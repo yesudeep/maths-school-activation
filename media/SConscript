@@ -23,6 +23,7 @@ SCRIPT_FILES = Split("""
 """)
 
 IMAGE_FILES = Split("""
+    image/icon/128x128/activation.png
 """)
 
 CSS_FILES = Split("""
