@@ -40,7 +40,7 @@ class IndexHandler(BaseRequestHandler):
     def get(self):
         self.render('index.html')
 
-class ProductsHandler(BaseRequestHandler):
+class ProductChoiceHandler(BaseRequestHandler):
     def get(self):
         self.render('products.html')
 
