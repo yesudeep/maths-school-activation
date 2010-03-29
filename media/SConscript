@@ -23,6 +23,7 @@ SCRIPT_FILES = Split("""
 """)
 
 IMAGE_FILES = Split("""
+    image/logo/en_US.png
     image/icon/128x128/activation.png
     image/bg/button_overlay.png
     image/bg/textfield_normal.png
