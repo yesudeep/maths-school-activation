@@ -69,7 +69,7 @@ GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
 
 OWNER_NAME = 'Maths Worldwide Pty Limited'
 OWNER_ADDRESS = ''
-OWNER_URL = '/'
+OWNER_URL = 'http://mathsworldwide.com.au'
 OWNER_COMPANY = 'Maths Worldwide Pty Limited'
 COPYRIGHT_YEARS = '2010'
 
