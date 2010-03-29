@@ -8,7 +8,7 @@
   <div id="login-or-register">
     <div class="half box">
       <h2>New user? Register</h2>
-      <form id="form-register-subscriber" class="decorated-fields vertical" action="/products" method="post">
+      <form id="form-register-subscriber" class="decorated-fields vertical" action="/profile" method="post">
         <label for="full_name">
           <span class="prefix">full name</span>
           <input type="text" name="full_name" value="" class="required capitalize" />
@@ -21,7 +21,7 @@
         </label>
         <label for="phone_number">
           <span class="prefix">phone number</span>
-          <input type="text" name="phone_number" value="" class="required" />
+          <input type="text" name="phone_number" value="" class="required mobile" />
           <span class="suffix"></span>
         </label>
         <label for="mobile_number">
@@ -32,10 +32,10 @@
         <label for="country">
           <span class="prefix">country</span>
           <select name="country">
-            <option value="">Australia</option>
-            <option value="">New Zealand</option>
-            <option value="">Singapore</option>
-            <option value="">South Africa</option>
+            <option value="AU">Australia</option>
+            <option value="NZ">New Zealand</option>
+            <option value="SG">Singapore</option>
+            <option value="ZA">South Africa</option>
           </select> 
           <span class="suffix"></span>
         </label>
@@ -50,12 +50,12 @@
           <span class="suffix"></span>
         </label>
         <label for="street">
-          <span class="prefix">number & street name</span>
+          <span class="prefix">street name</span>
           <input type="text" name="street" value="" class="required" />
           <span class="suffix"></span>
         </label>
         <label for="postal_code">
-          <span class="prefix">post code</span>
+          <span class="prefix">postal code</span>
           <input type="text" name="postal_code" value="" class="required" />
           <span class="suffix"></span>
         </label>
@@ -68,16 +68,16 @@
     </div>
     <div class="half box">
       <h2>Existing user? Login.</h2>
-      <form id="form-login-subscriber" class="decorated-fields vertical" action="/products" method="POST">
+      <form id="form-login-subscriber" class="decorated-fields vertical" action="/login" method="POST">
         <label for="email">
           <span class="prefix">email</span>
-          <input type="text" name="email" value="" class="required email" />
+          <input type="text" name="login-email" value="" class="required email" />
           <span class="suffix">(eg. john@doe.com)</span>
         </label>
         <label for="password">
           <span class="prefix">password</span>
-          <input type="text" name="password" value="" class="required password" />
-          <span class="suffix">(eg. john@doe.com)</span>
+          <input type="password" name="login-password" value="" class="required password" />
+          <span class="suffix"></span>
         </label>
         <label for="submit">
           <span class="prefix"></span>
