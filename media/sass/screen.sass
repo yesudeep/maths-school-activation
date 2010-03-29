@@ -1,3 +1,45 @@
 
 @import base.sass
 
+body
+  :background-color= !color_bg_body
+  :color= !color_fg_body
+  :font-family= !font_stack_helvetica  
+  :line-height 1.4
+  
+h1
+  :color= !color_fg_h1
+  :text-shadow= 0px 1px 1px !color_fg_h1_shadow
+  :letter-spacing -0.04em
+  :line-height 1
+  strong
+    :display block
+    :font-weight bold
+    :font-size 0.9em
+
+h1.icon
+  :font-size 4.2em
+  :padding-left 128px
+
+h1.icon.activation
+  :background= "transparent" !icon_activation "no-repeat scroll 0 0"
+
+h2
+  :color= !color_fg_h2
+  :text-shadow= 0px 1px 1px !color_fg_h2_shadow
+  :font-size 1.6em
+  
+#header-content, #trunk-content, #footer-content
+  +grid-container
+  :padding-top 1em
+  :padding-bottom 1em
+
+#login-box
+  :width 500px
+
+.box
+  +box-shadow("1px 1px 8px #222")
+  :background-color #dcdcdc
+  +border-radius("10px")
+  :padding 1em
+  :color= !color_fg_box_body
