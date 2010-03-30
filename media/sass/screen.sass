@@ -30,8 +30,9 @@ h1.icon
 ul.image-grid
   li
     +display-inline-block()
-    :margin 1em
+    :margin 0.5em
     a
+      :padding 1.2em 2em
       :display block
       :text-decoration none
       img
@@ -49,6 +50,11 @@ ul.image-grid
         :text-align center
         :color= !color_fg_icon_subtitle
         :display block
+      
+    a:hover
+      +border-radius("10px")
+      +box-shadow("inset 0 0 8px #222")
+      :background-color #20242d
 
 h2
   :color= !color_fg_h2
