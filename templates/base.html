@@ -20,9 +20,13 @@
 		<div id="header">
 		  <div id="nav-content">
 		    {% block tag_nav_content %}
-		      <ul>
-		        <li><a href="{{ OWNER_URL }}"><img id="logo" src="{{ MEDIA_URL }}image/logo/en_US.png" alt="Maths Worldwide (Australia)" /></a></li>
-		        <li></li>
+          <a id="logo-link" href="{{ OWNER_URL }}"><img id="logo" src="{{ MEDIA_URL }}image/logo/en_US.png" alt="Maths Worldwide (Australia)" /></a>
+		      <ul id="nav-bar">
+		        <li><a href="/dashboard" {% block navlink_dashboard_attributes %}{% end %}">dashboard</a></li>
+		        <li><a href="/activate" {% block navlink_activate_attributes %}{% end %}>activate</a></li>
+		        <li><a href="/deactivate" {% block navlink_deactivate_attributes %}{% end %}>deactivate</a></li>
+		        <li><a href="/deinstall" {% block navlink_deinstall_attributes %}{% end %}>deinstall</a></li>
+		        <li><a href="/profile" {% block navlink_profile_attributes %}{% end %}>edit profile</a></li>
 		      </ul>
 		    {% end %}
 		  </div>

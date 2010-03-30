@@ -7,6 +7,12 @@ body
   :font-family= !font_stack_helvetica  
   :line-height 1.4
 
+a
+  :text-decoration none
+  :color= !color_fg_link
+a:hover
+  :text-decoration none
+  :color= !color_fg_link_hover
 
 h1
   :color= !color_fg_h1
@@ -20,18 +26,24 @@ h1
 
 h1.icon
   :font-size 4.2em
-  :padding-left 128px
+  :padding-left 150px
 
-.icon.activation
-  :background= "transparent" !icon_activation "no-repeat scroll 0 0"
+.icon.activate
+  :background= "transparent" !icon_activate "no-repeat scroll 0 0"
+.icon.deactivate
+  :background= "transparent" !icon_deactivate "no-repeat scroll 0 0"
 .icon.package
   :background= "transparent" !icon_package "no-repeat scroll 0 0"
+.icon.dashboard
+  :background= "transparent" !icon_dashboard "no-repeat scroll 0 0"
+
 
 ul.image-grid
   li
     +display-inline-block()
     :margin 0.5em
     a
+      :min-width 140px
       :padding 1.2em 2em
       :display block
       :text-decoration none
@@ -39,6 +51,7 @@ ul.image-grid
         :width 128px
         :height 128px
         :display block
+        :margin 0.5em auto
       strong
         :color= !color_fg_icon_title
         //:text-shadow= "0 0 1px " !color_fg_icon_title_shadow
@@ -54,7 +67,7 @@ ul.image-grid
     a:hover
       +border-radius("10px")
       +box-shadow("inset 0 0 8px #222")
-      :background-color #20242d
+      :background-color #30343d
 
 h2
   :color= !color_fg_h2
@@ -72,6 +85,22 @@ h2
   :clear both
   :margin-bottom 2em
 
+#nav-bar
+  li
+    +display-inline-block()
+    :vertical-align text-bottom
+    a
+      :font-size 1.4em
+      :display block
+      :height 90px
+      :padding 5px 10px
+    a:hover, a.selected
+      :background-color= !color_bg_darkbox
+      :color= !color_fg_link_hover
+
+#logo-link
+  :float left
+  
 #logo
   :background-color white
   :padding 20px
@@ -94,6 +123,7 @@ h2
   :background-color= !color_bg_darkbox
   :padding 1em
   :color= !color_fg_darkbox_body
+  :margin-bottom 1em
 
 #login-or-register .box
   +grid(5, 12)

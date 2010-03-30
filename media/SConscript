@@ -31,6 +31,13 @@ IMAGE_FILES = Split("""
     image/icon/128x128/cd_red.png
     image/icon/128x128/cd_yellow.png
     image/icon/128x128/cd.png
+    image/icon/128x128/check.png
+    image/icon/128x128/uncheck.png
+    image/icon/128x128/gear.png
+    image/icon/128x128/lock.png
+    image/icon/128x128/unlock.png
+    image/icon/128x128/trash.png
+    image/icon/128x128/user_information.png
     image/bg/button_overlay.png
     image/bg/textfield_normal.png
     image/bg/textfield_readonly.png
@@ -97,13 +104,21 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
-        selector="products.js",
+        selector="activate.js",
         sources = Split(
         COMMON_SCRIPTS + 
         """
-            script/products.js
+            script/activate.js
         """)
-    ),    
+    ),
+    dict(
+        selector="deactivate.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/deactivate.js
+        """)
+    ),
 )
 
 

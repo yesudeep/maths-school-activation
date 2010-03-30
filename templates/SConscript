@@ -20,16 +20,17 @@ env.Cheetah(TEMPLATE_BUILD_DIR + 'base_site.html', 'base_site.html.tmpl', PICKLE
 # These templates must have corresponding page scripts.
 PAGE_TEMPLATE_FILES = Split("""
     index.html
-    products.html
+    activate.html
+    deactivate.html
 """)
 
 BASE_TEMPLATE_FILES = Split("""
     base.html
+    dashboard.html
 """)
 
 # If the template does not use scripts, please place it here.
 TEMPLATE_FILES = BASE_TEMPLATE_FILES + Split("""
-
 """)
 
 PLAIN_COPIES = Split("""
