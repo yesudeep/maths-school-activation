@@ -25,6 +25,7 @@ SCRIPT_FILES = Split("""
 IMAGE_FILES = Split("""
     image/logo/en_US.png
     image/icon/128x128/activation.png
+    image/icon/128x128/package.png
     image/bg/button_overlay.png
     image/bg/textfield_normal.png
     image/bg/textfield_readonly.png
@@ -90,6 +91,14 @@ SCRIPT_BUNDLES = (
             script/index.js
         """)
     ),
+    dict(
+        selector="products.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/products.js
+        """)
+    ),    
 )
 
 

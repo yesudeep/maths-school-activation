@@ -21,8 +21,10 @@ h1.icon
   :font-size 4.2em
   :padding-left 128px
 
-h1.icon.activation
+.icon.activation
   :background= "transparent" !icon_activation "no-repeat scroll 0 0"
+.icon.package
+  :background= "transparent" !icon_package "no-repeat scroll 0 0"
 
 h2
   :color= !color_fg_h2
@@ -49,12 +51,19 @@ h2
   :width 500px
 
 .box
-  +box-shadow("1px 1px 8px #222")
+  +box-shadow("0 0 8px #222")
   :background-color #dcdcdc
   +border-radius("10px")
   :padding 1em
   :color= !color_fg_box_body
   :text-shadow= 0px 1px 1px !color_fg_box_body_shadow
+
+.darkbox
+  +border-radius("10px")
+  +box-shadow("inset 0 0 8px #222")
+  :background-color= !color_bg_darkbox
+  :padding 1em
+  :color= !color_fg_darkbox_body
 
 #login-or-register .box
   +grid(5, 12)

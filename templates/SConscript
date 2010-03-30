@@ -17,7 +17,7 @@ base_site_pickle = env.Pickle('base_site_vars.pkl', Value({
 }))
 env.Cheetah(TEMPLATE_BUILD_DIR + 'base_site.html', 'base_site.html.tmpl', PICKLE=base_site_pickle)
 
-# These files have page scripts.
+# These templates must have corresponding page scripts.
 PAGE_TEMPLATE_FILES = Split("""
     index.html
     products.html
@@ -27,6 +27,7 @@ BASE_TEMPLATE_FILES = Split("""
     base.html
 """)
 
+# If the template does not use scripts, please place it here.
 TEMPLATE_FILES = BASE_TEMPLATE_FILES + Split("""
 
 """)
