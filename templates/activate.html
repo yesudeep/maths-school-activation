@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% block navlink_activate_attributes %}class="selected"{% end %}
+
 {% block tag_header_content %}
-  <h1 class="icon package">Choose <strong>Products</strong></h1>
+  <h1 class="icon activate">Activate Products <strong>Pick any.</strong></h1>
 {% end %}
 
 {% block tag_trunk_content %}
@@ -23,16 +25,16 @@
       </li>
       <li>
         <a href="#">
-          <img src="{{ MEDIA_URL }}image/icon/128x128/cd_blue.png" />
-          <strong>Dinamagic</strong>
-          <span>Mathematics</span>
+          <img src="{{ MEDIA_URL }}image/icon/128x128/cd_green.png" />
+          <strong>English Story</strong>
+          <span>English</span>
         </a>
       </li>
       <li>
         <a href="#">
-          <img src="{{ MEDIA_URL }}image/icon/128x128/cd_green.png" />
-          <strong>English Story</strong>
-          <span>English</span>
+          <img src="{{ MEDIA_URL }}image/icon/128x128/cd_blue.png" />
+          <strong>Dinamagic</strong>
+          <span>Mathematics</span>
         </a>
       </li>
       <li>
@@ -58,4 +60,9 @@
       </li>
     </ul>
   </div>
+  <form id="form-activate-products" class="decorated-fields vertical">
+    <input type="submit" name="activate" class="awesome-button fresh large" value="&#10003; Activate" />
+  </form>
 {% end %}
+
+{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}

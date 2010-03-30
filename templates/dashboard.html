@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block navlink_dashboard_attributes %}class="selected"{% end %}
+
+{% block tag_header_content %}
+  <h1 class="icon dashboard">Karan's <strong>Dashboard</strong></h1>
+{% end %}
+
+{% block tag_trunk_content %}
+  <div class="darkbox">
+    <ul class="image-grid">
+      <li>
+        <a href="/activate">
+          <img src="{{ MEDIA_URL }}image/icon/128x128/unlock.png" />
+          <strong>Activate Product</strong>
+          <span>Enables billing</span>
+        </a>
+      </li>
+      <li>
+        <a href="/deactivate">
+          <img src="{{ MEDIA_URL }}image/icon/128x128/lock.png" />
+          <strong>Deactivate Product</strong>
+          <span>Disables billing</span>
+        </a>
+      </li>
+      <li>
+        <a href="/deinstall">
+          <img src="{{ MEDIA_URL }}image/icon/128x128/trash.png" />
+          <strong>Deinstall Product</strong>
+          <span>Get deinstall code</span>
+        </a>
+      </li>
+      <li>
+        <a href="/profile">
+          <img src="{{ MEDIA_URL }}image/icon/128x128/user_information.png" />
+          <strong>Edit Profile</strong>
+          <span>A little about you</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+{% end %}

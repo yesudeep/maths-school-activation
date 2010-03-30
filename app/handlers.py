@@ -40,14 +40,6 @@ class IndexHandler(BaseRequestHandler):
     def get(self):
         self.render('index.html')
 
-class ProductChoiceHandler(BaseRequestHandler):
-    def get(self):
-        self.render('products.html')
-
-class ActivationHandler(BaseRequestHandler):
-    def get(self):
-        self.render('activation.html')
-
 class ProfileHandler(BaseRequestHandler):
     def get(self):
         self.render('profile.html')
@@ -56,6 +48,22 @@ class RegistrationHandler(BaseRequestHandler):
     def get(self):
         self.render('registration.html')
 
+class DashboardHandler(BaseRequestHandler):
+    def get(self):
+        self.render('dashboard.html')
+
+class ActivateHandler(BaseRequestHandler):
+    def get(self):
+        self.render('activate.html')
+
+class DeactivateHandler(BaseRequestHandler):
+    def get(self):
+        self.render('deactivate.html')
+
+class DeinstallHandler(BaseRequestHandler):
+    def get(self):
+        self.render('deinstall.html')
+
 settings = {
     'debug': configuration.DEBUG,
     #'xsrf_cookies': True,
@@ -63,8 +71,10 @@ settings = {
 }
 urls = (
     (r'/', IndexHandler),
-    (r'/products/?', ProductChoiceHandler),
-    (r'/activation/?', ActivationHandler),
+    (r'/dashboard/?', DashboardHandler),
+    (r'/activate/?', ActivateHandler),
+    (r'/deactivate/?', DeactivateHandler),
+    (r'/deinstall/?', DeinstallHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),
 )
