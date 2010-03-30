@@ -26,6 +26,11 @@ IMAGE_FILES = Split("""
     image/logo/en_US.png
     image/icon/128x128/activation.png
     image/icon/128x128/package.png
+    image/icon/128x128/cd_blue.png
+    image/icon/128x128/cd_green.png
+    image/icon/128x128/cd_red.png
+    image/icon/128x128/cd_yellow.png
+    image/icon/128x128/cd.png
     image/bg/button_overlay.png
     image/bg/textfield_normal.png
     image/bg/textfield_readonly.png

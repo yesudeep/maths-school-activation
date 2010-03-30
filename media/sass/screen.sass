@@ -6,7 +6,8 @@ body
   :color= !color_fg_body
   :font-family= !font_stack_helvetica  
   :line-height 1.4
-  
+
+
 h1
   :color= !color_fg_h1
   :text-shadow= 0px 1px 1px !color_fg_h1_shadow
@@ -25,6 +26,29 @@ h1.icon
   :background= "transparent" !icon_activation "no-repeat scroll 0 0"
 .icon.package
   :background= "transparent" !icon_package "no-repeat scroll 0 0"
+
+ul.image-grid
+  li
+    +display-inline-block()
+    :margin 1em
+    a
+      :display block
+      :text-decoration none
+      img
+        :width 128px
+        :height 128px
+        :display block
+      strong
+        :color= !color_fg_icon_title
+        //:text-shadow= "0 0 1px " !color_fg_icon_title_shadow
+        :display block
+        :text-align center
+        :font-weight bold
+        :font-size 1.1em
+      span
+        :text-align center
+        :color= !color_fg_icon_subtitle
+        :display block
 
 h2
   :color= !color_fg_h2
