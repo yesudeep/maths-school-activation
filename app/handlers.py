@@ -70,7 +70,8 @@ class DeinstallPhonicaDinamagicHandler(BaseRequestHandler):
 
 class DeinstallMathsEnglishHandler(BaseRequestHandler):
     def get(self):
-        self.render('deinstall_maths_english.html')
+        import random
+        self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
 
 settings = {
     'debug': configuration.DEBUG,

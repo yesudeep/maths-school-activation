@@ -6,7 +6,8 @@ body
   :color= !color_fg_body
   :font-family= !font_stack_helvetica  
   :line-height 1.4
-
+p
+  :margin-bottom 1em
 a
   :text-decoration none
   :color= !color_fg_link
@@ -51,16 +52,30 @@ ol.steps
     //:background= "transparent" !image_bg_bullet "no-repeat scroll 1.3em 1.3em"
     .content
       //+display-inline-block()
-      :width 500px
+      //:width 500px
       //:margin-right 1em
       //:padding-left 1.6em
       :color= !color_fg_box_body
+      blockquote
+        :padding 1em
+        :font-size 1.2em
+      strong
+        :font-weight bold
+      strong.warning
+        :color red
+      code
+        //+display-inline-block()
+        :background-color= !color_bg_darkbox
+        :color #fff
+        :text-shadow none
+        :padding-left 0.9em
+        :padding-right 0.9em
+        +border-radius("10px")      
     .illustration
+      :margin-top 1em
+      :margin-bottom 1em
       //+display-inline-block()
       :color= !color_fg_box_body
-    blockquote
-      :padding 1em
-      :font-size 1.2em
 
 ul.image-grid
   li
