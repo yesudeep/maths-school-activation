@@ -20,6 +20,22 @@
       {% end %}
     </ul>
   </div>
+  <div id="input-serial-number">
+    <form class="input-serial-number decorated-fields tabular">
+      <input type="hidden" name="product-id" value="" />
+      <label for="serial-number">
+        <span class="prefix">Serial Number</span>
+        <input type="text" name="serial-number" value="" />
+        <span class="suffix"></span>
+      </label>
+      <label for="machine-id">
+        <span class="prefix">Machine ID or Site Code</span>
+        <input type="text" name="machine-id" value="" />
+        <span class="suffix"></span>
+      </label>
+      <input type="submit" name="add-product" class="awesome-button fresh" value="+ Add Product" />
+    </form>
+  </div>
   <form id="form-activate-products" class="decorated-fields vertical">
     <input type="submit" name="activate" class="awesome-button fresh large" value="&#10003; Activate" />
   </form>
