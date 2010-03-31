@@ -27,6 +27,7 @@ PAGE_TEMPLATE_FILES = Split("""
 BASE_TEMPLATE_FILES = Split("""
     base.html
     dashboard.html
+    deinstall.html
 """)
 
 # If the template does not use scripts, please place it here.

@@ -64,6 +64,14 @@ class DeinstallHandler(BaseRequestHandler):
     def get(self):
         self.render('deinstall.html')
 
+class DeinstallPhonicaDinamagicHandler(BaseRequestHandler):
+    def get(self):
+        self.render('deinstall_phonica_dinamagic.html')
+
+class DeinstallMathsEnglishHandler(BaseRequestHandler):
+    def get(self):
+        self.render('deinstall_maths_english.html')
+
 settings = {
     'debug': configuration.DEBUG,
     #'xsrf_cookies': True,
@@ -77,6 +85,12 @@ urls = (
     (r'/deinstall/?', DeinstallHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),
+    (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
+    (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
+    (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),
+    (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
+    (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
+    (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),    
 )
 application = tornado.wsgi.WSGIApplication(urls, **settings)
 
