@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block navlink_deinstall_attributes %}class="selected"{% end %}
+
+{% block tag_header_content %}
+  <h1 class="icon deinstall">Deinstallation for<strong>Phonica or Dinamagic</strong></h1>
+{% end %}
+
+{% block tag_trunk_content %}
+  <div id="deinstall_phonica_or_dinamagic">
+    <div class="half box">
+      <h2>Just a minute.  Thank you.</h2>
+      <p>Before deinstalling software, please provide a little information so you can re-install it in the future.</p>
+      <form id="form-deinstall" class="decorated-fields tabular" action="." method="POST">
+        <label for="email">
+          <span class="prefix">serial number</span>
+          <input type="text" name="serial-number" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="site code">
+          <span class="prefix">site code</span>
+          <input type="text" name="site-code" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="removal code">
+          <span class="prefix">removal code</span>
+          <input type="text" name="removal-code" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="submit">
+          <span class="prefix"></span>
+          <input type="submit" class="awesome-button" name="submit" value="&#10004; Submit" />
+          <span class="suffix"></span>
+        </label>
+      </form>
+    </div>
+  </div>
+{% end %}
+{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
