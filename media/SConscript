@@ -127,6 +127,14 @@ SCRIPT_BUNDLES = (
             script/deinstall_phonica_dinamagic.js
         """)
     ),
+    dict(
+        selector="deinstall_maths_english.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/deinstall_maths_english.js
+        """)
+    ),
 )
 
 

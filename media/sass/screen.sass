@@ -74,6 +74,17 @@ h2
   :color= !color_fg_h2
   :text-shadow= 0px 1px 1px !color_fg_h2_shadow
   :font-size 1.6em
+
+h3
+  :font-size 1.4em
+  :font-weight bold
+  :padding 0.3em 1.4em
+  +box-shadow("0 3px 8px #222")
+  :border 1px solid #999
+  :margin 1.4em -1.4em 1em
+  :background= "#b5b5b5" !image_button_overlay "repeat-x scroll 0 0"
+  
+    
   
 #header-content, #trunk-content, #footer-content
   +grid-container
@@ -128,7 +139,6 @@ h2
 
 #login-or-register .box
   +grid(5, 12)
-
 
 
 //form.awesome
