@@ -33,6 +33,7 @@ from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import BaseRequestHandler
+from models import Product
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -54,7 +55,8 @@ class DashboardHandler(BaseRequestHandler):
 
 class ActivateHandler(BaseRequestHandler):
     def get(self):
-        self.render('activate.html')
+        products = Product.get_all()
+        self.render('activate.html', products=products)
 
 class UnsubscribtionHandler(BaseRequestHandler):
     def get(self):
