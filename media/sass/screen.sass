@@ -40,7 +40,7 @@ h1.icon
   :background= "transparent" !icon_deinstall "no-repeat scroll 0 0"
 
 ol.steps
-  :list-style-position inside
+  :list-style-position outside
   :margin -1em
   li:first-child
     :border-top 0
@@ -48,16 +48,19 @@ ol.steps
     :border-top 1px dashed #4f4f4f
     :padding 1.6em 1em 1.6em 1.9em
     :color #fff
-    :background= "transparent" !image_bg_bullet "no-repeat scroll 1.3em 1.3em"
+    //:background= "transparent" !image_bg_bullet "no-repeat scroll 1.3em 1.3em"
     .content
-      +display-inline-block()
+      //+display-inline-block()
       :width 500px
-      :margin-right 1em
-      :padding-left 1.6em
+      //:margin-right 1em
+      //:padding-left 1.6em
       :color= !color_fg_box_body
     .illustration
-      +display-inline-block()
+      //+display-inline-block()
       :color= !color_fg_box_body
+    blockquote
+      :padding 1em
+      :font-size 1.2em
 
 ul.image-grid
   li
