@@ -56,9 +56,9 @@ class ActivateHandler(BaseRequestHandler):
     def get(self):
         self.render('activate.html')
 
-class DeactivateHandler(BaseRequestHandler):
+class UnsubscribtionHandler(BaseRequestHandler):
     def get(self):
-        self.render('deactivate.html')
+        self.render('unsubscribe.html')
 
 class DeinstallHandler(BaseRequestHandler):
     def get(self):
@@ -82,7 +82,7 @@ urls = (
     (r'/', IndexHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/?', ActivateHandler),
-    (r'/deactivate/?', DeactivateHandler),
+    (r'/unsubscribe/?', UnsubscribtionHandler),
     (r'/deinstall/?', DeinstallHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),

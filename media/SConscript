@@ -115,11 +115,11 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
-        selector="deactivate.js",
+        selector="unsubscribe.js",
         sources = Split(
         COMMON_SCRIPTS + 
         """
-            script/deactivate.js
+            script/unsubscribe.js
         """)
     ),
     dict(
