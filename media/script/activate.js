@@ -1,11 +1,30 @@
-jQuery(".btn-slide").click(function(){
-	jQuery(".panel").slideToggle("slow");
-});
-jQuery("#cancel-button").click(function(){
-  jQuery(".panel").fadeOut("slow");
-});
-jQuery("#activate-product-button").click(function(){
-  jQuery(".panel").fadeOut("slow");
+
+jQuery(function(){
+  var elements = {
+    product: jQuery('#products a'),
+    dialog_input_serial_number: jQuery('#dialog-input-serial-number'),
+    dialog_input_serial_number_ok: jQuery('#dialog-input-serial-number .button-ok'),
+    dialog_input_serial_number_cancel: jQuery('#dialog-input-serial-number .button-cancel')
+  };
+  
+  elements.product.click(function(e){
+  	elements.dialog_input_serial_number.slideToggle('slow');
+  	e.preventDefault();
+  	e.stopPropagation();
+  	return false;
+  });
+  elements.dialog_input_serial_number_ok.click(function(e){
+    elements.dialog_input_serial_number.fadeOut('slow');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+  elements.dialog_input_serial_number_cancel.click(function(e){
+    elements.dialog_input_serial_number.fadeOut('slow');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
 });
 
 /*jQuery(function(){
