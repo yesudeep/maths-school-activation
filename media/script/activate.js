@@ -17,6 +17,7 @@ jQuery(function(){
     e.preventDefault();
     return false;
   });
+  
   jQuery('#simplemodal-container form.input-serial-number').live('submit', function(e){    
     var form = jQuery(this),
       serialNumber = form.find('input[name="serial-number"]').val(),

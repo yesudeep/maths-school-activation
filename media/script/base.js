@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+/*jQuery(document).ready(function() {
 	jQuery('input[title]').each(function() {
 		if(jQuery(this).val() === '') {
 			jQuery(this).val($(this).attr('title'));
@@ -17,3 +17,4 @@ jQuery(document).ready(function() {
 		});
 	});
 });
+*/
