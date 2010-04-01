@@ -10,7 +10,7 @@
   <div id="dialog-input-serial-number" class="dialog box">
     <h2>Your serial number please.</h2>
     <p>To activate this product, you will need to input the serial number and machine ID.</p>
-    <form id="form-unsubscribe-products" class="decorated-fields tabular" action="" method="POST">
+    <form id="form-input-serial-number" class="decorated-fields tabular" action="" method="POST">
       <label for="serial-number">
         <span class="prefix">Serial Number</span>
         <input type="text" name="serial-number" value="" />
@@ -21,15 +21,15 @@
         <input type="text" name="machine-id" value="" />
         <span class="suffix"></span>
       </label>
-      <input type="button" id="activate-product-button" name="add-product" class="awesome-button large button-ok" value="+ Activate" />
-      <input type="button" id="cancel-button" name="unload-form" class="awesome-button button-cancel"  value="&times; Cancel" onClick/>
+      <input type="submit" name="add-activation" class="awesome-button button-ok" value="+ Add Activation" />
+      <input type="button" name="cancel" class="awesome-button button-cancel"  value="&times; Cancel" onClick/>
     </form>
   </div>
   <div class="darkbox">
     <ul id="products" class="image-grid">
       {% for product in products %}
       <li>
-        <a id="{{ product.key().id() }}" class="btn-slide" href="#{{ product.key().id() }}">
+        <a id="{{ product.key() }}" class="btn-slide" href="#{{ product.key() }}">
           <img src="{{ product.icon_url }}" />
           <strong>{{ product.title }}</strong>
           <span>{{ product.subtitle }}</span>
@@ -38,9 +38,7 @@
       {% end %}
     </ul>
   </div>
-  <form id="form-activate-products" class="decorated-fields vertical">
-    <input type="submit" name="activate" class="awesome-button fresh large" value="&#10003; Activate" />
-  </form>
+  <a id="button-activate" href="#" class="awesome-button fresh large">&#10003; Activate</a>
 {% end %}
 
 {% block tag_scripts %}

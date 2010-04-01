@@ -2,28 +2,56 @@
 jQuery(function(){
   var elements = {
     product: jQuery('#products a'),
-    dialog_input_serial_number: jQuery('#dialog-input-serial-number'),
-    dialog_input_serial_number_ok: jQuery('#dialog-input-serial-number .button-ok'),
-    dialog_input_serial_number_cancel: jQuery('#dialog-input-serial-number .button-cancel')
+    dialogInputSerialNumber: jQuery('#dialog-input-serial-number'),
+    dialogInputSerialNumberOK: jQuery('#dialog-input-serial-number .button-ok'),
+    dialogInputSerialNumberCancel: jQuery('#dialog-input-serial-number .button-cancel'),
+    formInputSerialNumber: jQuery('#form-input-serial-number'),
+    buttonActivate: jQuery('#button-activate')
   };
-  
+  var selectedProductKey, activateProducts={};
   elements.product.click(function(e){
-  	elements.dialog_input_serial_number.slideToggle('slow');
+    var elem = jQuery(this);
+    selectedProductKey = elem.attr('id');
+    if (elem.hasClass('selected')){
+      elem.removeClass('selected');
+      delete activateProducts[selectedProductKey];
+    } else {
+    	elements.dialogInputSerialNumber.slideToggle('slow');      
+    }
   	e.preventDefault();
   	e.stopPropagation();
   	return false;
   });
-  elements.dialog_input_serial_number_ok.click(function(e){
-    elements.dialog_input_serial_number.fadeOut('slow');
+  elements.formInputSerialNumber.submit(function(e){
+    var form = jQuery(this),
+      serialNumberField = form.find('input[name="serial-number"]'),
+      machineIdField = form.find('input[name="machine-id"]');
+    activateProducts[selectedProductKey] = {
+      serialNumber: serialNumberField.val(),
+      machineId: machineIdField.val()
+    };
+    jQuery('#' + selectedProductKey).toggleClass('selected');
+    elements.dialogInputSerialNumber.fadeOut('slow');
+    serialNumberField.val("");
+    machineIdField.val("");
+
     e.preventDefault();
     e.stopPropagation();
     return false;
   });
-  elements.dialog_input_serial_number_cancel.click(function(e){
-    elements.dialog_input_serial_number.fadeOut('slow');
+  elements.dialogInputSerialNumberCancel.click(function(e){
+    elements.dialogInputSerialNumber.fadeOut('slow');
     e.preventDefault();
     e.stopPropagation();
     return false;
+  });
+  elements.buttonActivate.click(function(e){
+    jQuery.post('/activate', activateProducts, function(data){
+      console.log(data);
+    });
+    e.preventDefault();
+    e.stopPropagation();
+    return false;    
   });
 });
 
