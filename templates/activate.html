@@ -7,33 +7,29 @@
 {% end %}
 
 {% block tag_trunk_content %}
-  <div id="input-serial-number" class="panel box">
-    <p>Please enter your Serial number and Machine ID or Site Code to activate the product</p>
+  <div id="dialog-input-serial-number" class="dialog box">
+    <h2>Your serial number please.</h2>
+    <p>To activate this product, you will need to input the serial number and machine ID.</p>
     <form id="form-unsubscribe-products" class="decorated-fields tabular" action="" method="POST">
-      <input type="hidden" name="product-id" value="" />
       <label for="serial-number">
         <span class="prefix">Serial Number</span>
         <input type="text" name="serial-number" value="" />
         <span class="suffix"></span>
       </label>
       <label for="machine-id">
-        <span class="prefix">Machine ID or Site Code</span>
+        <span class="prefix">Machine ID/Site Code</span>
         <input type="text" name="machine-id" value="" />
         <span class="suffix"></span>
       </label>
-      <label for="Activation-amount">
-        <span class="prefix">Activation Amount</span>
-        <span class="suffix">Some Amount</span>
-      </label>
-      <input type="button" id="activate-product-button" name="add-product" class="awesome-button fresh" value="+ Activate Product" />
-      <input type="button" id="cancel-button" name="unload-form" class="awesome-button fresh cancel-button"  value="+ Cancel" onClick/>
+      <input type="button" id="activate-product-button" name="add-product" class="awesome-button large button-ok" value="+ Activate" />
+      <input type="button" id="cancel-button" name="unload-form" class="awesome-button button-cancel"  value="&times; Cancel" onClick/>
     </form>
   </div>
   <div class="darkbox">
     <ul id="products" class="image-grid">
       {% for product in products %}
       <li>
-        <a id="{{ product.key().id() }}" href="#{{ product.key().id() }}">
+        <a id="{{ product.key().id() }}" class="btn-slide" href="#{{ product.key().id() }}">
           <img src="{{ product.icon_url }}" />
           <strong>{{ product.title }}</strong>
           <span>{{ product.subtitle }}</span>
@@ -47,4 +43,12 @@
   </form>
 {% end %}
 
-{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
+{% block tag_scripts %}
+#*<script type="text/javascript">
+window.__hc_scripts.push({% if LOCAL %}
+"{{ TEXT_MEDIA_URL }}script/lib/chickoojs/src/jquery/tools/1.1.2/jquery.tools.min.js"
+{% else %}
+"http://cdn.jquerytools.org/1.1.2/full/jquery.tools.min.js"
+{% end %});
+</script>*#
+<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
