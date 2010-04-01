@@ -1,4 +1,14 @@
-jQuery(function(){
+jQuery(".btn-slide").click(function(){
+	jQuery(".panel").slideToggle("slow");
+});
+jQuery("#cancel-button").click(function(){
+  jQuery(".panel").fadeOut("slow");
+});
+jQuery("#activate-product-button").click(function(){
+  jQuery(".panel").fadeOut("slow");
+});
+
+/*jQuery(function(){
   var elements = {
     products: jQuery('#products'),
     product: jQuery('#products a'),
@@ -32,3 +42,4 @@ jQuery(function(){
     return false;
   });
 });
+*/
