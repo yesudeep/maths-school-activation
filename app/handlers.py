@@ -58,7 +58,12 @@ class ActivateHandler(BaseRequestHandler):
         products = Product.get_all()
         self.render('activate.html', products=products)
 
-class UnsubscribtionHandler(BaseRequestHandler):
+    def post(self):
+        from django.utils import simplejson as json
+        data = json.loads(self.get_argument('data'))
+        logging.info(data)
+
+class UnsubscriptionHandler(BaseRequestHandler):
     def get(self):
         self.render('unsubscribe.html')
 
@@ -75,6 +80,8 @@ class DeinstallMathsEnglishHandler(BaseRequestHandler):
         import random
         self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
 
+
+
 settings = {
     'debug': configuration.DEBUG,
     #'xsrf_cookies': True,
@@ -84,7 +91,7 @@ urls = (
     (r'/', IndexHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/?', ActivateHandler),
-    (r'/unsubscribe/?', UnsubscribtionHandler),
+    (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),
