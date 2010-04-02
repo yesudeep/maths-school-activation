@@ -116,6 +116,14 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
+        selector="profile.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/profile.js
+        """)
+    ),
+    dict(
         selector="unsubscribe.js",
         sources = Split(
         COMMON_SCRIPTS + 
@@ -140,7 +148,6 @@ SCRIPT_BUNDLES = (
         """)
     ),
 )
-
 
 CSS_BUNDLES = (
     dict(

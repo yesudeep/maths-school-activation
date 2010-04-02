@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
 {% block tag_header_content %}
-  <h1 class="icon package">Welcome. <strong>Thank you for your support.</strong></h1>
+  <h1 class="icon user_information">Welcome. <strong> Tell us a little about you. </strong></h1>
 {% end %}
 
 {% block tag_trunk_content %}
-  <div id="login-or-register">
-    <div class="half box">
-      <h2>New user? Register</h2>
-      <form id="form-register-subscriber" class="decorated-fields vertical" action="/profile" method="post">
+  <div class="profile box">
+    <h3>Help us provide you better support, updated profile regularly!</h3>
+    <form id="form-edit-subscriber-profile" class="decorated-fields tabular" action="/profile" method="post">
         <label for="first_name">
           <span class="prefix">First Name</span>
           <input type="text" name="first_name" value="" class="required capitalize" />
@@ -71,31 +70,10 @@
         </label>
         <label for="submit">
           <span class="prefix"></span>
-          <input type="submit" class="awesome-button midium" name="submit" value="&#10004; Register" />
+          <input type="submit" class="awesome-button" name="submit" value="&#10004; Update Profile" />
           <span class="suffix"></span>
         </label>
       </form>
-    </div>
-    <div class="half box">
-      <h2>Existing user? Login.</h2>
-      <form id="form-login-subscriber" class="decorated-fields vertical" action="/login" method="POST">
-        <label for="email">
-          <span class="prefix">Email</span>
-          <input type="text" name="login-email" value="" class="required email" />
-          <span class="suffix">(eg. john@doe.com)</span>
-        </label>
-        <label for="password">
-          <span class="prefix">Password</span>
-          <input type="password" name="login-password" value="" class="required password" />
-          <span class="suffix"></span>
-        </label>
-        <label for="submit">
-          <span class="prefix"></span>
-          <input type="submit" class="awesome-button" name="submit" value="&#10004; Login" />
-          <span class="suffix"></span>
-        </label>
-      </form>
-    </div>
   </div>
 {% end %}
 {% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
