@@ -83,21 +83,18 @@ class Product(SerializableModel):
     billing_gst_currency = db.StringProperty(choices=CURRENCY_CHOICES, default='AUD')
     icon_url = db.URLProperty()
 
+class Invoice(SerializableModel):    
+    code = db.StringProperty()
 
-class Order(SerializableModel):
-    product = db.ReferenceProperty(Product, collection_name='orders')
-    customer = db.ReferenceProperty(Customer, collection_name='orders')
-    invoice = db.ReferenceProperty(Invoice, collection_name='orders')
-
-  
 class Transaction(SerializableModel):
     code = db.StringProperty()
     when_transacted = db.DateTimeProperty()
     invoice = db.ReferenceProperty(Invoice, collection_name='transactions')
     mode = db.StringProperty(choices=TRANSACTION_MODES, default='online')
     agent = db.StringProperty(choices=PAYMENT_AGENT, default='chargify')
-
-
-class Invoice(SerializableModel):    
-    code = db.StringProperty()
+    invoice = db.ReferenceProperty(Invoice, collection_name='orders')
     
+class Order(SerializableModel):
+    product = db.ReferenceProperty(Product, collection_name='orders')
+    customer = db.ReferenceProperty(Customer, collection_name='orders')
+
