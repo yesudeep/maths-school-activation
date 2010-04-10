@@ -66,6 +66,10 @@ class DeinstallHandler(BaseRequestHandler):
     def get(self):
         self.render('deinstall.html')
 
+class ProductActivationHandler(BaseRequestHandler):
+    def get(self):
+        self.render('product_activation.html')
+
 class DeinstallPhonicaDinamagicHandler(BaseRequestHandler):
     def get(self):
         self.render('deinstall_phonica_dinamagic.html')
@@ -86,6 +90,7 @@ urls = (
     (r'/activate/?', ActivateHandler),
     (r'/unsubscribe/?', UnsubscribtionHandler),
     (r'/deinstall/?', DeinstallHandler),
+    (r'/product/activation/?', ProductActivationHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),
     (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),

@@ -116,6 +116,14 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
+        selector="product_activation.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/product_activation.js
+        """)
+    ),
+    dict(
         selector="profile.js",
         sources = Split(
         COMMON_SCRIPTS + 
