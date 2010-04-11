@@ -32,7 +32,7 @@ import tornado.wsgi
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from utils import SessionRequestHandler
+from utils import SessionRequestHandler, BaseRequestHandler
 from models import Product
 
 logging.basicConfig(level=logging.DEBUG)
@@ -62,7 +62,7 @@ class ActivateHandler(SessionRequestHandler):
         from django.utils import simplejson as json
         data = json.loads(self.get_argument('data'))
         logging.info(data)
-        for k, v in data:
+        for k, v in data.iteritems():
             pass
 
 class UnsubscriptionHandler(SessionRequestHandler):
