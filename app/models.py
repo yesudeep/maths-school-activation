@@ -79,7 +79,7 @@ class CustomerActivatedProducts(SerializableModel):
 
 class Product(SerializableModel):
     """
-    Product information displayed in various product information pages.
+    Product information.
 
     Helps answer these questions:
 
