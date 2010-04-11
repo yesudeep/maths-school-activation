@@ -32,28 +32,28 @@ import tornado.wsgi
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from utils import BaseRequestHandler
+from utils import SessionRequestHandler
 from models import Product
 
 logging.basicConfig(level=logging.DEBUG)
 
-class IndexHandler(BaseRequestHandler):
+class IndexHandler(SessionRequestHandler):
     def get(self):
         self.render('index.html')
 
-class ProfileHandler(BaseRequestHandler):
+class ProfileHandler(SessionRequestHandler):
     def get(self):
         self.render('profile.html')
 
-class RegistrationHandler(BaseRequestHandler):
+class RegistrationHandler(SessionRequestHandler):
     def get(self):
         self.render('registration.html')
 
-class DashboardHandler(BaseRequestHandler):
+class DashboardHandler(SessionRequestHandler):
     def get(self):
         self.render('dashboard.html')
 
-class ActivateHandler(BaseRequestHandler):
+class ActivateHandler(SessionRequestHandler):
     def get(self):
         products = Product.get_all()
         self.render('activate.html', products=products)
@@ -62,25 +62,25 @@ class ActivateHandler(BaseRequestHandler):
         from django.utils import simplejson as json
         data = json.loads(self.get_argument('data'))
         logging.info(data)
+        for k, v in data:
+            pass
 
-class UnsubscriptionHandler(BaseRequestHandler):
+class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
         self.render('unsubscribe.html')
 
-class DeinstallHandler(BaseRequestHandler):
+class DeinstallHandler(SessionRequestHandler):
     def get(self):
         self.render('deinstall.html')
 
-class DeinstallPhonicaDinamagicHandler(BaseRequestHandler):
+class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
     def get(self):
         self.render('deinstall_phonica_dinamagic.html')
 
-class DeinstallMathsEnglishHandler(BaseRequestHandler):
+class DeinstallMathsEnglishHandler(SessionRequestHandler):
     def get(self):
         import random
         self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
-
-
 
 settings = {
     'debug': configuration.DEBUG,

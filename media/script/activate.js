@@ -46,9 +46,9 @@ jQuery(function(){
     return false;
   });
   elements.buttonActivate.click(function(e){
-    jQuery.post('/activate', activateProducts, function(data){
+    jQuery.post('/activate', {data: JSON.stringify(activateProducts)}, function(data){
       console.log(data);
-    });
+    }, 'json');
     e.preventDefault();
     e.stopPropagation();
     return false;    

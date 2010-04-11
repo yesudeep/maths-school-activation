@@ -38,6 +38,7 @@ EXTRA_LIB_PATH = [
     path_join(LIB_PATH, 'tornado'),
     path_join(LIB_PATH, 'appengine_gaefy'),
     path_join(LIB_PATH, 'aeoid'),
+    path_join(LIB_PATH, 'gaeutilities'),
 ]
 sys.path = EXTRA_LIB_PATH + sys.path
 # End boilerplate.

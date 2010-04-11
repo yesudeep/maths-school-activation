@@ -102,3 +102,8 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         template_values.update(values)
         return tornado.web.RequestHandler.render_string(self, template_name, **template_values)
 
+class SessionRequestHandler(BaseRequestHandler):
+    def __init__(self, application, request, transforms=None):
+        super(SessionRequestHandler, self).__init__(application, request, transforms)
+        from appengine_utilities import sessions
+        self.session = sessions.Session()
