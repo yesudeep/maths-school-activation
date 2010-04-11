@@ -36,6 +36,13 @@ DEFAULT_PAYMENT_AGENT = PAYMENT_AGENT_PAYPAL
 
 
 class Profile(polymodel.PolyModel):
+    """
+    This is a base polymodel for models that have contact information.
+    Contact information is tied to this polymodel instead of
+    specialized contact information (phone number, email, etc.) 
+    models (eg., CustomerPhoneNumber, PersonAddress, CompanyLocation) 
+    for each of these models that have contact information.
+    """
     pass
 
 
