@@ -134,13 +134,17 @@ class SessionRequestHandler(BaseRequestHandler):
         super(SessionRequestHandler, self).__init__(application, request, transforms)
         from appengine_utilities import sessions
         self.session = sessions.Session()
-        
+                
+    def get_current_username(self):
+        return self.session.get('username')
+    
     def is_logged_in(self):
         return self.session.get('is_logged_in', False)
     
-    def do_login(self):
+    def do_login(self, username):
         self.session['is_logged_in'] = True
+        self.session['username'] = username
     
     def do_logout(self):
         self.session['is_logged_in'] = False
-
+        #del self.session['username']

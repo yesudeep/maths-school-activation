@@ -69,6 +69,7 @@ class Customer(Profile):
     password_hash = Base64Property(required=True)
     password_salt = Base64Property(required=True)
     should_reset_password = db.BooleanProperty(default=False)
+    is_admin = db.BooleanProperty(default=False)
 
     def is_password_correct(self, password):
         from utils import hash_password
@@ -117,14 +118,11 @@ class Product(SerializableModel):
     title = db.StringProperty()
     subtitle = db.StringProperty()
     description = db.TextProperty()
-    up_front_price = DecimalProperty()
-    up_front_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    up_front_gst = DecimalProperty()
-    up_front_gst_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    #up_front_price = DecimalProperty()
+    #up_front_gst = DecimalProperty()
     billing_price = DecimalProperty()
-    billing_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     billing_gst = DecimalProperty()
-    billing_gst_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     icon_url = db.URLProperty()
 
 
@@ -144,7 +142,8 @@ class Invoice(SerializableModel):
     """
     customer = db.ReferenceProperty(Customer, collection_name='invoices')
     total_price = DecimalProperty()
-    total_price_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    is_draft = db.BooleanProperty(default=True)
 
 
 class Transaction(SerializableModel):
@@ -175,22 +174,25 @@ class Transaction(SerializableModel):
 
 class Order(SerializableModel):
     """
+    Activation order
     Helps answer these questions:
-    
+
     1. What product was sold to which customer?
     2. Which invoice does an order belong to?
     3. At what price was the product sold to the customer?
-    
+
     """
     product = db.ReferenceProperty(Product, collection_name='orders')
     customer = db.ReferenceProperty(Customer, collection_name='orders')
     invoice = db.ReferenceProperty(Invoice, collection_name='orders')
-    
-    up_front_price = DecimalProperty()
-    up_front_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    up_front_gst = DecimalProperty()
-    up_front_gst_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+
+    #up_front_price = DecimalProperty()
+    #up_front_gst = DecimalProperty()
     billing_price = DecimalProperty()
-    billing_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     billing_gst = DecimalProperty()
-    billing_gst_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+
+    serial_number = db.StringProperty()
+    machine_id = db.StringProperty()
+    activation_code = db.StringProperty()
+

@@ -50,7 +50,9 @@ jQuery(function(){
   });
   elements.buttonActivate.click(function(e){
     jQuery.post('/activate', {data: JSON.stringify(activateProducts)}, function(data){
-      console.log(data);
+      if (data.url != ""){
+        window.location = data.url;
+      }
     }, 'json');
     e.preventDefault();
     e.stopPropagation();

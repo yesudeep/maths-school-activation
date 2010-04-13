@@ -29,31 +29,31 @@ import utils
 import tornado.web
 import tornado.wsgi
 
+from decimal import Decimal
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import SessionRequestHandler, BaseRequestHandler
-from models import Product, Customer
+from models import Product, Customer, Invoice, Order
+
 
 logging.basicConfig(level=logging.DEBUG)
 
 LOGIN_PAGE_URL = '/'
 
-def check_login(handler):
-    if not handler.is_logged_in():
-        handler.redirect(LOGIN_PAGE_URL)
 
 class IndexHandler(SessionRequestHandler):
     def get(self):
         if self.is_logged_in():
             self.redirect('/dashboard')
         else:
-            error = self.get_argument('error')
-            if error:
-                values = dict(error=error)
-            else:
-                values = dict()
-            self.render('index.html', **values)
+            #error = self.get_argument('error')
+            #if error:
+            #    values = dict(error=error)
+            #else:
+            #    values = dict()
+            #self.render('index.html', **values)
+            self.render('index.html')
     
 class LoginHandler(SessionRequestHandler):
     def post(self):
@@ -62,9 +62,8 @@ class LoginHandler(SessionRequestHandler):
         customer = Customer.get_by_key_name(email)
         if customer:
             if customer.is_password_correct(password):
-                self.do_login()
+                self.do_login(email)
                 self.redirect('/dashboard')
-                logging.info('>> is_logged_in: ' + str(self.session['is_logged_in']))
         else:
             self.redirect('/?error=login_failed')
 
@@ -88,9 +87,11 @@ class RegistrationHandler(SessionRequestHandler):
 class DashboardHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
+            logging.info('>>>>>>>>>>>>> ERROR: not logged in')
             self.redirect(LOGIN_PAGE_URL)
         else:
-            self.render('dashboard.html')
+            customer = Customer.get_by_key_name(self.get_current_username())
+            self.render('dashboard.html', customer=customer)
 
 class ActivateHandler(SessionRequestHandler):
     def get(self):
@@ -103,7 +104,52 @@ class ActivateHandler(SessionRequestHandler):
     def post(self):
         from django.utils import simplejson as json
         data = json.loads(self.get_argument('data'))
+        logging.info(data)
+
+        if data:
+            customer = Customer.get_by_key_name(self.get_current_username())
+            invoice = Invoice(customer=customer)
+            invoice.put()
+            
+            total_price = Decimal('0.00')
+            orders = []
+            for key, value in data.iteritems():
+                product = db.get(db.Key(key))
+                order = Order(product=product, invoice=invoice, customer=customer)
+                order.serial_number = value.get('serialNumber')
+                order.machine_id = value.get('machineId')
+                #order.up_front_price = product.up_front_price
+                #order.up_front_gst = product.up_front_gst
+                order.billing_price = product.billing_price
+                order.billing_gst = product.billing_gst
+                order.currency = product.currency
+                
+                total_price += order.billing_price + order.billing_gst
+                logging.info(total_price)
+                orders.append(order)
+            db.put(orders)
+            invoice.total_price = total_price
+            invoice.currency = orders[0].currency
+            invoice.put()
+            
+            logging.info('>>>>>>>>> invoice total price' + str(invoice.total_price))
+            
+            self.session['activation-invoice-key'] = str(invoice.key())
+            self.set_header('Content-Type', 'application/json')
+            self.write(json.dumps(dict(url='/activate/overview')))
+        else:
+            self.set_header('Content-Type', 'application/json')
+            self.write(json.dumps(dict(url='')))
+
+
+class ActivateOverviewHandler(SessionRequestHandler):
+    def get(self):
+        invoice_key = self.session.get('activation-invoice-key')
+        invoice = db.get(db.Key(invoice_key))
         
+        logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
+        
+
 
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
@@ -157,6 +203,7 @@ urls = (
     (r'/activate/?', ActivateHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
+    (r'/activate/overview/?', ActivateOverviewHandler),
     (r'/product/activation/?', ProductActivationHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),
