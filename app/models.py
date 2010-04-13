@@ -171,13 +171,16 @@ class Transaction(SerializableModel):
        from the payment agent?
     
     """
-    status_code = db.StringProperty()
+    identifier = db.StringProperty()
+    transaction_type = db.StringProperty()
+    
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    amount = DecimalProperty(required=True)
-    when_completed = db.DateTimeProperty()    
+    amount = DecimalProperty()
+    #when_completed = db.DateTimeProperty()    
     payment_agent = db.StringProperty(choices=PAYMENT_AGENTS, default=DEFAULT_PAYMENT_AGENT)    
     
     invoice = db.ReferenceProperty(Invoice, collection_name='transactions')
+    data = db.TextProperty()
 
 
 class Order(SerializableModel):

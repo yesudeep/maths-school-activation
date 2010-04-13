@@ -207,15 +207,28 @@ class PaypalEndpoint(BaseRequestHandler):
         
     def post(self):
         data = flatten_arguments(self.request.arguments)
+        from models import Transaction, Invoice
+        from pprint import pformat
         
-        if self.verify(data):
-            r = self.process(data)
-        else:
-            r = self.process_invalid(data)
-        if r:
-            self.write(r)
-        else:
-            self.write('Nothing to see here.')
+        invoice_id = data.get('invoice')
+        if invoice_id:
+            invoice = Invoice.get_by_id(int(invoice_id, 10))
+            txn = Transaction(invoice=invoice)
+            txn.identifier = data.get('txn_id')
+            txn.transaction_type = data.get('txn_type')
+            txn.currency = data.get('mc_currency')
+            txn.amount = data.get('mc_amount3', data.get('mc_gross'))
+            txn.data = pformat(data)
+            txn.put()
+            
+            if self.verify(data):
+                r = self.process(data)
+            else:
+                r = self.process_invalid(data)
+            if r:
+                self.write(r)
+            else:
+                self.write('Nothing to see here.')
     
     def process(self, data):
         pass
