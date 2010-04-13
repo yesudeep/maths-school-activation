@@ -22,7 +22,7 @@
       <tbody>
         {% for order in invoice.orders %}
         <tr>
-          <td>{{ order.product.title }} {{ order.product.subtitle }}</td>
+          <td>{{ order.product.title }} ({{ order.product.subtitle }})</td>
           <td>{{ order.billing_price }} {{ order.currency }}</td>
           <td>{{ order.billing_gst }} {{ order.currency }}</td>
           <td>{{ order.total_price }} {{ order.currency }}</td>
