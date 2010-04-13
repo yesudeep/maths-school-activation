@@ -150,7 +150,7 @@ class ActivateOverviewHandler(SessionRequestHandler):
         invoice_key = self.session.get('activation-invoice-key')
         invoice = db.get(db.Key(invoice_key))
         logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
-        self.render('activate_overview.html', invoice=invoice, return_url='/activate/complete')
+        self.render('activate_overview.html', invoice=invoice, return_url='%sactivate/complete' % (configuration.ROOT_URL,))
 
     def post(self):
         # A request is sent to this handler to mark the invoice as pending.
@@ -165,15 +165,57 @@ class ActivateOverviewHandler(SessionRequestHandler):
 
 class ActivateCompleteHandler(SessionRequestHandler):
     def get(self):
-        logging.info(self.request.arguments)
-        self.write(self.request.arguments)
+        self.render('activate_complete.html')
 
 
-class PaypalIPNHandler(SessionRequestHandler):
+class PaypalEndpoint(BaseRequestHandler):
+    verify_url = configuration.PAYPAL_POST_URL
+    
+    def do_post(self, url, arguments):
+        from google.appengine.api import urlfetch
+        from urllib import urlencode
+        payload = urlencode(arguments)
+        logging.info(payload)
+        return urlfetch.fetch(
+            url=url,
+            method=urlfetch.POST,
+            payload=payload
+        ).content
+    
+    def verify(self, data):
+        arguments = {
+            'cmd': '_notify-validate',
+        }
+        arguments.update(data)
+        return self.do_post(self.verify_url, arguments) == 'VERIFIED'
+        
     def post(self):
+        data = self.request.arguments
+        if self.verify(data):
+            r = self.process(data)
+        else:
+            r = self.process_invalid(data)
+        if r:
+            self.write(r)
+        else:
+            self.write('Nothing to see here.')
+    
+    def process(self, data):
+        pass
+    
+    def process_invalid(self, data):
+        pass
+
+
+class PaypalIPNHandler(PaypalEndpoint):
+    def process(self, data):
         from pprint import pformat
-        logging.info(pformat(self.request.arguments))
-        self.write(self.request.arguments)
+        logging.info('valid: ' + pformat(self.request.arguments))
+
+
+    def process_invalid(self, data):
+        from pprint import pformat
+        logging.info('invalid: ' + pformat(self.request.arguments))
 
 
 class UnsubscriptionHandler(SessionRequestHandler):

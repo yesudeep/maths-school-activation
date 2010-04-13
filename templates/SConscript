@@ -32,6 +32,7 @@ BASE_TEMPLATE_FILES = Split("""
     dashboard.html
     deinstall.html
     activate_overview.html
+    activate_complete.html
     product_activation.html
 """)
 
