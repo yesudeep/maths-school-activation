@@ -168,6 +168,20 @@ class ActivateCompleteHandler(SessionRequestHandler):
         self.render('activate_complete.html')
 
 
+def flatten_arguments(args):
+    """
+    This returns a dict and hence cannot totally flatten
+    the arguments list.  Ideally, one would return a list
+    of 2-tuples and then urlencode that.
+    """
+    arguments = {}
+    for k, v in args.iteritems():
+        if len(v) == 1:
+            arguments[k] = v[0]
+        else:
+            arguments[k] = v
+    return arguments
+
 class PaypalEndpoint(BaseRequestHandler):
     verify_url = configuration.PAYPAL_POST_URL
     
@@ -176,11 +190,13 @@ class PaypalEndpoint(BaseRequestHandler):
         from urllib import urlencode
         payload = urlencode(arguments)
         logging.info(payload)
-        return urlfetch.fetch(
+        content = urlfetch.fetch(
             url=url,
             method=urlfetch.POST,
             payload=payload
         ).content
+        logging.info(content)
+        return content
     
     def verify(self, data):
         arguments = {
@@ -190,7 +206,8 @@ class PaypalEndpoint(BaseRequestHandler):
         return self.do_post(self.verify_url, arguments) == 'VERIFIED'
         
     def post(self):
-        data = self.request.arguments
+        data = flatten_arguments(self.request.arguments)
+        
         if self.verify(data):
             r = self.process(data)
         else:
