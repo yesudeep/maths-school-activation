@@ -74,8 +74,10 @@ class LogoutHandler(SessionRequestHandler):
 
 class ProfileHandler(SessionRequestHandler):
     def get(self):
-        check_login(self)
-        self.render('profile.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('profile.html')
 
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
