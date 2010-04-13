@@ -150,7 +150,7 @@ class ActivateOverviewHandler(SessionRequestHandler):
         invoice_key = self.session.get('activation-invoice-key')
         invoice = db.get(db.Key(invoice_key))
         logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
-        self.render('activate_overview.html', invoice=invoice)
+        self.render('activate_overview.html', invoice=invoice, return_url='/activate/complete')
 
     def post(self):
         # A request is sent to this handler to mark the invoice as pending.
@@ -166,6 +166,14 @@ class ActivateOverviewHandler(SessionRequestHandler):
 class ActivateCompleteHandler(SessionRequestHandler):
     def get(self):
         logging.info(self.request.arguments)
+        self.write(self.request.arguments)
+
+
+class PaypalIPNHandler(SessionRequestHandler):
+    def post(self):
+        from pprint import pformat
+        logging.info(pformat(self.request.arguments))
+        self.write(self.request.arguments)
 
 
 class UnsubscriptionHandler(SessionRequestHandler):
@@ -221,6 +229,7 @@ urls = (
     (r'/activate/?', ActivateHandler),
     (r'/activate/overview/?', ActivateOverviewHandler),
     (r'/activate/complete/?', ActivateCompleteHandler),
+    (r'/paypal/ipn/?', PaypalIPNHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
     (r'/product/activation/?', ProductActivationHandler),

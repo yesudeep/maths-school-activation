@@ -35,19 +35,21 @@
         <tr>
           <th class="right" colspan="3"></th>
           <td class="paypal_button">
-              <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-                  <input type="hidden" name="cmd" value="_xclick-subscriptions">
-                  <input type="hidden" name="business" value="seller_1271087231_biz@happychickoo.com">
-                  <input type="hidden" name="currency_code" value="{{ invoice.currency }}">
-                  <input type="hidden" name="item_name" value="Maths Worldwide">
-                  <input type="hidden" name="notify_url" value="{{ PAYPAL_COMPLETE_URL }}">
-                  <input type="hidden" name="no_shipping" value="1">
-                  <input type="image" src="https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online.">
-                  <input type="hidden" name="a3" value="{{ invoice.total_price }}">
-                  <input type="hidden" name="p3" value="1">
-                  <input type="hidden" name="t3" value="M">
-                  <input type="hidden" name="src" value="1">
-                  <input type="hidden" name="sra" value="1">
+              <form action="{{ PAYPAL_POST_URL }}" method="post">
+                  <input type="hidden" name="cmd" value="_xclick-subscriptions" />
+                  <input type="hidden" name="business" value="{{ PAYPAL_MERCHANT_EMAIL }}" />
+                  <input type="hidden" name="currency_code" value="{{ invoice.currency }}" />
+                  <input type="hidden" name="item_name" value="Products: {% for order in invoice.orders %}{{ order.product.key().id() }}, {% end %}" />
+                  #*<input type="hidden" name="notify_url" value="{{ PAYPAL_NOTIFY_URL }}" />
+                  <input type="hidden" name="return" value="{{ return_url }}" />*#
+                  <input type="hidden" name="no_shipping" value="1" />
+                  <input type="image" src="https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
+                  <input type="hidden" name="a3" value="{{ invoice.total_price }}" />
+                  <input type="hidden" name="p3" value="1" />
+                  <input type="hidden" name="t3" value="M" />
+                  <input type="hidden" name="src" value="1" />
+                  <input type="hidden" name="sra" value="1" />
+                  <input type="hidden" name="invoice" value="{{ invoice.key().id() }}" />
               </form>
           </td>    
         </tr>

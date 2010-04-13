@@ -83,7 +83,6 @@ if SERVER_PORT and SERVER_PORT != '80':
     HOST_NAME = '%s:%s' % (SERVER_NAME, SERVER_PORT,)
     LOCAL = True
     DEBUG = True
-    PAYPAL_COMPLETE_URL = 'http://%s/activate/complete' % (HOST_NAME,)
     #MEDIA_URL = 'http://%s/s/' % (HOST_NAME, )
 else:
     # We are using the production server.
@@ -91,8 +90,22 @@ else:
     HOST_NAME = SERVER_NAME
     LOCAL = False
     DEBUG = False
-    PAYPAL_COMPLETE_URL = "https://%s.appspot.com/activate/complete" % (APPLICATION_ID,)
     #TEXT_MEDIA_URL = "http://assets.%s/" % (NAKED_DOMAIN, )
+
+# Uncomment one of these to use either sandbox or live settings.
+PAYPAL_MODE = 'sandbox'
+#PAYPAL_MODE = 'live'
+
+if PAYPAL_MODE == 'sandbox':
+    #PAYPAL_MERCHANT_EMAIL = 'seller_1271087231_biz@happychickoo.com'
+    PAYPAL_MERCHANT_EMAIL = 'meow_1270981698_biz@happychickoo.com'
+    PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+else:
+    PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
+    PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
+
+PAYPAL_NOTIFY_URL = "https://%s.appspot.com/paypal/ipn" % (APPLICATION_ID,)
+
 
 if DEBUG:
     # Minification suffixes to use for CSS and JS files.
@@ -158,7 +171,9 @@ TEMPLATE_BUILTINS = {
     'ROOT_URL': sanitize_url(ROOT_URL),
     'TEMPLATE_DEBUG': DEBUG,
     'TEXT_MEDIA_URL': TEXT_MEDIA_URL,
-    'PAYPAL_COMPLETE_URL': PAYPAL_COMPLETE_URL,
+    'PAYPAL_NOTIFY_URL': PAYPAL_NOTIFY_URL,
+    'PAYPAL_MERCHANT_EMAIL': PAYPAL_MERCHANT_EMAIL,
+    'PAYPAL_POST_URL': PAYPAL_POST_URL,
 }
 
 # Directories in which to search for templates.
