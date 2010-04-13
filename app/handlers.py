@@ -106,6 +106,7 @@ class ActivateHandler(SessionRequestHandler):
         data = json.loads(self.get_argument('data'))
         logging.info(data)
 
+
         if data:
             customer = Customer.get_by_key_name(self.get_current_username())
             invoice = Invoice(customer=customer)
@@ -146,11 +147,18 @@ class ActivateOverviewHandler(SessionRequestHandler):
     def get(self):
         invoice_key = self.session.get('activation-invoice-key')
         invoice = db.get(db.Key(invoice_key))
-        
         logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
-
         self.render('activate_overview.html', invoice=invoice)
 
+    def post(self):
+        # A request is sent to this handler to mark the invoice as pending.
+        from models import INVOICE_STATUS_PENDING
+        invoice_key = self.session.get('activation-invoice-key')
+        invoice = db.get(db.Key(invoice_key))
+        invoice.status = INVOICE_STATUS_PENDING
+        invoice.put()
+        self.set_header('Content-Type', 'application/json')
+        self.write(invoice.status)
 
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
