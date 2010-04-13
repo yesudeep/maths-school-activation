@@ -32,17 +32,24 @@ import re
 import tornado.web
 import tornado.wsgi
 import unicodedata
+import hashlib
+from base64 import b64encode, b64decode
+from uuid import uuid1
+
 
 from datetime import datetime
 from functools import partial
 from urllib import urlencode
 
+
 # Conveninence wrapper to make sure int conversion uses a decimal base.
 dec = partial(int, base=10)
+
 
 def slugify(s):
     s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore')
     return re.sub('[^a-zA-Z0-9-]+', '-', s).strip('-')
+
 
 def datetimeformat(value, format="%Y-%m-%dT%H:%M:%SZ"):
     if value and hasattr(value, 'strftime'):
@@ -95,6 +102,25 @@ def get_previous_month(d=None):
         year = d.year
     return datetime(year, months[previous_m_index] + 1, 1)
 
+
+def hash_password(password_string, salt=None):
+    """
+    Hashes a password with a unique salt and returns the
+    hexdigest and the salt as a tuple (powered 2).
+    """
+    hash_function = hashlib.sha1()
+    if not salt:
+        random_salt = str(uuid1())
+    else:
+        random_salt = salt
+    hash_function.update(random_salt + password_string)
+    hexdigest = hash_function.hexdigest()
+    if not salt:
+        return (hexdigest, random_salt)
+    else:
+        return hexdigest
+
+
 class BaseRequestHandler(tornado.web.RequestHandler):
     def render_string(self, template_name, **values):
         template_values = {}
@@ -102,8 +128,19 @@ class BaseRequestHandler(tornado.web.RequestHandler):
         template_values.update(values)
         return tornado.web.RequestHandler.render_string(self, template_name, **template_values)
 
+
 class SessionRequestHandler(BaseRequestHandler):
     def __init__(self, application, request, transforms=None):
         super(SessionRequestHandler, self).__init__(application, request, transforms)
         from appengine_utilities import sessions
         self.session = sessions.Session()
+        
+    def is_logged_in(self):
+        return self.session.get('is_logged_in', False)
+    
+    def do_login(self):
+        self.session['is_logged_in'] = True
+    
+    def do_logout(self):
+        self.session['is_logged_in'] = False
+

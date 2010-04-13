@@ -3,6 +3,8 @@ jQuery(function(){
   var elements = {
     product: jQuery('#products a'),
     dialogInputSerialNumber: jQuery('#dialog-input-serial-number'),
+    fieldSerialNumber: jQuery('#dialog-input-serial-number').find('input[name="serial-number"]'),
+    fieldMachineId: jQuery('#dialog-input-serial-number').find('input[name="machine-id"]'),
     dialogInputSerialNumberOK: jQuery('#dialog-input-serial-number .button-ok'),
     dialogInputSerialNumberCancel: jQuery('#dialog-input-serial-number .button-cancel'),
     formInputSerialNumber: jQuery('#form-input-serial-number'),
@@ -18,6 +20,7 @@ jQuery(function(){
     } else {
     	elements.dialogInputSerialNumber.slideToggle('slow');      
     }
+    elements.fieldSerialNumber.focus();
   	e.preventDefault();
   	e.stopPropagation();
   	return false;

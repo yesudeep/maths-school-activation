@@ -5,7 +5,7 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 from google.appengine.api import memcache,users
 from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, CACHE_DURATION, SerializableModel
-from properties import DecimalProperty
+from properties import DecimalProperty, Base64Property
 from decimal import Decimal
 
 CURRENCY_CHOICES = (
@@ -43,17 +43,36 @@ class Profile(polymodel.PolyModel):
     models (eg., CustomerPhoneNumber, PersonAddress, CompanyLocation) 
     for each of these models that have contact information.
     """
-    pass
-
-
-class Customer(Profile):
-    first_name = db.StringProperty(required=True)
-    last_name = db.StringProperty(required=True)
-    email = db.EmailProperty(required=True)
-    password_hash = db.StringProperty(required=True)
     
     when_created = db.DateTimeProperty(auto_now_add=True)
     when_modified = db.DateTimeProperty(auto_now=True)
+
+
+class Customer(Profile):
+    """
+    Customer information.
+    
+    Helps answer these questions:
+    
+    1. What is the name of the customer?
+    2. When did the customer register?
+    3. What orders has the customer placed?
+    4. Which products does the customer use?
+    5. Which invoices have been issued to a customer?
+    
+    """
+    first_name = db.StringProperty(required=True)
+    last_name = db.StringProperty(required=True)
+    
+    # basic-authentication credentials
+    email = db.EmailProperty(required=True)
+    password_hash = Base64Property(required=True)
+    password_salt = Base64Property(required=True)
+    should_reset_password = db.BooleanProperty(default=False)
+
+    def is_password_correct(self, password):
+        from utils import hash_password
+        return hash_password(password, self.password_salt) == self.password_hash
 
 
 class Phone(SerializableModel):
@@ -70,11 +89,6 @@ class Location(SerializableModel):
     area_or_suburb = db.StringProperty()
     street_name = db.StringProperty()
     zip_code = db.StringProperty()
-
-
-class CustomerActivatedProducts(SerializableModel):
-    """Records all the active products of a customer."""
-    profile = db.ReferenceProperty(Profile, collection_name='active_products')
 
 
 class Product(SerializableModel):

@@ -6,7 +6,7 @@
 
 {% block tag_trunk_content %}
   <div class="profile box">
-    <h3>Help us provide you better support, updated profile regularly!</h3>
+    <h3>Personal information</h3>
     <form id="form-edit-subscriber-profile" class="decorated-fields tabular" action="/profile" method="post">
         <label for="first_name">
           <span class="prefix">First Name</span>
@@ -16,16 +16,6 @@
         <label for="last_name">
           <span class="prefix">Last Name</span>
           <input type="text" name="last_name" value="" class="required capitalize" />
-          <span class="suffix"></span>
-        </label>
-        <label for="email">
-          <span class="prefix">Email</span>
-          <input type="text" name="email" value="" class="required email" />
-          <span class="suffix">(eg. john@doe.com)</span>
-        </label>
-        <label for="password">
-          <span class="prefix">Password</span>
-          <input type="password" name="password" value="" class="required password" />
           <span class="suffix"></span>
         </label>
         <label for="phone_number">

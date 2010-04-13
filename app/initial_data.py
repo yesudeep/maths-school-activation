@@ -3,7 +3,7 @@ import configuration
 
 from google.appengine.api import memcache
 from google.appengine.ext import db
-from models import Product
+from models import Product, Customer
 from decimal import Decimal
 
 from configuration import MEDIA_URL as media_url
@@ -14,6 +14,7 @@ if MEDIA_URL.startswith('/'):
 
 def import_all():
     import_products()
+    import_customers()
 
 def import_products():
     products_list = (
@@ -70,6 +71,31 @@ def import_products():
     products = []
     for p in products_list:
         p['icon_url'] = MEDIA_URL + p['icon_url']
-        p = Product(**p)
-        products.append(p)
+        products.append(Product(**p))
     db.put(products)
+
+def import_customers():
+    from utils import hash_password
+    p = hash_password('example')
+    customers_list = (
+        dict(
+            key_name='yesudeep@gmail.com',
+            first_name='Yesudeep',
+            last_name='Mangalapilly',
+            email='yesudeep@gmail.com',
+            password_hash=p[0],
+            password_salt=p[1],
+            ),        
+        dict(
+            key_name='tanuj.hattangdi@gmail.com',
+            first_name='Tanuj',
+            last_name='Hattangdi',
+            email='tanuj.hattangdi@gmail.com',
+            password_hash=p[0],
+            password_salt=p[1],
+            ),
+    )
+    customers = []
+    for c in customers_list:
+        customers.append(Customer(**c))
+    db.put(customers)

@@ -48,6 +48,10 @@ handlers:
   script: handlers.py
   secure: always
 
+- url: /login
+  script: handlers.py
+  secure: always
+
 - url: /.*
   script: handlers.py
 

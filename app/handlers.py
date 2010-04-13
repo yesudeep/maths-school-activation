@@ -33,58 +33,116 @@ from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import SessionRequestHandler, BaseRequestHandler
-from models import Product
+from models import Product, Customer
 
 logging.basicConfig(level=logging.DEBUG)
 
+LOGIN_PAGE_URL = '/'
+
+def check_login(handler):
+    if not handler.is_logged_in():
+        handler.redirect(LOGIN_PAGE_URL)
+
 class IndexHandler(SessionRequestHandler):
     def get(self):
-        self.render('index.html')
+        if self.is_logged_in():
+            self.redirect('/dashboard')
+        else:
+            error = self.get_argument('error')
+            if error:
+                values = dict(error=error)
+            else:
+                values = dict()
+            self.render('index.html', **values)
+    
+class LoginHandler(SessionRequestHandler):
+    def post(self):
+        email = self.get_argument('login-email')
+        password = self.get_argument('login-password')
+        customer = Customer.get_by_key_name(email)
+        if customer:
+            if customer.is_password_correct(password):
+                self.do_login()
+                self.redirect('/dashboard')
+                logging.info('>> is_logged_in: ' + str(self.session['is_logged_in']))
+        else:
+            self.redirect('/?error=login_failed')
+
+class LogoutHandler(SessionRequestHandler):
+    def get(self):
+        self.do_logout()
+        self.redirect(LOGIN_PAGE_URL)
 
 class ProfileHandler(SessionRequestHandler):
     def get(self):
+        check_login(self)
         self.render('profile.html')
 
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
-        self.render('registration.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('registration.html')
 
 class DashboardHandler(SessionRequestHandler):
     def get(self):
-        self.render('dashboard.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('dashboard.html')
 
 class ActivateHandler(SessionRequestHandler):
     def get(self):
-        products = Product.get_all()
-        self.render('activate.html', products=products)
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            products = Product.get_all()
+            self.render('activate.html', products=products)
 
     def post(self):
         from django.utils import simplejson as json
         data = json.loads(self.get_argument('data'))
-        logging.info(data)
-        for k, v in data.iteritems():
-            pass
+        
 
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
-        self.render('unsubscribe.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('unsubscribe.html')
 
 class DeinstallHandler(SessionRequestHandler):
     def get(self):
-        self.render('deinstall.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('deinstall.html')
 
 class ProductActivationHandler(BaseRequestHandler):
     def get(self):
-        self.render('product_activation.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('product_activation.html')
+
 
 class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
     def get(self):
-        self.render('deinstall_phonica_dinamagic.html')
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('deinstall_phonica_dinamagic.html')
+
 
 class DeinstallMathsEnglishHandler(SessionRequestHandler):
     def get(self):
-        import random
-        self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            import random
+            self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
+
 
 settings = {
     'debug': configuration.DEBUG,
@@ -93,6 +151,8 @@ settings = {
 }
 urls = (
     (r'/', IndexHandler),
+    (r'/login', LoginHandler),
+    (r'/logout', LogoutHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/?', ActivateHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
