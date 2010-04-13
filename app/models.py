@@ -190,6 +190,7 @@ class Order(SerializableModel):
     #up_front_gst = DecimalProperty()
     billing_price = DecimalProperty()
     billing_gst = DecimalProperty()
+    total_price = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
 
     serial_number = db.StringProperty()

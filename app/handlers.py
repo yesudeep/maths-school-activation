@@ -123,8 +123,8 @@ class ActivateHandler(SessionRequestHandler):
                 order.billing_price = product.billing_price
                 order.billing_gst = product.billing_gst
                 order.currency = product.currency
-                
-                total_price += order.billing_price + order.billing_gst
+                order.total_price = order.billing_price + order.billing_gst
+                total_price += order.total_price
                 logging.info(total_price)
                 orders.append(order)
             db.put(orders)
@@ -148,7 +148,8 @@ class ActivateOverviewHandler(SessionRequestHandler):
         invoice = db.get(db.Key(invoice_key))
         
         logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
-        
+
+        self.render('activate_overview.html', invoice=invoice)
 
 
 class UnsubscriptionHandler(SessionRequestHandler):

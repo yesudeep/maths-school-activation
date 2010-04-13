@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block navlink_activate_attributes %}class="selected"{% end %}
+
+{% block tag_header_content %}
+  <h1 class="icon activate">Activate Products <strong>Confirm activations.</strong></h1>
+{% end %}
+
+{% block tag_trunk_content %}
+  <div class="box">
+    <h2>Please confirm your selection.</h2>
+    <table class="classic" cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Billing Price</th>
+          <th>General Sales Tax (GST)</th>
+          <th>Product Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in invoice.orders %}
+        <tr>
+          <td>{{ order.product.title }} {{ order.product.subtitle }}</td>
+          <td>{{ order.billing_price }} {{ order.currency }}</td>
+          <td>{{ order.billing_gst }} {{ order.currency }}</td>
+          <td>{{ order.total_price }} {{ order.currency }}</td>
+        </tr>
+        {% end %}
+        <tr>
+          <th class="right" colspan="3">Total Price</th>
+          <td class="large">{{ invoice.total_price }} {{ invoice.currency }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% end %}
