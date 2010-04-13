@@ -92,6 +92,7 @@ else:
     DEBUG = False
     #TEXT_MEDIA_URL = "http://assets.%s/" % (NAKED_DOMAIN, )
 
+
 # Uncomment one of these to use either sandbox or live settings.
 PAYPAL_MODE = 'sandbox'
 #PAYPAL_MODE = 'live'
@@ -114,6 +115,7 @@ if DEBUG:
 else:
     CSS_MINIFIED = '-min'
     JS_MINIFIED = '-min'
+
 
 # The URL root of the Website.
 # For example:
