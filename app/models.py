@@ -23,6 +23,15 @@ PHONE_TYPE_CHOICES = (
     'home',
 )
 
+INVOICE_STATUS_DRAFT = 'draft'
+INVOICE_STATUS_PENDING = 'pending'
+INVOICE_STATUS_COMPLETE = 'complete'
+INVOICE_STATUS_CHOICES = (
+    INVOICE_STATUS_DRAFT,       # When a new invoice is generated
+    INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
+    INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
+)
+
 # Payment Agents
 PAYMENT_AGENT_PAYPAL = 'paypal'
 PAYMENT_AGENT_CHARGIFY = 'chargify'
@@ -143,8 +152,7 @@ class Invoice(SerializableModel):
     customer = db.ReferenceProperty(Customer, collection_name='invoices')
     total_price = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    is_draft = db.BooleanProperty(default=True)
-
+    status = db.StringProperty(choices=INVOICE_STATUS_CHOICES, default=INVOICE_STATUS_DRAFT)
 
 class Transaction(SerializableModel):
     """
