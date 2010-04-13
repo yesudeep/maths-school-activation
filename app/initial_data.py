@@ -94,6 +94,14 @@ def import_customers():
             password_hash=p[0],
             password_salt=p[1],
             ),
+        dict(
+            key_name='aswad.r@gmail.com',
+            first_name='Aswad',
+            last_name='Rangnekar',
+            email='aswad.r@gmail.com',
+            password_hash=p[0],
+            password_salt=p[1],            
+            ),
     )
     customers = []
     for c in customers_list:
