@@ -162,12 +162,19 @@ class ActivateOverviewHandler(SessionRequestHandler):
         self.set_header('Content-Type', 'application/json')
         self.write(invoice.status)
 
+
+class ActivateCompleteHandler(SessionRequestHandler):
+    def get(self):
+        logging.info(self.request.arguments)
+
+
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
             self.render('unsubscribe.html')
+
 
 class DeinstallHandler(SessionRequestHandler):
     def get(self):
@@ -212,9 +219,10 @@ urls = (
     (r'/logout', LogoutHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/?', ActivateHandler),
+    (r'/activate/overview/?', ActivateOverviewHandler),
+    (r'/activate/complete/?', ActivateCompleteHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
-    (r'/activate/overview/?', ActivateOverviewHandler),
     (r'/product/activation/?', ProductActivationHandler),
     (r'/profile/?', ProfileHandler),
     (r'/register/?', RegistrationHandler),

@@ -83,6 +83,7 @@ if SERVER_PORT and SERVER_PORT != '80':
     HOST_NAME = '%s:%s' % (SERVER_NAME, SERVER_PORT,)
     LOCAL = True
     DEBUG = True
+    PAYPAL_COMPLETE_URL = 'http://%s/activate/complete' % (HOST_NAME,)
     #MEDIA_URL = 'http://%s/s/' % (HOST_NAME, )
 else:
     # We are using the production server.
@@ -90,6 +91,7 @@ else:
     HOST_NAME = SERVER_NAME
     LOCAL = False
     DEBUG = False
+    PAYPAL_COMPLETE_URL = "https://%s.appspot.com/activate/complete" % (APPLICATION_ID,)
     #TEXT_MEDIA_URL = "http://assets.%s/" % (NAKED_DOMAIN, )
 
 if DEBUG:
@@ -105,6 +107,7 @@ else:
 #     http://www.example.com/
 #     http://localhost:8000/
 ROOT_URL = 'http://%s/' % (HOST_NAME,)
+
 
 # ---------------------------------------------------------------------------
 # Stuff that should be different in production.
@@ -155,6 +158,7 @@ TEMPLATE_BUILTINS = {
     'ROOT_URL': sanitize_url(ROOT_URL),
     'TEMPLATE_DEBUG': DEBUG,
     'TEXT_MEDIA_URL': TEXT_MEDIA_URL,
+    'PAYPAL_COMPLETE_URL': PAYPAL_COMPLETE_URL,
 }
 
 # Directories in which to search for templates.
