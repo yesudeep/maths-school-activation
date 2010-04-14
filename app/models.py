@@ -126,6 +126,7 @@ class Location(SerializableModel):
     area_or_suburb = db.StringProperty()
     street_name = db.StringProperty()
     zip_code = db.StringProperty()
+    city = db.StringProperty()
     country = db.StringProperty()
 
 

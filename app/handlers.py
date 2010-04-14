@@ -43,6 +43,13 @@ logging.basicConfig(level=logging.DEBUG)
 LOGIN_PAGE_URL = '/'
 
 
+COUNTRIES_TUPLE = (
+    ('AUS', 'Australia'),
+    ('NZL', 'New Zealand'),
+    ('SGP', 'Singapore'),
+    ('ZAF', 'South Africa'),
+)
+
 class IndexHandler(SessionRequestHandler):
     def get(self):
         if self.is_logged_in():
@@ -78,21 +85,61 @@ class ProfileHandler(SessionRequestHandler):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
-            self.render('profile.html')
+            customer = Customer.get_by_key_name(self.get_current_username())
+            
+            landline = Phone.all().filter('profile = ', customer).filter('phone_type = ', 'landline').get()
+            mobile = Phone.all().filter('profile = ', customer).filter('phone_type = ', 'mobile').get()
+            
+            self.render('profile.html', countries=COUNTRIES_TUPLE, 
+                landline=landline,
+                mobile=mobile, 
+                customer=customer,
+                location=customer.locations[0])
+    
+    def post(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            customer = Customer.get_by_key_name(self.get_current_username())
+            customer.first_name = self.get_argument('first_name')
+            customer.last_name = self.get_argument('last_name')
+            
+            landline_key = self.get_argument('landline_key')
+            landline = db.get(db.Key(landline_key))
+            landline.number = self.get_argument('landline_number')
+            
+            mobile_key = self.get_argument('mobile_key')
+            mobile = db.get(db.Key(mobile_key))
+            mobile.number = self.get_argument('mobile_number')
+            
+            location_key = self.get_argument('location_key')
+            location = db.get(db.Key(location_key))
+            
+            location.city = self.get_argument('city')
+            location.country = self.get_argument('country')
+            location.state_or_province = self.get_argument('state_or_province')
+            location.area_or_suburb = self.get_argument('area_or_suburb')
+            location.street_name = self.get_argument('street_name')
+            location.zip_code = self.get_argument('zip_code')
+            
+            db.put([customer, mobile, landline, location])
+            
+            self.get()
 
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
-            self.render('register.html')
+            self.render('register.html', countries=COUNTRIES_TUPLE)
 
     def post(self):
         first_name = self.get_argument('first_name')
         last_name = self.get_argument('last_name')
         email = self.get_argument('email')
         password = self.get_argument('password')
-        phone_number = self.get_argument('phone_number')
+        landline_number = self.get_argument('landline_number')
         mobile_number = self.get_argument('mobile_number')
         country = self.get_argument('country')
+        city = self.get_argument('city')
         state_province = self.get_argument('state_town')
         suburb = self.get_argument('suburb')
         street = self.get_argument('street')
@@ -111,7 +158,7 @@ class RegistrationHandler(SessionRequestHandler):
         db.put(customer)
         
         landline = Phone(phone_type='landline',
-                         number=phone_number,
+                         number=landline_number,
                          profile=customer)
         
         mobile = Phone(phone_type='mobile',
@@ -123,6 +170,7 @@ class RegistrationHandler(SessionRequestHandler):
                            street_name=street,
                            zip_code=zip_code,
                            country=country,
+                           city=city,
                            profile=customer)        
 
         db.put([location, mobile, landline])

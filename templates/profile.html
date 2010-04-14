@@ -1,61 +1,70 @@
 {% extends "base.html" %}
 
 {% block tag_header_content %}
-  <h1 class="icon user_information">Welcome. <strong> Tell us a little about you. </strong></h1>
+  <h1 class="icon user_information">Hey. <strong>Check out your profile. </strong></h1>
 {% end %}
 
 {% block tag_trunk_content %}
   <div class="profile box">
+    <h2>Your account.</h2>
+    <p>Want to <a href="/profile/password/change">change your password</a>?</p>
     <h3>Contact information</h3>
-    <form id="form-edit-subscriber-profile" class="decorated-fields tabular" action="/profile" method="post">
+    <form id="form-edit-profile" class="decorated-fields tabular" action="" method="post">
         <label for="first_name">
           <span class="prefix">First Name</span>
-          <input type="text" name="first_name" value="" class="required capitalize" />
+          <input type="text" name="first_name" value="{{ customer.first_name }}" class="required capitalize" />
           <span class="suffix"></span>
         </label>
         <label for="last_name">
           <span class="prefix">Last Name</span>
-          <input type="text" name="last_name" value="" class="required capitalize" />
+          <input type="text" name="last_name" value="{{ customer.last_name }}" class="required capitalize" />
           <span class="suffix"></span>
         </label>
         <label for="phone_number">
           <span class="prefix">Phone Number</span>
-          <input type="text" name="phone_number" value="" class="required mobile" />
+          <input type="hidden" name="landline_key" value="{{ landline.key() }}" />
+          <input type="text" name="landline_number" value="{{ landline.number }}" class="required mobile" />
           <span class="suffix"></span>
         </label>
         <label for="mobile_number">
           <span class="prefix">Mobile Number</span>
-          <input type="text" name="mobile_number" value="" class="required mobile" />
+          <input type="hidden" name="mobile_key" value="{{ mobile.key() }}" />          
+          <input type="text" name="mobile_number" value="{{ mobile.number }}" class="required mobile" />
           <span class="suffix">Please include your <a href="http://en.wikipedia.org/wiki/List_of_country_calling_codes" target="_blank"> country code</a>. eg. +1 650 555 1212</span>
         </label>
+        <input type="hidden" name="location_key" value="{{ location.key() }}" />
         <label for="country">
           <span class="prefix">Country</span>
           <select name="country">
-            <option value="AU">Australia</option>
-            <option value="NZ">New Zealand</option>
-            <option value="SG">Singapore</option>
-            <option value="ZA">South Africa</option>
+            {% for country in countries %}
+              <option value="{{ country[0] }}" {% if country[0] == location.country %}selected="selected"{% end %}>{{ country[1] }}</option>
+            {% end %}
           </select> 
           <span class="suffix"></span>
         </label>
-        <label for="state_town">
-          <span class="prefix">State Or Town</span>
-          <input type="text" name="state_town" value="" class="required" />
+        <label for="state_or_province">
+          <span class="prefix">State/Province</span>
+          <input type="text" name="state_or_province" value="{{ location.state_or_province }}" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="suburb">
-          <span class="prefix">Suburb</span>
-          <input type="text" name="suburb" value="" class="required" />
+        <label for="area_or_suburb">
+          <span class="prefix">Area/Suburb</span>
+          <input type="text" name="area_or_suburb" value="{{ location.area_or_suburb }}" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="street">
+        <label for="street_name">
           <span class="prefix">Street Name</span>
-          <input type="text" name="street" value="" class="required" />
+          <input type="text" name="street_name" value="{{ location.street_name }}" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="postal_code">
+        <label for="city">
+          <span class="prefix">City</span>
+          <input type="text" name="city" value="{{ location.city }}" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="zip_code">
           <span class="prefix">Postal Code</span>
-          <input type="text" name="postal_code" value="" class="required" />
+          <input type="text" name="zip_code" value="{{ location.zip_code }}" class="required" />
           <span class="suffix"></span>
         </label>
         <label for="submit">

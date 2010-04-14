@@ -30,7 +30,7 @@
         </label>
         <label for="phone_number">
           <span class="prefix">Phone Number</span>
-          <input type="text" name="phone_number" value="" class="required mobile" />
+          <input type="text" name="landline_number" value="" class="required mobile" />
           <span class="suffix"></span>
         </label>
         <label for="mobile_number">
@@ -41,31 +41,35 @@
         <label for="country">
           <span class="prefix">Country</span>
           <select name="country">
-            <option value="AUS">Australia</option>
-            <option value="NZL">New Zealand</option>
-            <option value="SGP">Singapore</option>
-            <option value="ZAF">South Africa</option>
+          {% for country in countries %}
+            <option value="{{ country[0] }}">{{ country[1] }}</option>
+          {% end %}
           </select> 
           <span class="suffix"></span>
         </label>
-        <label for="state_town">
-          <span class="prefix">State Or Town</span>
-          <input type="text" name="state_town" value="" class="required" />
+        <label for="state_or_province">
+          <span class="prefix">State/Province</span>
+          <input type="text" name="state_or_province" value="" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="suburb">
-          <span class="prefix">Suburb</span>
-          <input type="text" name="suburb" value="" class="required" />
+        <label for="area_or_suburb">
+          <span class="prefix">Area/Suburb</span>
+          <input type="text" name="area_or_suburb" value="" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="street">
+        <label for="street_name">
           <span class="prefix">Street Name</span>
-          <input type="text" name="street" value="" class="required" />
+          <input type="text" name="street_name" value="" class="required" />
           <span class="suffix"></span>
         </label>
-        <label for="postal_code">
+        <label for="city">
+          <span class="prefix">City</span>
+          <input type="text" name="city" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="zip_code">
           <span class="prefix">Postal Code</span>
-          <input type="text" name="postal_code" value="" class="required" />
+          <input type="text" name="zip_code" value="" class="required" />
           <span class="suffix"></span>
         </label>
         <label for="submit">
