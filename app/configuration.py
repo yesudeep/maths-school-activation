@@ -100,9 +100,11 @@ PAYPAL_MODE = 'sandbox'
 if PAYPAL_MODE == 'sandbox':
     #PAYPAL_MERCHANT_EMAIL = 'seller_1271087231_biz@happychickoo.com'
     PAYPAL_MERCHANT_EMAIL = 'meow_1270981698_biz@happychickoo.com'
+    PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 else:
     PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
+    PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
 
 PAYPAL_NOTIFY_URL = "https://%s.appspot.com/paypal/ipn" % (APPLICATION_ID,)

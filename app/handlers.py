@@ -33,9 +33,10 @@ from decimal import Decimal
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from utils import SessionRequestHandler, BaseRequestHandler
+from utils import SessionRequestHandler, BaseRequestHandler, hash_password
 from models import Product, Customer, Invoice, Order, Phone, Location
-from utils import hash_password
+from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
+from models import INVOICE_STATUS_PENDING, INVOICE_STATUS_COMPLETE
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -54,7 +55,7 @@ class IndexHandler(SessionRequestHandler):
             #    values = dict()
             #self.render('index.html', **values)
             self.render('index.html')
-    
+
 class LoginHandler(SessionRequestHandler):
     def post(self):
         email = self.get_argument('login-email')
@@ -133,7 +134,6 @@ class RegistrationHandler(SessionRequestHandler):
 class DashboardHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
-            logging.info('>>>>>>>>>>>>> ERROR: not logged in')
             self.redirect(LOGIN_PAGE_URL)
         else:
             customer = Customer.get_by_key_name(self.get_current_username())
@@ -157,7 +157,7 @@ class ActivateHandler(SessionRequestHandler):
             customer = Customer.get_by_key_name(self.get_current_username())
             invoice = Invoice(customer=customer)
             invoice.put()
-            
+
             total_price = Decimal('0.00')
             orders = []
             for key, value in data.iteritems():
@@ -178,9 +178,9 @@ class ActivateHandler(SessionRequestHandler):
             invoice.total_price = total_price
             invoice.currency = orders[0].currency
             invoice.put()
-            
+
             logging.info('>>>>>>>>> invoice total price' + str(invoice.total_price))
-            
+
             self.session['activation-invoice-key'] = str(invoice.key())
             self.set_header('Content-Type', 'application/json')
             self.write(json.dumps(dict(url='/activate/overview')))
@@ -198,7 +198,6 @@ class ActivateOverviewHandler(SessionRequestHandler):
 
     def post(self):
         # A request is sent to this handler to mark the invoice as pending.
-        from models import INVOICE_STATUS_PENDING
         invoice_key = self.session.get('activation-invoice-key')
         invoice = db.get(db.Key(invoice_key))
         invoice.status = INVOICE_STATUS_PENDING
@@ -228,7 +227,7 @@ def flatten_arguments(args):
 
 class PaypalEndpoint(BaseRequestHandler):
     verify_url = configuration.PAYPAL_POST_URL
-    
+
     def do_post(self, url, arguments):
         from google.appengine.api import urlfetch
         from urllib import urlencode
@@ -241,55 +240,88 @@ class PaypalEndpoint(BaseRequestHandler):
         ).content
         logging.info(content)
         return content
-    
+
     def verify(self, data):
         arguments = {
             'cmd': '_notify-validate',
         }
         arguments.update(data)
         return self.do_post(self.verify_url, arguments) == 'VERIFIED'
-        
+
     def post(self):
         data = flatten_arguments(self.request.arguments)
         from models import Transaction, Invoice
         from pprint import pformat
-        
+
         invoice_id = data.get('invoice')
         if invoice_id:
             invoice = Invoice.get_by_id(int(invoice_id, 10))
+
             txn = Transaction(invoice=invoice)
             txn.identifier = data.get('txn_id')
             txn.transaction_type = data.get('txn_type')
             txn.currency = data.get('mc_currency')
-            txn.amount = data.get('mc_amount3', data.get('mc_gross'))
+            txn.amount = data.get('mc_gross', data.get('mc_amount3'))
             txn.data = pformat(data)
             txn.put()
-            
+
             if self.verify(data):
-                r = self.process(data)
+                r = self.process(data, txn=txn, invoice=invoice)
             else:
-                r = self.process_invalid(data)
+                r = self.process_invalid(data, txn=txn, invoice=invoice)
             if r:
                 self.write(r)
             else:
                 self.write('Nothing to see here.')
-    
-    def process(self, data):
+        else:
+            # error.  invoice id was not found.
+            pass
+
+    def process(self, data, **kwargs):
         pass
-    
-    def process_invalid(self, data):
+
+    def process_invalid(self, data, **kwargs):
         pass
 
 
 class PaypalIPNHandler(PaypalEndpoint):
-    def process(self, data):
+    def process(self, data, **kwargs):
         from pprint import pformat
         logging.info('valid: ' + pformat(self.request.arguments))
 
+        txn = kwargs['txn']
+        invoice = kwargs['invoice']
 
-    def process_invalid(self, data):
+        txn.verification_status = VERIFICATION_STATUS_VERIFIED
+        txn.put()
+
+        if txn.transaction_type == 'subscr_payment':
+            payment_status = data.get('payment_status')
+            if payment_status == 'Pending':
+                invoice.status = INVOICE_STATUS_PENDING
+                invoice.status_reason = data.get('pending_reason')
+                invoice.put()
+            elif payment_status == 'Completed':
+                if data.get('receiver_email') == configuration.PAYPAL_MERCHANT_RECEIVER_EMAIL \
+                       and invoice.total_price == txn.amount \
+                       and txn.currency == invoice.currency:
+                    invoice.status = INVOICE_STATUS_COMPLETE
+                    invoice.put()
+                    # Email success and activation code.
+                else:
+                    pass
+                    # Email error.
+
+
+    def process_invalid(self, data, **kwargs):
         from pprint import pformat
         logging.info('invalid: ' + pformat(self.request.arguments))
+
+        txn = kwargs['txn']
+        invoice = kwargs['invoice']
+
+        txn.verification_status = VERIFICATION_STATUS_INVALID
+        txn.put()
 
 
 class UnsubscriptionHandler(SessionRequestHandler):
@@ -348,7 +380,7 @@ urls = (
     (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
-    (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),    
+    (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),
 )
 application = tornado.wsgi.WSGIApplication(urls, **settings)
 
@@ -357,6 +389,6 @@ def main():
     DatastoreCachingShim.Install()
     run_wsgi_app(application)
     DatastoreCachingShim.Uninstall()
-    
+
 if __name__ == '__main__':
     main()
