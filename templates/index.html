@@ -6,77 +6,7 @@
 
 {% block tag_trunk_content %}
   <div id="login-or-register">
-    <div class="half box">
-      <h2>New user? Register</h2>
-      #*<form id="form-register-subscriber" class="decorated-fields vertical" action="/profile" method="post">
-        <label for="first_name">
-          <span class="prefix">First Name</span>
-          <input type="text" name="first_name" value="" class="required capitalize" />
-          <span class="suffix"></span>
-        </label>
-        <label for="last_name">
-          <span class="prefix">Last Name</span>
-          <input type="text" name="last_name" value="" class="required capitalize" />
-          <span class="suffix"></span>
-        </label>
-        <label for="email">
-          <span class="prefix">Email</span>
-          <input type="text" name="email" value="" class="required email" />
-          <span class="suffix">(eg. john@doe.com)</span>
-        </label>
-        <label for="password">
-          <span class="prefix">Password</span>
-          <input type="password" name="password" value="" class="required password" />
-          <span class="suffix"></span>
-        </label>
-        <label for="phone_number">
-          <span class="prefix">Phone Number</span>
-          <input type="text" name="phone_number" value="" class="required mobile" />
-          <span class="suffix"></span>
-        </label>
-        <label for="mobile_number">
-          <span class="prefix">Mobile Number</span>
-          <input type="text" name="mobile_number" value="" class="required mobile" />
-          <span class="suffix">Include your <a href="http://en.wikipedia.org/wiki/List_of_country_calling_codes" target="_blank"> country code</a> and full mobile number. eg. +1 650 555 1212</span>
-        </label>
-        <label for="country">
-          <span class="prefix">Country</span>
-          <select name="country">
-            <option value="AU">Australia</option>
-            <option value="NZ">New Zealand</option>
-            <option value="SG">Singapore</option>
-            <option value="ZA">South Africa</option>
-          </select> 
-          <span class="suffix"></span>
-        </label>
-        <label for="state_town">
-          <span class="prefix">State Or Town</span>
-          <input type="text" name="state_town" value="" class="required" />
-          <span class="suffix"></span>
-        </label>
-        <label for="suburb">
-          <span class="prefix">Suburb</span>
-          <input type="text" name="suburb" value="" class="required" />
-          <span class="suffix"></span>
-        </label>
-        <label for="street">
-          <span class="prefix">Street Name</span>
-          <input type="text" name="street" value="" class="required" />
-          <span class="suffix"></span>
-        </label>
-        <label for="postal_code">
-          <span class="prefix">Postal Code</span>
-          <input type="text" name="postal_code" value="" class="required" />
-          <span class="suffix"></span>
-        </label>
-        <label for="submit">
-          <span class="prefix"></span>
-          <input type="submit" class="awesome-button midium" name="submit" value="&#10004; Register" />
-          <span class="suffix"></span>
-        </label>
-      </form>*#
-    </div>
-    <div class="half box">
+    <div class="login box">
       <h2>Existing user? Login.</h2>
       <form id="form-login-subscriber" class="decorated-fields vertical" action="/login" method="POST">
         <label for="email">
@@ -91,9 +21,10 @@
         </label>
         <label for="submit">
           <span class="prefix"></span>
-          <input type="submit" class="awesome-button" name="submit" value="&#10004; Login" />
+          <input type="submit" class="awesome-button login-button" name="submit" value="&#10004; Login" />
           <span class="suffix"></span>
         </label>
+        <h2>New user? <a href="/register">Register</a></h2>
       </form>
     </div>
   </div>

@@ -22,7 +22,6 @@ PHONE_TYPE_CHOICES = (
     'work',
     'home',
 )
-
 INVOICE_STATUS_DRAFT = 'draft'
 INVOICE_STATUS_PENDING = 'pending'
 INVOICE_STATUS_COMPLETE = 'complete'
@@ -99,6 +98,7 @@ class Location(SerializableModel):
     area_or_suburb = db.StringProperty()
     street_name = db.StringProperty()
     zip_code = db.StringProperty()
+    country = db.StringProperty()
 
 
 class Product(SerializableModel):

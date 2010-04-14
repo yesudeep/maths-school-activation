@@ -25,6 +25,7 @@ PAGE_TEMPLATE_FILES = Split("""
     unsubscribe.html
     deinstall_phonica_dinamagic.html
     deinstall_maths_english.html
+    register.html
 """)
 
 BASE_TEMPLATE_FILES = Split("""

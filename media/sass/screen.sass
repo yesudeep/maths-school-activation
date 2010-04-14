@@ -195,8 +195,14 @@ div .dialog
   .button-ok
     :margin-left 210px
 
-#login-or-register .box
-  +grid(5, 12)
+#login-or-register
+  :margin 10px 280px 10px 340px
+  .login 
+    h2
+      a
+        :color= !color_register_link
+        &:hover
+          :color= !color_register_link_hover
 
 table.classic
   :width 100%

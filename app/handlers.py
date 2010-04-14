@@ -34,8 +34,8 @@ from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import SessionRequestHandler, BaseRequestHandler
-from models import Product, Customer, Invoice, Order
-
+from models import Product, Customer, Invoice, Order, Phone, Location
+from utils import hash_password
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -82,9 +82,53 @@ class ProfileHandler(SessionRequestHandler):
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('registration.html')
+            self.render('register.html')
+
+    def post(self):
+        first_name = self.get_argument('first_name')
+        last_name = self.get_argument('last_name')
+        email = self.get_argument('email')
+        password = self.get_argument('password')
+        phone_number = self.get_argument('phone_number')
+        mobile_number = self.get_argument('mobile_number')
+        country = self.get_argument('country')
+        state_province = self.get_argument('state_town')
+        suburb = self.get_argument('suburb')
+        street = self.get_argument('street')
+        zip_code = self.get_argument('postal_code')
+        
+        p = hash_password(password)
+        
+        customer = Customer(key_name=email,      
+                            first_name=first_name,
+                            last_name=last_name,
+                            email=email,
+                            password_hash=p[0],
+                            password_salt=p[1])
+
+        #TODO: before saving the profile check if the data is not repeated
+        db.put(customer)
+        
+        landline = Phone(phone_type='landline',
+                         number=phone_number,
+                         profile=customer)
+        
+        mobile = Phone(phone_type='mobile',
+                       number=mobile_number,
+                       profile=customer)
+
+        location = Location(state_or_province=state_province,
+                           area_or_suburb=suburb,
+                           street_name=street,
+                           zip_code=zip_code,
+                           country=country,
+                           profile=customer)        
+
+        db.put([location, mobile, landline])
+  
+        self.do_login(email)
+        self.redirect('/dashboard')
+        
 
 class DashboardHandler(SessionRequestHandler):
     def get(self):
@@ -263,13 +307,6 @@ class DeinstallHandler(SessionRequestHandler):
         else:
             self.render('deinstall.html')
 
-class ProductActivationHandler(BaseRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('product_activation.html')
-
 
 class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
     def get(self):
@@ -297,6 +334,7 @@ urls = (
     (r'/', IndexHandler),
     (r'/login', LoginHandler),
     (r'/logout', LogoutHandler),
+    (r'/register/?', RegistrationHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/?', ActivateHandler),
     (r'/activate/overview/?', ActivateOverviewHandler),
@@ -304,9 +342,7 @@ urls = (
     (r'/paypal/ipn/?', PaypalIPNHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
-    (r'/product/activation/?', ProductActivationHandler),
     (r'/profile/?', ProfileHandler),
-    (r'/register/?', RegistrationHandler),
     (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),

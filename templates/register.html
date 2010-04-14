@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block tag_header_content %}
+  <h1 class="icon user_information">Welcome. <strong> Tell us a little about you. </strong></h1>
+{% end %}
+
+{% block tag_trunk_content %}
+  <div class="box">
+      <h3>Create an account.</h3>
+      <form id="form-register-subscriber" class="decorated-fields tabular" action="" method="post">
+        <label for="first_name">
+          <span class="prefix">First Name</span>
+          <input type="text" name="first_name" value="" class="required capitalize" />
+          <span class="suffix"></span>
+        </label>
+        <label for="last_name">
+          <span class="prefix">Last Name</span>
+          <input type="text" name="last_name" value="" class="required capitalize" />
+          <span class="suffix"></span>
+        </label>
+        <label for="email">
+          <span class="prefix">Email</span>
+          <input type="text" name="email" value="" class="required email" />
+          <span class="suffix">(eg. john@doe.com)</span>
+        </label>
+        <label for="password">
+          <span class="prefix">Password</span>
+          <input type="password" name="password" value="" class="required password" />
+          <span class="suffix"></span>
+        </label>
+        <label for="phone_number">
+          <span class="prefix">Phone Number</span>
+          <input type="text" name="phone_number" value="" class="required mobile" />
+          <span class="suffix"></span>
+        </label>
+        <label for="mobile_number">
+          <span class="prefix">Mobile Number</span>
+          <input type="text" name="mobile_number" value="" class="required mobile" />
+          <span class="suffix">Include your <a href="http://en.wikipedia.org/wiki/List_of_country_calling_codes" target="_blank"> country code</a> and full mobile number. eg. +1 650 555 1212</span>
+        </label>
+        <label for="country">
+          <span class="prefix">Country</span>
+          <select name="country">
+            <option value="AUS">Australia</option>
+            <option value="NZL">New Zealand</option>
+            <option value="SGP">Singapore</option>
+            <option value="ZAF">South Africa</option>
+          </select> 
+          <span class="suffix"></span>
+        </label>
+        <label for="state_town">
+          <span class="prefix">State Or Town</span>
+          <input type="text" name="state_town" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="suburb">
+          <span class="prefix">Suburb</span>
+          <input type="text" name="suburb" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="street">
+          <span class="prefix">Street Name</span>
+          <input type="text" name="street" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="postal_code">
+          <span class="prefix">Postal Code</span>
+          <input type="text" name="postal_code" value="" class="required" />
+          <span class="suffix"></span>
+        </label>
+        <label for="submit">
+          <span class="prefix"></span>
+          <input type="submit" class="awesome-button midium" name="submit" value="&#10004; Register" />
+          <span class="suffix"></span>
+        </label>
+      </form>
+    </div>
+{% end %}
+{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
