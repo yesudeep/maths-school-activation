@@ -140,10 +140,10 @@ class RegistrationHandler(SessionRequestHandler):
         mobile_number = self.get_argument('mobile_number')
         country = self.get_argument('country')
         city = self.get_argument('city')
-        state_province = self.get_argument('state_town')
-        suburb = self.get_argument('suburb')
-        street = self.get_argument('street')
-        zip_code = self.get_argument('postal_code')
+        state_or_province = self.get_argument('state_or_province')
+        area_or_suburb = self.get_argument('area_or_suburb')
+        street_name = self.get_argument('street_name')
+        zip_code = self.get_argument('zip_code')
         
         p = hash_password(password)
         
@@ -165,9 +165,9 @@ class RegistrationHandler(SessionRequestHandler):
                        number=mobile_number,
                        profile=customer)
 
-        location = Location(state_or_province=state_province,
-                           area_or_suburb=suburb,
-                           street_name=street,
+        location = Location(state_or_province=state_or_province,
+                           area_or_suburb=area_or_suburb,
+                           street_name=street_name,
                            zip_code=zip_code,
                            country=country,
                            city=city,
