@@ -405,6 +405,26 @@ class DeinstallMathsEnglishHandler(SessionRequestHandler):
             self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
 
 
+class ChangePasswordHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('change_password.html')
+
+    def post(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            customer = Customer.get_by_key_name(self.get_current_username())
+            if customer.is_password_correct(self.get_argument('old_password')):
+                p = hash_password(self.get_argument('new_password'))
+                customer.password_hash = p[0]
+                customer.password_salt = p[1]
+                customer.put()
+            self.redirect('/dashboard')
+
+
 settings = {
     'debug': configuration.DEBUG,
     #'xsrf_cookies': True,
@@ -423,6 +443,7 @@ urls = (
     (r'/unsubscribe/?', UnsubscriptionHandler),
     (r'/deinstall/?', DeinstallHandler),
     (r'/profile/?', ProfileHandler),
+    (r'/profile/password/change/?', ChangePasswordHandler),
     (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),

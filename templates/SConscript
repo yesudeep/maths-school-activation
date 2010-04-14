@@ -34,7 +34,7 @@ BASE_TEMPLATE_FILES = Split("""
     deinstall.html
     activate_overview.html
     activate_complete.html
-    product_activation.html
+    change_password.html
 """)
 
 # If the template does not use scripts, please place it here.
