@@ -179,6 +179,7 @@ class Invoice(SerializableModel):
     total_price = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     status = db.StringProperty(choices=INVOICE_STATUS_CHOICES, default=INVOICE_STATUS_DRAFT)
+    status_reason = db.StringProperty()
 
 class Transaction(SerializableModel):
     """

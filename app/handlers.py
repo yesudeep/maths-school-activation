@@ -256,6 +256,7 @@ class PaypalIPNHandler(PaypalEndpoint):
             payment_status = data.get('payment_status')
             if payment_status == 'Pending':
                 invoice.status = INVOICE_STATUS_PENDING
+                invoice.status_reason = data.get('pending_reason')
                 invoice.put()
             elif payment_status == 'Completed':
                 if data.get('receiver_email') == configuration.PAYPAL_MERCHANT_RECEIVER_EMAIL \
