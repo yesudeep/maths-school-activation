@@ -63,12 +63,12 @@ SERVER_NAME = os.environ['SERVER_NAME']
 SERVER_SOFTWARE = os.environ['SERVER_SOFTWARE']
 
 DEVELOPER_URL = "http://happychickoo.com"
-DEVELOPER_NAME = "happychickoo"
+DEVELOPER_NAME = "Happychickoo"
 
 # Analytics identifiers.
 GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
 
-OWNER_NAME = 'Maths Worldwide Pty Limited'
+OWNER_NAME = 'Maths Schools Ltd.'
 OWNER_ADDRESS = ''
 OWNER_URL = 'http://mathsworldwide.com.au'
 OWNER_COMPANY = 'Maths Worldwide Pty Limited'
