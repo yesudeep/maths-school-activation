@@ -156,12 +156,13 @@ class Product(SerializableModel):
     title = db.StringProperty()
     subtitle = db.StringProperty()
     description = db.TextProperty()
+    icon_url = db.URLProperty()
+    display_rank = db.IntegerProperty()
     #up_front_price = DecimalProperty()
     #up_front_gst = DecimalProperty()
     billing_price = DecimalProperty()
     billing_gst = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    icon_url = db.URLProperty()
 
 
 class Invoice(SerializableModel):
