@@ -11,6 +11,7 @@ jQuery(function(){
     buttonActivate: jQuery('#button-activate')
   };
   var selectedProductKey, activateProducts={};
+  
   elements.product.click(function(e){
     var elem = jQuery(this);
     selectedProductKey = elem.attr('id');
@@ -25,6 +26,7 @@ jQuery(function(){
   	e.stopPropagation();
   	return false;
   });
+  
   elements.formInputSerialNumber.submit(function(e){
     var form = jQuery(this),
       serialNumberField = form.find('input[name="serial-number"]'),
@@ -42,12 +44,14 @@ jQuery(function(){
     e.stopPropagation();
     return false;
   });
+  
   elements.dialogInputSerialNumberCancel.click(function(e){
     elements.dialogInputSerialNumber.fadeOut('slow');
     e.preventDefault();
     e.stopPropagation();
     return false;
   });
+  
   elements.buttonActivate.click(function(e){
     jQuery.post('/activate', {data: JSON.stringify(activateProducts)}, function(data){
       if (data.url != ""){

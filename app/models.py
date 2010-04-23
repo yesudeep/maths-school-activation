@@ -42,6 +42,15 @@ INVOICE_STATUS_CHOICES = (
     INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
     INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
 )
+#subscription models
+MONTHLY = 1                     #in months
+QUATERLY = 3                    #in months
+ANUALLY = 12                    #in months
+SUBSCRIPTION_CHOICES = (
+    MONTHLY,
+    QUATERLY,
+    ANUALLY,
+)
 
 # Payment Agents
 PAYMENT_AGENT_PAYPAL = 'paypal'
@@ -160,10 +169,16 @@ class Product(SerializableModel):
     display_rank = db.IntegerProperty()
     #up_front_price = DecimalProperty()
     #up_front_gst = DecimalProperty()
+
+class SubscriptionModel(SerializableModel):
+    """
+    Gives subscription flexibility, monthly, quaterly, anually
+    """
+    #product = db.ReferenceProperty(Product, collection_name='subscription')
     billing_price = DecimalProperty()
     billing_gst = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-
+    duration = db.IntegerProperty(choices=SUBSCRIPTION_CHOICES)
 
 class Invoice(SerializableModel):
     """
