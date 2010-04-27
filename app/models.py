@@ -42,15 +42,6 @@ INVOICE_STATUS_CHOICES = (
     INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
     INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
 )
-#subscription models
-MONTHLY = 1                     #in months
-QUATERLY = 3                    #in months
-ANUALLY = 12                    #in months
-SUBSCRIPTION_CHOICES = (
-    MONTHLY,
-    QUATERLY,
-    ANUALLY,
-)
 
 # Payment Agents
 PAYMENT_AGENT_PAYPAL = 'paypal'
@@ -238,8 +229,11 @@ class Order(SerializableModel):
     1. What product was sold to which customer?
     2. Which invoice does an order belong to?
     3. At what price was the product sold to the customer?
+    4. Which orders does a subscription have?  How many users chose to pay for 3 months, 1 year, half yearly, etc?
+    5. Which subscription does this order belong to?
 
     """
+    subscription = db.ReferenceProperty(Subscription, collection_name='orders')
     product = db.ReferenceProperty(Product, collection_name='orders')
     customer = db.ReferenceProperty(Customer, collection_name='orders')
     invoice = db.ReferenceProperty(Invoice, collection_name='orders')
@@ -248,7 +242,7 @@ class Order(SerializableModel):
     #up_front_gst = DecimalProperty()
     subscription_price = DecimalProperty()
     subscription_general_sales_tax = DecimalProperty()
-    subscription_duration = db.IntegerProperty()
+    subscription_duration_in_months = db.IntegerProperty()
     subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
 
