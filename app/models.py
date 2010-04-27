@@ -170,15 +170,15 @@ class Product(SerializableModel):
     #up_front_price = DecimalProperty()
     #up_front_gst = DecimalProperty()
 
-class SubscriptionModel(SerializableModel):
+class Subscription(SerializableModel):
     """
     Gives subscription flexibility, monthly, quaterly, anually
     """
-    #product = db.ReferenceProperty(Product, collection_name='subscription')
-    billing_price = DecimalProperty()
-    billing_gst = DecimalProperty()
+    product = db.ReferenceProperty(Product, collection_name='subscriptions')
+    price = DecimalProperty()
+    general_sales_tax = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    duration = db.IntegerProperty(choices=SUBSCRIPTION_CHOICES)
+    duration_in_months = db.IntegerProperty()
 
 class Invoice(SerializableModel):
     """
@@ -246,10 +246,11 @@ class Order(SerializableModel):
 
     #up_front_price = DecimalProperty()
     #up_front_gst = DecimalProperty()
-    billing_price = DecimalProperty()
-    billing_gst = DecimalProperty()
-    total_price = DecimalProperty()
-    currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+    subscription_price = DecimalProperty()
+    subscription_general_sales_tax = DecimalProperty()
+    subscription_duration = db.IntegerProperty()
+    subscription_total_price = DecimalProperty()
+    subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
 
     serial_number = db.StringProperty()
     machine_id = db.StringProperty()

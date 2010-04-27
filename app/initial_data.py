@@ -96,6 +96,14 @@ def import_customers():
             password_hash=p[0],
             password_salt=p[1],            
             ),
+        dict(
+            key_name='dreamzr4u@gmail.com',
+            first_name="Raj",
+            last_name="Singh",
+            email="dreamzr4u@gmail.com",
+            password_hash=p[0],
+            password_salt=p[1],
+            ),
     )
     customers = []
     for c in customers_list:
@@ -104,17 +112,17 @@ def import_customers():
 
 def import_subscriptions():
     subscription_list = (
-        dict(billing_price=Decimal(29.0),
+        dict(billing_price=Decimal("29.0"),
             billing_gst=Decimal("0.95"),
-            duration= 1,
+            duration=1,
             ),
-        dict(billing_price=Decimal(49.0),
+        dict(billing_price=Decimal("49.0"),
             billing_gst=Decimal("0.95"),
-            duration = 3,
+            duration=3,
             ),
-        dict(billing_price=Decimal(149.0),
+        dict(billing_price=Decimal("149.0"),
             billing_gst=Decimal("0.95"),
-            duration = 12,
+            duration=12,
             ),
     )
     subscriptions = []
