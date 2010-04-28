@@ -1,5 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Datastore models for the application.
+# Copyright (c) 2009 happychickoo.
+#
+# The MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# Note:
+# -----
+# Issue these commands at the admin console to import preliminary data
+#
+#     > from initial_data import import_all
+#     > import_all()
 
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
@@ -22,7 +51,6 @@ PHONE_TYPE_CHOICES = (
     'work',
     'home',
 )
-
 DEFAULT_PHONE_TYPE = 'mobile'
 
 EMAIL_TYPE_CHOICES = (
@@ -41,15 +69,6 @@ INVOICE_STATUS_CHOICES = (
     INVOICE_STATUS_DRAFT,       # When a new invoice is generated
     INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
     INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
-)
-#subscription models
-MONTHLY = 1                     #in months
-QUATERLY = 3                    #in months
-ANUALLY = 12                    #in months
-SUBSCRIPTION_CHOICES = (
-    MONTHLY,
-    QUATERLY,
-    ANUALLY,
 )
 
 # Payment Agents
@@ -129,7 +148,11 @@ class Email(SerializableModel):
 
 
 class Location(SerializableModel):
-    """Records the address of a customer."""
+    """
+    Address locations.
+    
+    Helps locate a customer.
+    """
     profile = db.ReferenceProperty(Profile, collection_name='locations')
     state_or_province = db.StringProperty()
     area_or_suburb = db.StringProperty()
@@ -147,19 +170,7 @@ class Product(SerializableModel):
 
     1. What is the title and subtitle of the product?
     2. What describes the product?
-    3. How much is the up-front sales price of the product?
-    4. How much is the up-front sales tax applied?
-    5. What currency is in use?
-    6. How much is the *monthly* billing price for the product?
-    7. How much sales tax will be applied on the billing price?
-    8. What image/icon represents this product?
-
-    Developer's Note:
-    -----------------
-    Kindly issue these commands at the admin console to import preliminary data
-
-        > from initial_data import import_all
-        > import_all()
+    3. What image/icon represents this product?
 
     """
     title = db.StringProperty()
@@ -167,18 +178,35 @@ class Product(SerializableModel):
     description = db.TextProperty()
     icon_url = db.URLProperty()
     display_rank = db.IntegerProperty()
-    #up_front_price = DecimalProperty()
-    #up_front_gst = DecimalProperty()
+
 
 class Subscription(SerializableModel):
     """
-    Gives subscription flexibility, monthly, quaterly, anually
+    Subscription options available per product for the customer:
+    
+        1. Monthly
+        2. Quarterly
+        3. Half yearly
+        4. Yearly
+    
+    Helps answer these questions:
+    
+    1. Which product is being offered under this subscription?
+    2. What is the subscription price?
+    3. What is the recurring payment period of the subscription?
+    4. What is the general sales tax and currency?
+    5. Which orders have been placed by customers to use this subscription?  (foreign relationship) 
+    
+    This information is filled in by administrators.
+    The same number of subscriptions with the same durations must be present for all the products
+    for the current system to work.
     """
     product = db.ReferenceProperty(Product, collection_name='subscriptions')
     price = DecimalProperty()
     general_sales_tax = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-    duration_in_months = db.IntegerProperty()
+    period_in_months = db.IntegerProperty()
+
 
 class Invoice(SerializableModel):
     """
@@ -199,6 +227,7 @@ class Invoice(SerializableModel):
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     status = db.StringProperty(choices=INVOICE_STATUS_CHOICES, default=INVOICE_STATUS_DRAFT)
     status_reason = db.StringProperty()
+
 
 class Transaction(SerializableModel):
     """
@@ -222,7 +251,7 @@ class Transaction(SerializableModel):
 
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     amount = DecimalProperty()
-    #when_completed = db.DateTimeProperty()
+    # TODO: when_completed = db.DateTimeProperty()
     payment_agent = db.StringProperty(choices=PAYMENT_AGENTS, default=DEFAULT_PAYMENT_AGENT)
 
     invoice = db.ReferenceProperty(Invoice, collection_name='transactions')
@@ -238,21 +267,21 @@ class Order(SerializableModel):
     1. What product was sold to which customer?
     2. Which invoice does an order belong to?
     3. At what price was the product sold to the customer?
+    4. Which orders does a subscription have?  How many users chose to pay for 3 months, 1 year, half yearly, etc?
+    5. Which subscription does this order belong to?
 
     """
+    subscription = db.ReferenceProperty(Subscription, collection_name='orders')
     product = db.ReferenceProperty(Product, collection_name='orders')
     customer = db.ReferenceProperty(Customer, collection_name='orders')
     invoice = db.ReferenceProperty(Invoice, collection_name='orders')
 
-    #up_front_price = DecimalProperty()
-    #up_front_gst = DecimalProperty()
     subscription_price = DecimalProperty()
     subscription_general_sales_tax = DecimalProperty()
-    subscription_duration = db.IntegerProperty()
+    subscription_period_in_months = db.IntegerProperty()
     subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
 
     serial_number = db.StringProperty()
     machine_id = db.StringProperty()
     activation_code = db.StringProperty()
-

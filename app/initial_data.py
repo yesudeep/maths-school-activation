@@ -1,9 +1,41 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -8-
+# Initial data to be imported.
+# Copyright (c) 2009 happychickoo.
+#
+# The MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#
+# Note:
+# -----
+# Issue these commands at the admin console to import preliminary data
+#
+#     > from initial_data import import_all
+#     > import_all()
 
 import configuration
 
 from google.appengine.api import memcache
 from google.appengine.ext import db
-from models import Product, Customer, SubscriptionModel
+from models import Product, Customer, Subscription
 from decimal import Decimal
 
 from configuration import MEDIA_URL as media_url
@@ -15,58 +47,77 @@ if MEDIA_URL.startswith('/'):
 def import_all():
     import_products()
     import_customers()
-    import_subscriptions()
 
 def import_products():
-    products_list = (
+    products_list = (    
+        dict(title="All Maths",
+            subtitle="Product collection",
+            icon_url="image/icon/128x128/cd_bunch.png",
+            display_rank=1),
+        dict(title="All Maths + English",
+            subtitle="Product collection",
+            icon_url="image/icon/128x128/cd_bunch.png",
+            display_rank=2),
         dict(title="Maths Story",
             subtitle="Junior",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_blue.png",
-            display_rank = 1),
+            display_rank=3),
         dict(title="Maths Story",
             subtitle="Primary",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_blue.png",
-            display_rank = 2),
+            display_rank=4),
         dict(title="Maths Story",
             subtitle="Senior",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_blue.png",
-            display_rank = 3),
+            display_rank=5),
         dict(title="English Story",
             subtitle="English",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_green.png",
-            display_rank = 4),
+            display_rank=6),
         dict(title="Phonica",
             subtitle="Elementary English",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_green.png",
-            display_rank = 5),
+            display_rank=7),
         dict(title="Phonica",
             subtitle="Advanced English",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_green.png",
-            display_rank = 6),
+            display_rank=8),
         dict(title="Dinamagic",
             subtitle="Mathematics",
-            #up_front_price=Decimal("39.0"),
-            #up_front_gst=Decimal("0.95"),
             icon_url="image/icon/128x128/cd_blue.png",
-            display_rank = 7),
+            display_rank=9),
     )
+    subscriptions_list = (
+        dict(price=Decimal("29.0"),
+            general_sales_tax=Decimal("0.95"),
+            period_in_months=1,
+            ),
+        dict(price=Decimal("49.0"),
+            general_sales_tax=Decimal("0.95"),
+            period_in_months=3,
+            ),
+        dict(price=Decimal("149.0"),
+            general_sales_tax=Decimal("0.95"),
+            period_in_months=12,
+            ),
+    )
+
+    # Batch-dump products into the datastore.
     products = []
     for p in products_list:
         p['icon_url'] = MEDIA_URL + p['icon_url']
         products.append(Product(**p))
     db.put(products)
+
+    # Now that we have keys assigned to the products, 
+    # assign to each product a bunch of subscriptions
+    # and batch-dump into the datastore.
+    subscriptions = []
+    for product in products:
+        for subscription in subscriptions_list:
+            subscription['product'] = product
+            subscriptions.append(Subscription(**subscription))
+    db.put(subscriptions)
 
 def import_customers():
     from utils import hash_password
@@ -110,22 +161,3 @@ def import_customers():
         customers.append(Customer(**c))
     db.put(customers)
 
-def import_subscriptions():
-    subscription_list = (
-        dict(billing_price=Decimal("29.0"),
-            billing_gst=Decimal("0.95"),
-            duration=1,
-            ),
-        dict(billing_price=Decimal("49.0"),
-            billing_gst=Decimal("0.95"),
-            duration=3,
-            ),
-        dict(billing_price=Decimal("149.0"),
-            billing_gst=Decimal("0.95"),
-            duration=12,
-            ),
-    )
-    subscriptions = []
-    for s in subscription_list:
-        subscriptions.append(SubscriptionModel(**s))
-    db.put(subscriptions)‍
