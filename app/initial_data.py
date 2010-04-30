@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -8-
+# -*- coding: utf-8 -*-
 # Initial data to be imported.
 # Copyright (c) 2009 happychickoo.
 #
@@ -35,7 +35,7 @@ import configuration
 
 from google.appengine.api import memcache
 from google.appengine.ext import db
-from models import Product, Customer, Subscription
+from models import Product, Basket, Customer, Subscription
 from decimal import Decimal
 
 from configuration import MEDIA_URL as media_url
@@ -49,44 +49,44 @@ def import_all():
     import_customers()
 
 def import_products():
-    products_list = (    
-        dict(title="All Maths",
-            subtitle="Product collection",
-            icon_url="image/icon/128x128/cd_bunch.png",
-            display_rank=1),
-        dict(title="All Maths + English",
-            subtitle="Product collection",
-            icon_url="image/icon/128x128/cd_bunch.png",
-            display_rank=2),
-        dict(title="Maths Story",
-            subtitle="Junior",
-            icon_url="image/icon/128x128/cd_blue.png",
-            display_rank=3),
-        dict(title="Maths Story",
-            subtitle="Primary",
-            icon_url="image/icon/128x128/cd_blue.png",
-            display_rank=4),
-        dict(title="Maths Story",
-            subtitle="Senior",
-            icon_url="image/icon/128x128/cd_blue.png",
-            display_rank=5),
-        dict(title="English Story",
-            subtitle="English",
-            icon_url="image/icon/128x128/cd_green.png",
-            display_rank=6),
-        dict(title="Phonica",
-            subtitle="Elementary English",
-            icon_url="image/icon/128x128/cd_green.png",
-            display_rank=7),
-        dict(title="Phonica",
-            subtitle="Advanced English",
-            icon_url="image/icon/128x128/cd_green.png",
-            display_rank=8),
-        dict(title="Dinamagic",
-            subtitle="Mathematics",
-            icon_url="image/icon/128x128/cd_blue.png",
-            display_rank=9),
+    math_story_junior = Product(title="Maths Story",
+        subtitle="Junior",
+        icon_url=MEDIA_URL + "image/icon/128x128/cd_blue.png",
+        display_rank=3)
+    math_story_primary = Product(title="Maths Story",
+        subtitle="Primary",
+        icon_url=MEDIA_URL + "image/icon/128x128/cd_blue.png",
+        display_rank=4)
+    math_story_senior = Product(title="Maths Story",
+        subtitle="Senior",
+        icon_url=MEDIA_URL + "image/icon/128x128/cd_blue.png",
+        display_rank=5)
+    english_story = Product(title="English Story",
+        subtitle="English",
+        icon_url=MEDIA_URL + "image/icon/128x128/cd_green.png",
+        display_rank=6)
+    
+    products = [math_story_junior, math_story_primary, math_story_senior, english_story]
+    db.put(products)
+
+    baskets = (
+        Basket(
+            title='All Maths',
+            subtitle='Product collection',
+            icon_url=MEDIA_URL + 'image/icon/128x128/cd_bunch.png',
+            display_rank=0,
+            products=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key()]
+        ),
+        Basket(
+            title='All Maths + English',
+            subtitle='Product collection',
+            icon_url=MEDIA_URL + 'image/icon/128x128/cd_bunch.png',
+            display_rank=0,
+            products=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key(), english_story.key()]
+        ),
     )
+    db.put(baskets)
+
     subscriptions_list = (
         dict(price=Decimal("29.0"),
             general_sales_tax=Decimal("0.95"),
@@ -102,13 +102,6 @@ def import_products():
             ),
     )
 
-    # Batch-dump products into the datastore.
-    products = []
-    for p in products_list:
-        p['icon_url'] = MEDIA_URL + p['icon_url']
-        products.append(Product(**p))
-    db.put(products)
-
     # Now that we have keys assigned to the products, 
     # assign to each product a bunch of subscriptions
     # and batch-dump into the datastore.
@@ -117,7 +110,12 @@ def import_products():
         for subscription in subscriptions_list:
             subscription['product'] = product
             subscriptions.append(Subscription(**subscription))
+    for basket in baskets:
+        for subscription in subscriptions_list:
+            subscription['product'] = basket
+            subscriptions.append(Subscription(**subscription))
     db.put(subscriptions)
+
 
 def import_customers():
     from utils import hash_password

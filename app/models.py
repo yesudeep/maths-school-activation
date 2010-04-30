@@ -202,6 +202,15 @@ class Product(polymodel.PolyModel):
     def baskets(self):
         return Basket.gql('WHERE products = :1', self.key())
 
+    @classmethod
+    def get_all(cls, count=MAX_COUNT):
+        cache_key = '%s.get_all()' % (cls.__name__,)
+        entities = deserialize_entities(memcache.get(cache_key))
+        if not entities:
+            entities = db.GqlQuery('SELECT * FROM %s' % cls.__name__).fetch(count)
+            memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
+        return entities
+
 
 class Basket(Product):
     """
@@ -305,26 +314,6 @@ class Transaction(SerializableModel):
     data = db.TextProperty()
 
 
-class ActivationCredentials(SerializableModel):
-    """
-    Activation credentials for a product that are stored per order.
-    
-    Helps answer these questions:
-    
-    1. What activation information was provided by the customer?
-    2. Which order does this activation information belong to?
-    3. Which product does this activation information apply to?
-    4. Which customer provided this activation information? (via order.customer)
-    
-    """
-    serial_number = db.StringProperty()
-    machine_id = db.StringProperty()
-    activation_code = db.StringProperty()
-    
-    product = db.ReferenceProperty(Product, collection_name='activation_credentials')
-    order = db.ReferenceProperty(Order, collection_name='activation_credentials')
-
-
 class Order(SerializableModel):
     """
     Subscription orders
@@ -346,3 +335,23 @@ class Order(SerializableModel):
     subscription_period_in_months = db.IntegerProperty()
     subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+
+
+class ActivationCredentials(SerializableModel):
+    """
+    Activation credentials for a product that are stored per order.
+
+    Helps answer these questions:
+
+    1. What activation information was provided by the customer?
+    2. Which order does this activation information belong to?
+    3. Which product does this activation information apply to?
+    4. Which customer provided this activation information? (via order.customer)
+
+    """
+    serial_number = db.StringProperty()
+    machine_id = db.StringProperty()
+    activation_code = db.StringProperty()
+
+    product = db.ReferenceProperty(Product, collection_name='activation_credentials')
+    order = db.ReferenceProperty(Order, collection_name='activation_credentials')
