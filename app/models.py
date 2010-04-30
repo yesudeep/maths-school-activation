@@ -36,6 +36,10 @@ from google.appengine.api import memcache,users
 from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, CACHE_DURATION, SerializableModel
 from properties import DecimalProperty, Base64Property
 from decimal import Decimal
+from countries import ISO_ALPHA_3_CODES
+
+AUSTRALIA_ISO_ALPHA_3_CODE = 'AUS'
+DEFAULT_ISO_ALPHA_3_CODE = AUSTRALIA_ISO_ALPHA_3_CODE
 
 CURRENCY_CHOICES = (
     'AUD',
@@ -93,6 +97,15 @@ VERIFICATION_STATUS_CHOICES = (
 DEFAULT_VERIFICATION_STATUS = VERIFICATION_STATUS_UNKNOWN
 
 
+#PRODUCT_TYPE_UNIT = 'unit'        # A single atomic product unit.
+#PRODUCT_TYPE_BASKET = 'basket'    # A basket collection of products.
+#PRODUCT_TYPE_CHOICES = (
+#    PRODUCT_TYPE_UNIT,
+#    PRODUCT_TYPE_BASKET,
+#)
+#DEFAULT_PRODUCT_TYPE = PRODUCT_TYPE_UNIT
+
+
 class Profile(polymodel.PolyModel):
     """
     This is a base polymodel for models that have contact information.
@@ -101,7 +114,6 @@ class Profile(polymodel.PolyModel):
     models (eg., CustomerPhoneNumber, PersonAddress, CompanyLocation)
     for each of these models that have contact information.
     """
-
     when_created = db.DateTimeProperty(auto_now_add=True)
     when_modified = db.DateTimeProperty(auto_now=True)
 
@@ -159,10 +171,10 @@ class Location(SerializableModel):
     street_name = db.StringProperty()
     zip_code = db.StringProperty()
     city = db.StringProperty()
-    country = db.StringProperty()
+    country = db.StringProperty(choices=ISO_ALPHA_3_CODES, default=DEFAULT_ISO_ALPHA_3_CODE)
 
 
-class Product(SerializableModel):
+class Product(polymodel.PolyModel):
     """
     Product information.
 
@@ -178,6 +190,40 @@ class Product(SerializableModel):
     description = db.TextProperty()
     icon_url = db.URLProperty()
     display_rank = db.IntegerProperty()
+
+    when_created = db.DateTimeProperty(auto_now_add=True)
+    when_modified = db.DateTimeProperty(auto_now=True)
+    is_deleted = db.BooleanProperty(default=False)
+
+    #product_type = db.StringProperty(choices=PRODUCT_TYPE_CHOICES, default=DEFAULT_PRODUCT_TYPE)
+    #basket = db.SelfReferenceProperty(Product, collection_name='products')
+
+    @property
+    def baskets(self):
+        return Basket.gql('WHERE products = :1', self.key())
+
+
+class Basket(Product):
+    """
+    Basket is a collective product that contains other products
+    and has its own subscriptions.  A product, however, can belong
+    to multiple baskets, hence, we store a list of keys belonging
+    to each product contained by the basket.  
+    
+    The polymodel inheritance allows a basket to:
+    
+    1. be a product itself.
+    2. contain products.
+    3. contain other baskets.
+    
+    Helps answer these questions:
+    
+    1. Which products are contained by this basket?
+    
+    Other questions mentioned in the Product model are also included.
+    
+    """
+    products = db.ListProperty(db.Key)
 
 
 class Subscription(SerializableModel):
@@ -259,9 +305,29 @@ class Transaction(SerializableModel):
     data = db.TextProperty()
 
 
+class ActivationCredentials(SerializableModel):
+    """
+    Activation credentials for a product that are stored per order.
+    
+    Helps answer these questions:
+    
+    1. What activation information was provided by the customer?
+    2. Which order does this activation information belong to?
+    3. Which product does this activation information apply to?
+    4. Which customer provided this activation information? (via order.customer)
+    
+    """
+    serial_number = db.StringProperty()
+    machine_id = db.StringProperty()
+    activation_code = db.StringProperty()
+    
+    product = db.ReferenceProperty(Product, collection_name='activation_credentials')
+    order = db.ReferenceProperty(Order, collection_name='activation_credentials')
+
+
 class Order(SerializableModel):
     """
-    Activation order
+    Subscription orders
     Helps answer these questions:
 
     1. What product was sold to which customer?
@@ -272,7 +338,6 @@ class Order(SerializableModel):
 
     """
     subscription = db.ReferenceProperty(Subscription, collection_name='orders')
-    product = db.ReferenceProperty(Product, collection_name='orders')
     customer = db.ReferenceProperty(Customer, collection_name='orders')
     invoice = db.ReferenceProperty(Invoice, collection_name='orders')
 
@@ -281,7 +346,3 @@ class Order(SerializableModel):
     subscription_period_in_months = db.IntegerProperty()
     subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
-
-    serial_number = db.StringProperty()
-    machine_id = db.StringProperty()
-    activation_code = db.StringProperty()
