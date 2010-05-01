@@ -109,12 +109,12 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
-        selector="activate.js",
+        selector="select_products.js",
         sources = Split(
         COMMON_SCRIPTS + 
         """
             script/lib/json2.js
-            script/activate.js
+            script/select_products.js
         """)
     ),
     dict(

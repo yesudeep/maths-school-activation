@@ -53,7 +53,7 @@ jQuery(function(){
   });
   
   elements.buttonActivate.click(function(e){
-    jQuery.post('/activate', {data: JSON.stringify(activateProducts)}, function(data){
+    jQuery.post('/activate/select', {data: JSON.stringify(activateProducts)}, function(data){
       if (data.url != ""){
         window.location = data.url;
       }

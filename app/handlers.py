@@ -177,7 +177,7 @@ class RegistrationHandler(SessionRequestHandler):
   
         self.do_login(email)
         self.redirect('/dashboard')
-        
+
 
 class DashboardHandler(SessionRequestHandler):
     def get(self):
@@ -187,13 +187,14 @@ class DashboardHandler(SessionRequestHandler):
             customer = Customer.get_by_key_name(self.get_current_username())
             self.render('dashboard.html', customer=customer)
 
-class ActivateHandler(SessionRequestHandler):
+
+class SelectProductsHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
             products = Product.get_all()
-            self.render('activate.html', products=products)
+            self.render('select_products.html', products=products)
 
     def post(self):
         from django.utils import simplejson as json
@@ -436,7 +437,7 @@ urls = (
     (r'/logout', LogoutHandler),
     (r'/register/?', RegistrationHandler),
     (r'/dashboard/?', DashboardHandler),
-    (r'/activate/?', ActivateHandler),
+    (r'/activate/select/?', SelectProductsHandler),
     (r'/activate/overview/?', ActivateOverviewHandler),
     (r'/activate/complete/?', ActivateCompleteHandler),
     (r'/paypal/ipn/?', PaypalIPNHandler),
