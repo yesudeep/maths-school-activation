@@ -4,6 +4,8 @@
 *.bak
 *.swp
 *.log
+*.psd
+
 \#*\#
 .\#*
 .sconsign.dblite
@@ -39,3 +41,5 @@ media/css/ie6.css
 
 # Confidential files that should be ignored
 app/api_preferences.py
+app/activation.py
+

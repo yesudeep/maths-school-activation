@@ -1,4 +1,56 @@
+jQuery(function(){
+  var elements = {
+    productLinks: jQuery('#products a'),
+    buttonActivate: jQuery('#button-activate'),
+    dialogSubscription: jQuery('#dialog-subscription')
+  };
+  
+  var selectedClassName = 'selected';
+  var data = {
+    products: {},
+    subscription: {
+      period: 0
+    }
+  };
+  
+  elements.buttonActivate.click(function(e){
+    var elem = jQuery(this);
 
+    elements.dialogSubscription.slideToggle('slow');
+
+    /*
+    jQuery.post('/activate/select', {payload: JSON.stringify(data)}, function(result){
+      
+    }, 'json');*/
+    
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+  
+  
+  elements.productLinks.click(function(e){
+    var elem = jQuery(this);
+    var selectedProductKey = elem.attr('id');
+    
+    // Mark the clicked product as selected and add it to data.
+    if (elem.hasClass(selectedClassName)){
+      elem.removeClass(selectedClassName);
+      delete data.products[selectedProductKey];
+    } else {
+      data.products[selectedProductKey] = true;
+      elem.addClass(selectedClassName);
+    }
+  
+    // Prevent default behavior and stop event bubbling.
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+  
+});
+
+/*
 jQuery(function(){
   var elements = {
     product: jQuery('#products a'),
@@ -63,3 +115,4 @@ jQuery(function(){
     return false;    
   });
 });
+*/

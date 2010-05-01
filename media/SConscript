@@ -118,6 +118,15 @@ SCRIPT_BUNDLES = (
         """)
     ),
     dict(
+        selector="activation_credentials_input.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/lib/json2.js
+            script/activation_credentials_input.js
+        """)
+    ),
+    dict(
         selector="profile.js",
         sources = Split(
         COMMON_SCRIPTS + 

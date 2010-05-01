@@ -38,6 +38,11 @@ from models import Product, Customer, Invoice, Order, Phone, Location
 from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
 from models import INVOICE_STATUS_PENDING, INVOICE_STATUS_COMPLETE
 
+try:
+    import json
+except ImportError:
+    from django.utils import simplejson as json
+
 logging.basicConfig(level=logging.DEBUG)
 
 LOGIN_PAGE_URL = '/'
@@ -144,9 +149,9 @@ class RegistrationHandler(SessionRequestHandler):
         area_or_suburb = self.get_argument('area_or_suburb')
         street_name = self.get_argument('street_name')
         zip_code = self.get_argument('zip_code')
-        
+
         p = hash_password(password)
-        
+
         customer = Customer(key_name=email,      
                             first_name=first_name,
                             last_name=last_name,
@@ -156,11 +161,11 @@ class RegistrationHandler(SessionRequestHandler):
 
         #TODO: before saving the profile check if the data is not repeated
         db.put(customer)
-        
+
         landline = Phone(phone_type='landline',
                          number=landline_number,
                          profile=customer)
-        
+
         mobile = Phone(phone_type='mobile',
                        number=mobile_number,
                        profile=customer)
@@ -171,10 +176,10 @@ class RegistrationHandler(SessionRequestHandler):
                            zip_code=zip_code,
                            country=country,
                            city=city,
-                           profile=customer)        
+                           profile=customer)
 
         db.put([location, mobile, landline])
-  
+
         self.do_login(email)
         self.redirect('/dashboard')
 
@@ -193,11 +198,22 @@ class SelectProductsHandler(SessionRequestHandler):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
+            from models import SubscriptionPeriod
             products = Product.get_all()
-            self.render('select_products.html', products=products)
+            subscription_periods = SubscriptionPeriod.get_all()
+            self.render('select_products.html', 
+                products=products, 
+                subscription_periods=subscription_periods)
 
     def post(self):
-        from django.utils import simplejson as json
+        payload = json.loads(self.get_argument('payload'))
+        
+        
+        self.write('hmm')
+
+
+class ActivateHandler(SessionRequestHandler):
+    def post(self):
         data = json.loads(self.get_argument('data'))
         logging.info(data)
 
@@ -214,8 +230,6 @@ class SelectProductsHandler(SessionRequestHandler):
                 order = Order(product=product, invoice=invoice, customer=customer)
                 order.serial_number = value.get('serialNumber')
                 order.machine_id = value.get('machineId')
-                #order.up_front_price = product.up_front_price
-                #order.up_front_gst = product.up_front_gst
                 order.billing_price = product.billing_price
                 order.billing_gst = product.billing_gst
                 order.currency = product.currency
@@ -236,6 +250,11 @@ class SelectProductsHandler(SessionRequestHandler):
         else:
             self.set_header('Content-Type', 'application/json')
             self.write(json.dumps(dict(url='')))
+
+
+class ActivationCredentialsInputHandler(SessionRequestHandler):
+    def get(self):
+        self.render('activation_credentials_input.html')
 
 
 class ActivateOverviewHandler(SessionRequestHandler):
@@ -438,6 +457,7 @@ urls = (
     (r'/register/?', RegistrationHandler),
     (r'/dashboard/?', DashboardHandler),
     (r'/activate/select/?', SelectProductsHandler),
+    (r'/activate/credentials/?', ActivationCredentialsInputHandler),
     (r'/activate/overview/?', ActivateOverviewHandler),
     (r'/activate/complete/?', ActivateCompleteHandler),
     (r'/paypal/ipn/?', PaypalIPNHandler),

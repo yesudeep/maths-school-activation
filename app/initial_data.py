@@ -35,7 +35,7 @@ import configuration
 
 from google.appengine.api import memcache
 from google.appengine.ext import db
-from models import Product, Basket, Customer, Subscription
+from models import Product, Basket, Customer, Subscription, SubscriptionPeriod
 from decimal import Decimal
 
 from configuration import MEDIA_URL as media_url
@@ -47,6 +47,29 @@ if MEDIA_URL.startswith('/'):
 def import_all():
     import_products()
     import_customers()
+    import_subscription_periods()
+    
+def import_subscription_periods():
+    subscription_periods_list = (
+        dict(
+            title='Monthly',
+            period_in_months=1
+        ),
+        dict(
+            title='Quarterly',
+            period_in_months=3
+        ),
+        dict(
+            title='Yearly',
+            period_in_months=12
+        ),
+    )
+    
+    subscription_periods = []
+    for subscription_period in subscription_periods_list:
+        subscription_periods.append(SubscriptionPeriod(**subscription_period))
+    db.put(subscription_periods)
+
 
 def import_products():
     math_story_junior = Product(title="Maths Story",
@@ -95,10 +118,12 @@ def import_products():
         dict(price=Decimal("49.0"),
             general_sales_tax=Decimal("0.95"),
             period_in_months=3,
+            free_period_in_months=1,
             ),
         dict(price=Decimal("149.0"),
             general_sales_tax=Decimal("0.95"),
             period_in_months=12,
+            free_period_in_months=2,
             ),
     )
 

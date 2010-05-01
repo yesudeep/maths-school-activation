@@ -7,10 +7,24 @@
 {% end %}
 
 {% block tag_trunk_content %}
-  <div id="dialog-input-serial-number" class="dialog box">
-    <h2>Your serial number please.</h2>
-    <p>To activate this product, you will need to input the serial number and machine ID.</p>
-    <form id="form-input-serial-number" class="decorated-fields tabular" action="" method="POST">
+  <div id="dialog-subscription" class="dialog box">
+    <h2>Choose subscription</h2>
+    <p>Pick from a choice of these subscription periods.</p>
+    <form id="form-subscription-period">
+      <label for="period">
+        <span class="prefix"></span>
+        <select name="period">
+          {% for period in subscription_periods %}
+          <option value="{{ period.period_in_months }}">{{ period.title }}</option>
+          {% end %}
+        </select>
+        <span class="suffix"></span>
+      </label>
+      <input type="submit" name="continue" class="awesome-button button-ok" value="&#10004; Continue" />
+      <input type="button" name="cancel" class="awesome-button button-cancel" value="&times; Cancel" />
+    </form>
+    
+    #*<form id="form-input-serial-number" class="decorated-fields tabular" action="" method="POST">
       <label for="serial-number">
         <span class="prefix">Serial Number</span>
         <input type="text" name="serial-number" value="" />
@@ -22,8 +36,8 @@
         <span class="suffix"></span>
       </label>
       <input type="submit" name="add-activation" class="awesome-button button-ok" value="+ Add Activation" />
-      <input type="button" name="cancel" class="awesome-button button-cancel"  value="&times; Cancel" onClick/>
-    </form>
+      <input type="button" name="cancel" class="awesome-button button-cancel"  value="&times; Cancel" />
+    </form>*#
   </div>
   <div class="darkbox">
     <ul id="products" class="image-grid">
@@ -38,7 +52,8 @@
       {% end %}
     </ul>
   </div>
-  <a id="button-activate" href="/product/activation" class="awesome-button fresh large">&#10003; Activate</a>
+  
+  <a id="button-activate" href="/activate/credentials" class="awesome-button fresh large">&#10003; Activate</a>
 {% end %}
 
 {% block tag_scripts %}

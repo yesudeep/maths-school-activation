@@ -261,6 +261,21 @@ class Subscription(SerializableModel):
     general_sales_tax = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     period_in_months = db.IntegerProperty()
+    free_period_in_months = db.IntegerProperty(default=0)
+
+
+class SubscriptionPeriod(SerializableModel):
+    period_in_months = db.IntegerProperty()
+    title = db.StringProperty()
+
+    @classmethod
+    def get_all(cls, count=MAX_COUNT):
+        cache_key = '%s.get_all()' % (cls.__name__,)
+        entities = deserialize_entities(memcache.get(cache_key))
+        if not entities:
+            entities = SubscriptionPeriod.all().order('period_in_months').fetch(count)
+            memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
+        return entities
 
 
 class Invoice(SerializableModel):
@@ -333,6 +348,7 @@ class Order(SerializableModel):
     subscription_price = DecimalProperty()
     subscription_general_sales_tax = DecimalProperty()
     subscription_period_in_months = db.IntegerProperty()
+    subscription_free_period_in_months = db.IntegerProperty()
     subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
 
