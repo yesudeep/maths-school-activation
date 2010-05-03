@@ -335,15 +335,20 @@ class CheckActivationCodeGenerationHandler(BaseRequestHandler):
     def get(self):
         self.render('check_activation_code_generation.html')
 
-    def post(self):
+    def post(self):                
         from activation import calculate_activation_code
         serial_number = self.get_argument('serial_number')
         machine_id = self.get_argument('machine_id')
+        
+        logging.info(serial_number)
+        logging.info(machine_id)
+        
         if 'a_base' in self.request.arguments:
             a_base = int(self.get_argument('a_base'), 10)
         else:
             a_base = None
         activation_code = calculate_activation_code(machine_id, serial_number, a_base)
+        self.set_header('Content-Type', 'text/plain')
         self.write(activation_code)
 
 
