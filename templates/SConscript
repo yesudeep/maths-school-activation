@@ -27,6 +27,7 @@ PAGE_TEMPLATE_FILES = Split("""
     deinstall_maths_english.html
     register.html
     activation_credentials_input.html
+    check_activation_code_generation.html
 """)
 
 BASE_TEMPLATE_FILES = Split("""

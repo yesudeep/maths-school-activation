@@ -166,6 +166,15 @@ SCRIPT_BUNDLES = (
             script/deinstall_maths_english.js
         """)
     ),
+    dict(
+        selector="check_activation_code_generation.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/lib/chickoojs/src/jquery/form/jquery.form.js
+            script/check_activation_code_generation.js
+        """)
+    ),
 )
 
 CSS_BUNDLES = (

@@ -278,7 +278,77 @@ class ActivateCompleteHandler(SessionRequestHandler):
     def get(self):
         self.render('activate_complete.html')
 
+class UnsubscriptionHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('unsubscribe.html')
 
+
+class DeinstallHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('deinstall.html')
+
+
+class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('deinstall_phonica_dinamagic.html')
+
+
+class DeinstallMathsEnglishHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            import random
+            self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
+
+
+class ChangePasswordHandler(SessionRequestHandler):
+    def get(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            self.render('change_password.html')
+
+    def post(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            customer = Customer.get_by_key_name(self.get_current_username())
+            if customer.is_password_correct(self.get_argument('old_password')):
+                p = hash_password(self.get_argument('new_password'))
+                customer.password_hash = p[0]
+                customer.password_salt = p[1]
+                customer.put()
+            self.redirect('/dashboard')
+
+
+class CheckActivationCodeGenerationHandler(BaseRequestHandler):
+    def get(self):
+        self.render('check_activation_code_generation.html')
+
+    def post(self):
+        from activation import calculate_activation_code
+        serial_number = self.get_argument('serial_number')
+        machine_id = self.get_argument('machine_id')
+        if 'a_base' in self.request.arguments:
+            a_base = int(self.get_argument('a_base'), 10)
+        else:
+            a_base = None
+        activation_code = calculate_activation_code(machine_id, serial_number, a_base)
+        self.write(activation_code)
+
+
+#------------------------------------------------------------------------------
+# Paypal handlers.
 def flatten_arguments(args):
     """
     This returns a dict and hence cannot totally flatten
@@ -392,57 +462,6 @@ class PaypalIPNHandler(PaypalEndpoint):
         txn.put()
 
 
-class UnsubscriptionHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('unsubscribe.html')
-
-
-class DeinstallHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('deinstall.html')
-
-
-class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('deinstall_phonica_dinamagic.html')
-
-
-class DeinstallMathsEnglishHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            import random
-            self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
-
-
-class ChangePasswordHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('change_password.html')
-
-    def post(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            customer = Customer.get_by_key_name(self.get_current_username())
-            if customer.is_password_correct(self.get_argument('old_password')):
-                p = hash_password(self.get_argument('new_password'))
-                customer.password_hash = p[0]
-                customer.password_salt = p[1]
-                customer.put()
-            self.redirect('/dashboard')
 
 
 settings = {
@@ -471,6 +490,9 @@ urls = (
     (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),
+    
+    # Admin testing pages.
+    (r'/_at/check/activation/code/?', CheckActivationCodeGenerationHandler),
 )
 application = tornado.wsgi.WSGIApplication(urls, **settings)
 
