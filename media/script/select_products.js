@@ -2,7 +2,10 @@ jQuery(function(){
   var elements = {
     productLinks: jQuery('#products a'),
     buttonActivate: jQuery('#button-activate'),
-    dialogSubscription: jQuery('#dialog-subscription')
+    dialogSubscription: jQuery('#dialog-subscription'),
+    dialogSubscriptionCancel: jQuery('#dialog-subscription .button-cancel'),
+    dialogSubscriptionOk: jQuery('#dialog-subscription .button-ok'),
+    dialogSubscriptionOption: jQuery('#dialog-subscription').find('input[name="period"]')
   };
   
   var selectedClassName = 'selected';
@@ -28,6 +31,14 @@ jQuery(function(){
     return false;
   });
   
+  //fade out if cancel button is clicked on subscription-dialog-box
+  elements.dialogSubscriptionCancel.click(function(e){
+    elements.dialogSubscription.fadeOut('slow');
+
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
   
   elements.productLinks.click(function(e){
     var elem = jQuery(this);
@@ -46,6 +57,19 @@ jQuery(function(){
     e.preventDefault();
     e.stopPropagation();
     return false;
+  });
+  
+  // handel continue-button click of subscription-dialogbox
+  element.dialogSubscriptionOk.click(function(e){
+  
+  data.subscription[period] = dialogSubscriptionOption.val();
+  
+  //check
+  elements.dialogSubscription.fadeOut('slow');
+  
+  e.preventDefault();
+  e.stopPropogation();
+  return false;
   });
   
 });
