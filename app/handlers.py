@@ -209,7 +209,7 @@ class SelectProductsHandler(SessionRequestHandler):
         payload = json.loads(self.get_argument('payload'))
         
         
-        self.write('hmm')
+        self.write(payload)
 
 
 class ActivateHandler(SessionRequestHandler):

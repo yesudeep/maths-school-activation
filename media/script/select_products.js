@@ -73,7 +73,7 @@ jQuery(function(){
 
       
     //check
-    alert(subscription_request.subscription.period);
+    //alert(subscription_request.subscription.period);
     //alert(subscription_request.products)
   
     e.preventDefault();
