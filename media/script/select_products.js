@@ -4,12 +4,13 @@ jQuery(function(){
     buttonActivate: jQuery('#button-activate'),
     dialogSubscription: jQuery('#dialog-subscription'),
     dialogSubscriptionCancel: jQuery('#dialog-subscription .button-cancel'),
-    dialogSubscriptionOk: jQuery('#dialog-subscription .button-ok'),
-    dialogSubscriptionOption: jQuery('#dialog-subscription').find('input[name="period"]')
+    dialogSubscriptionOk: jQuery('#form-subscription-period .button-ok'),
+    subscription_period_form: jQuery('form-subscription-period')
+    //dialogSubscriptionOption: jQuery('select')
   };
   
   var selectedClassName = 'selected';
-  var data = {
+  var subscription_request = {
     products: {},
     subscription: {
       period: 0
@@ -47,9 +48,9 @@ jQuery(function(){
     // Mark the clicked product as selected and add it to data.
     if (elem.hasClass(selectedClassName)){
       elem.removeClass(selectedClassName);
-      delete data.products[selectedProductKey];
+      delete subscription_request.products[selectedProductKey];
     } else {
-      data.products[selectedProductKey] = true;
+      subscription_request.products[selectedProductKey] = true;
       elem.addClass(selectedClassName);
     }
   
@@ -58,19 +59,29 @@ jQuery(function(){
     e.stopPropagation();
     return false;
   });
-  
+
   // handel continue-button click of subscription-dialogbox
-  element.dialogSubscriptionOk.click(function(e){
+  elements.dialogSubscriptionOk.click(function(e){
+    
+    subscription_request.subscription.period = jQuery('select').val();
+    elements.dialogSubscription.fadeOut('slow');
+    
+    //send the data variable via ajax request 
+    jQuery.post('/activate/select', {payload: JSON.stringify(subscription_request)}, function(result){
+      
+    }, 'json')
+
+      
+    //check
+    alert(subscription_request.subscription.period);
+    //alert(subscription_request.products)
   
-  data.subscription[period] = dialogSubscriptionOption.val();
-  
-  //check
-  elements.dialogSubscription.fadeOut('slow');
-  
-  e.preventDefault();
-  e.stopPropogation();
-  return false;
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
   });
+  
+  
   
 });
 
