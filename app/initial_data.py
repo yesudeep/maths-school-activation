@@ -98,14 +98,14 @@ def import_products():
             subtitle='Product collection',
             icon_url=MEDIA_URL + 'image/icon/128x128/cd_bunch.png',
             display_rank=0,
-            products=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key()]
+            product_keys=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key()]
         ),
         Basket(
             title='All Maths + English',
             subtitle='Product collection',
             icon_url=MEDIA_URL + 'image/icon/128x128/cd_bunch.png',
             display_rank=0,
-            products=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key(), english_story.key()]
+            product_keys=[math_story_junior.key(), math_story_primary.key(), math_story_senior.key(), english_story.key()]
         ),
     )
     db.put(baskets)

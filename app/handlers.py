@@ -193,6 +193,8 @@ class DashboardHandler(SessionRequestHandler):
             self.render('dashboard.html', customer=customer)
 
 
+
+
 class SelectProductsHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
@@ -211,6 +213,9 @@ class SelectProductsHandler(SessionRequestHandler):
 
         self.set_header('Content-Type', 'application/json')
         if subscription_data:
+            products = subscription_data.get('products')
+            subscription_data['products'] = products.keys()
+            logging.info(subscription_data)
             self.session['subscription-data'] = subscription_data
             self.write(json.dumps(dict(url='/activate/credentials')))
         else:
@@ -259,7 +264,24 @@ class ActivateHandler(SessionRequestHandler):
 
 class ActivationCredentialsInputHandler(SessionRequestHandler):
     def get(self):
-        self.render('activation_credentials_input.html')
+        subscription_data = self.session['subscription-data']
+        products = db.get([db.Key(key) for key in subscription_data.get('products')])
+        units = [product for product in products if 'product_keys' not in product.properties()]
+        baskets = [product for product in products if 'product_keys' in product.properties()]
+        
+        logging.info(baskets)
+        logging.info(units)
+        
+        self.render('activation_credentials_input.html', products=products, units=units, baskets=baskets)
+
+    def post(self):
+        subscription_data = self.session['subscription-data']
+        products = db.get([db.Key(key) for key in subscription_data.get('products')])
+        period = subscription_data.get('period')
+        
+        for product in products:
+            pass
+        
 
 
 class ActivateOverviewHandler(SessionRequestHandler):

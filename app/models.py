@@ -200,7 +200,7 @@ class Product(polymodel.PolyModel):
 
     @property
     def baskets(self):
-        return Basket.gql('WHERE products = :1', self.key())
+        return Basket.gql('WHERE product_keys = :1', self.key())
 
     @classmethod
     def get_all(cls, count=MAX_COUNT):
@@ -210,6 +210,12 @@ class Product(polymodel.PolyModel):
             entities = db.GqlQuery('SELECT * FROM %s' % cls.__name__).fetch(count)
             memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
         return entities
+
+    def __unicode__(self):
+        return self.title + ', ' + self.subtitle + '(' + self.key().id() + ')'
+
+    def __str__(self):
+        return self.__unicode__()
 
 
 class Basket(Product):
@@ -232,7 +238,18 @@ class Basket(Product):
     Other questions mentioned in the Product model are also included.
     
     """
-    products = db.ListProperty(db.Key)
+    product_keys = db.ListProperty(db.Key)
+
+    @property
+    def products(self):
+        return db.get(self.product_keys)
+
+    def has_product(self, product):
+        """
+        Determines whether a product belongs to this basket
+        given the product entity.
+        """
+        return product.key() in self.product_keys
 
 
 class Subscription(SerializableModel):
@@ -265,6 +282,11 @@ class Subscription(SerializableModel):
 
 
 class SubscriptionPeriod(SerializableModel):
+    """
+    Subscription periods for the dropdown choice menu.
+    
+    (Static data model)
+    """
     period_in_months = db.IntegerProperty()
     title = db.StringProperty()
 

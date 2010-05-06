@@ -23,21 +23,6 @@
       <input type="submit" name="continue" class="awesome-button button-ok" value="&#10004; Continue" />
       <input type="button" name="cancel" class="awesome-button button-cancel" value="&times; Cancel" />
     </form>
-    
-    #*<form id="form-input-serial-number" class="decorated-fields tabular" action="" method="POST">
-      <label for="serial-number">
-        <span class="prefix">Serial Number</span>
-        <input type="text" name="serial-number" value="" />
-        <span class="suffix"></span>
-      </label>
-      <label for="machine-id">
-        <span class="prefix">Machine ID/Site Code</span>
-        <input type="text" name="machine-id" value="" />
-        <span class="suffix"></span>
-      </label>
-      <input type="submit" name="add-activation" class="awesome-button button-ok" value="+ Add Activation" />
-      <input type="button" name="cancel" class="awesome-button button-cancel"  value="&times; Cancel" />
-    </form>*#
   </div>
   <div class="darkbox">
     <ul id="products" class="image-grid">
@@ -52,16 +37,7 @@
       {% end %}
     </ul>
   </div>
-  
-  <a id="button-activate" href="/activate/credentials" class="awesome-button fresh large">&#10003; Activate</a>
+  <a id="button-activate" href="#" class="awesome-button fresh large">&#10003; Activate</a>
 {% end %}
 
-{% block tag_scripts %}
-#*<script type="text/javascript">
-window.__hc_scripts.push({% if LOCAL %}
-"{{ TEXT_MEDIA_URL }}script/lib/chickoojs/src/jquery/tools/1.1.2/jquery.tools.min.js"
-{% else %}
-"http://cdn.jquerytools.org/1.1.2/full/jquery.tools.min.js"
-{% end %});
-</script>*#
-<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
+{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
