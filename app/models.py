@@ -113,13 +113,13 @@ def purge_db(fetch_count=1000):
     Purges all model data in the datastore created using our models.
     """
     models = (
-        Profile, 
-        Customer, 
-        Phone, 
-        Email, 
-        Location, 
-        Product, 
-        Basket, 
+        Profile,
+        Customer,
+        Phone,
+        Email,
+        Location,
+        Product,
+        Basket,
         Subscription,
         SubscriptionPeriod,
         Invoice,
@@ -130,7 +130,7 @@ def purge_db(fetch_count=1000):
     for model in models:
         db.delete(model.all().fetch(fetch_count))
 
-    return 
+    return
 
 
 class Profile(polymodel.PolyModel):
@@ -197,7 +197,7 @@ class Email(SerializableModel):
 class Location(SerializableModel):
     """
     Address locations.
-    
+
     Helps locate a customer.
     """
     profile = db.ReferenceProperty(Profile, collection_name='locations')
@@ -212,6 +212,17 @@ class Location(SerializableModel):
 class Product(polymodel.PolyModel):
     """
     Product information.
+
+    A product can be one of two types based on its atomicity.
+    
+    1. Unit
+    2. Basket
+    
+    A product that can contain one or more atomic products is called a Basket
+    (see model class below).  A product that is atomic, indivisible, and
+    cannot contain other products is called a Unit--even though the term "Unit"
+    is never used as a model identifier, it is used as convention throughout
+    the code.
 
     Helps answer these questions:
 
@@ -265,20 +276,20 @@ class Basket(Product):
     Basket is a collective product that contains other products
     and has its own subscriptions.  A product, however, can belong
     to multiple baskets, hence, we store a list of keys belonging
-    to each product contained by the basket.  
-    
+    to each product contained by the basket.
+
     The polymodel inheritance allows a basket to:
-    
+
     1. be a product itself.
     2. contain products.
     3. contain other baskets.
-    
+
     Helps answer these questions:
-    
+
     1. Which products are contained by this basket?
-    
+
     Other questions mentioned in the Product model are also included.
-    
+
     """
     product_keys = db.ListProperty(db.Key)
 
@@ -301,20 +312,20 @@ class Basket(Product):
 class Subscription(SerializableModel):
     """
     Subscription options available per product for the customer:
-    
+
         1. Monthly
         2. Quarterly
         3. Half yearly
         4. Yearly
-    
+
     Helps answer these questions:
-    
+
     1. Which product is being offered under this subscription?
     2. What is the subscription price?
     3. What is the recurring payment period of the subscription?
     4. What is the general sales tax and currency?
-    5. Which orders have been placed by customers to use this subscription?  (foreign relationship) 
-    
+    5. Which orders have been placed by customers to use this subscription?  (foreign relationship)
+
     This information is filled in by administrators.
     The same number of subscriptions with the same durations must be present for all the products
     for the current system to work.
@@ -327,10 +338,26 @@ class Subscription(SerializableModel):
     free_period_in_months = db.IntegerProperty(default=0)
 
 
+    @classmethod
+    def get_by_product_and_period(cls, product, period_in_months):
+        """
+        Fetches a subscription for the given product and period in months.
+        """
+        cache_key = str(product.key()) + str(period_in_months)
+        subscription = deserialize_entities(memcache.get(cache_key))
+        if not subscription:
+            subscription = Subscription.all() \
+                .filter('product = ', product) \
+                .filter('period_in_months = ', period_in_months) \
+                .get()
+            memcache.set(cache_key, serialize_entities(subscription), CACHE_DURATION)
+        return subscription
+
+
 class SubscriptionPeriod(SerializableModel):
     """
     Subscription periods for the dropdown choice menu.
-    
+
     (Static data model)
     """
     period_in_months = db.IntegerProperty()
@@ -441,5 +468,6 @@ class ActivationCredentials(SerializableModel):
     machine_id = db.StringProperty()
     activation_code = db.StringProperty()
 
+    # Here product is always a unit never a basket.
     product = db.ReferenceProperty(Product, collection_name='activation_credentials')
     order = db.ReferenceProperty(Order, collection_name='activation_credentials')
