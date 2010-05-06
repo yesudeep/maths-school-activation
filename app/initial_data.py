@@ -76,15 +76,18 @@ def import_subscription_periods():
     subscription_periods_list = (
         dict(
             title='Monthly',
-            period_in_months=1
+            period_in_months=1,
+            free_period_in_months=1
         ),
         dict(
             title='Quarterly',
-            period_in_months=3
+            period_in_months=3,
+            free_period_in_months=1
         ),
         dict(
             title='Yearly',
-            period_in_months=12
+            period_in_months=12,
+            free_period_in_months=1
         ),
     )
     
@@ -141,12 +144,12 @@ def import_products():
         dict(price=Decimal("49.0"),
             general_sales_tax=Decimal("0.95"),
             period_in_months=3,
-            free_period_in_months=1,
+            #free_period_in_months=1,
             ),
         dict(price=Decimal("149.0"),
             general_sales_tax=Decimal("0.95"),
             period_in_months=12,
-            free_period_in_months=2,
+            #free_period_in_months=2,
             ),
     )
 

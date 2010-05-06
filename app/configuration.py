@@ -102,13 +102,14 @@ if PAYPAL_MODE == 'sandbox':
     PAYPAL_MERCHANT_EMAIL = 'meow_1270981698_biz@happychickoo.com'
     PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+    PAYPAL_BUTTON_IMAGE_URL = 'https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
 else:
     PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
     PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
+    PAYPAL_BUTTON_IMAGE_URL = 'https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
 
 PAYPAL_NOTIFY_URL = "https://%s.appspot.com/paypal/ipn" % (APPLICATION_ID,)
-
 
 if DEBUG:
     # Minification suffixes to use for CSS and JS files.
@@ -178,6 +179,7 @@ TEMPLATE_BUILTINS = {
     'PAYPAL_NOTIFY_URL': PAYPAL_NOTIFY_URL,
     'PAYPAL_MERCHANT_EMAIL': PAYPAL_MERCHANT_EMAIL,
     'PAYPAL_POST_URL': PAYPAL_POST_URL,
+    'PAYPAL_BUTTON_IMAGE_URL': PAYPAL_BUTTON_IMAGE_URL,
 }
 
 # Directories in which to search for templates.

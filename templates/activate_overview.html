@@ -13,19 +13,20 @@
     <table class="classic" cellpadding="0" cellspacing="0" border="0">
       <thead>
         <tr>
-          <th>Product Name</th>
-          <th>Billing Price</th>
+          <th>Subscription Name</th>
+          <th>Period (Months)</th>
+          <th>Price</th>
           <th>General Sales Tax (GST)</th>
-          <th>Product Price</th>
+          <th>Total Price</th>
         </tr>
       </thead>
       <tbody>
         {% for order in invoice.orders %}
         <tr>
-          <td>{{ order.product.title }} ({{ order.product.subtitle }})</td>
-          <td>{{ order.billing_price }} {{ order.currency }}</td>
-          <td>{{ order.billing_gst }} {{ order.currency }}</td>
-          <td>{{ order.total_price }} {{ order.currency }}</td>
+          <td>{{ order.subscription.product.title }} ({{ order.subscription.product.subtitle }})</td>
+          <td>{{ order.subscription_price }} {{ order.subscription_currency }}</td>
+          <td>{{ order.subscription_general_sales_tax }} {{ order.subscription_currency }}</td>
+          <td>{{ order.price }} {{ order.subscription_currency }}</td>
         </tr>
         {% end %}
         <tr>
@@ -39,16 +40,25 @@
                   <input type="hidden" name="cmd" value="_xclick-subscriptions" />
                   <input type="hidden" name="business" value="{{ PAYPAL_MERCHANT_EMAIL }}" />
                   <input type="hidden" name="currency_code" value="{{ invoice.currency }}" />
-                  <input type="hidden" name="item_name" value="Products: {% for order in invoice.orders %}{{ order.product.key().id() }}, {% end %}" />
+                  <input type="hidden" name="item_name" value="Subscriptions: {% for order in invoice.orders %}{{ order.subscription.key().id() }}, {% end %}" />
                   <input type="hidden" name="notify_url" value="{{ PAYPAL_NOTIFY_URL }}" />
                   #*<input type="hidden" name="return" value="{{ return_url }}" />*#
                   <input type="hidden" name="no_shipping" value="1" />
-                  <input type="image" src="https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
+                  <input type="image" src="{{ PAYPAL_BUTTON_IMAGE_URL }}" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
+                  
+                  #* Trial (may be free) price and period*#
+                  <input type="hidden" name="a1" value="0" />
+                  <input type="hidden" name="p1" value="{{ subscription_period.free_period_in_months }}" />
+                  <input type="hidden" name="t1" value="M" />
+                  
+                  #* Regular recurring price and period *#
                   <input type="hidden" name="a3" value="{{ invoice.total_price }}" />
-                  <input type="hidden" name="p3" value="1" />
+                  <input type="hidden" name="p3" value="{{ subscription_period.period_in_months }}" />
                   <input type="hidden" name="t3" value="M" />
+                  
                   <input type="hidden" name="src" value="1" />
                   <input type="hidden" name="sra" value="1" />
+                  
                   <input type="hidden" name="invoice" value="{{ invoice.key().id() }}" />
                   <input type="hidden" name="no_note" value="1" />
               </form>

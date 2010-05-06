@@ -35,7 +35,7 @@ from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import SessionRequestHandler, BaseRequestHandler, hash_password
 from models import Product, Customer, Invoice, Order, Phone, Location, \
-    Subscription, Basket, ActivationCredentials
+    Subscription, Basket, ActivationCredentials, SubscriptionPeriod
 from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
 from models import INVOICE_STATUS_PENDING, INVOICE_STATUS_COMPLETE
 
@@ -289,11 +289,13 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
         subscription_data = self.session['subscription-data']
         products = db.get([db.Key(key) for key in subscription_data.get('products')])
         period = subscription_data.get('period')
+        subscription_period = SubscriptionPeriod.get_by_period(period)
 
         units = [product for product in products if 'product_keys' not in product.properties()]
         baskets = [product for product in products if 'product_keys' in product.properties()]
 
         activation_credentials_list = []
+        orders = []
         for unit in units:
             subscription = Subscription.get_by_product_and_period(unit, period)
 
@@ -301,8 +303,9 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
             order.subscription_price = subscription.price
             order.subscription_general_sales_tax = subscription.general_sales_tax
             order.subscription_period_in_months = subscription.period_in_months
-            order.subscription_free_period_in_months = subscription.free_period_in_months
-            order.subscription_total_price = subscription.price + subscription.general_sales_tax
+            order.subscription_free_period_in_months = subscription_period.free_period_in_months
+            order.price = subscription.price + subscription.general_sales_tax
+            orders.append(order)
             order.put()
 
             unit_id = unit.key().id()
@@ -321,8 +324,9 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
             order.subscription_price = subscription.price
             order.subscription_general_sales_tax = subscription.general_sales_tax
             order.subscription_period_in_months = subscription.period_in_months
-            order.subscription_free_period_in_months = subscription.free_period_in_months
-            order.subscription_total_price = subscription.price + subscription.general_sales_tax
+            order.subscription_free_period_in_months = subscription_period.free_period_in_months
+            order.price = subscription.price + subscription.general_sales_tax
+            orders.append(order)
             order.put()
 
             for unit in basket.products:
@@ -339,16 +343,28 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
 
         db.put(activation_credentials_list)
         
+        invoice.total_price = sum([order.price for order in orders])
+        invoice.currency = orders[0].subscription_currency
+        invoice.put()
+        
         self.session['activation-invoice-key'] = str(invoice.key())
-        #self.redirect('/activate/overview')
+        self.redirect('/activate/overview')
 
 
 class ActivateOverviewHandler(SessionRequestHandler):
     def get(self):
         invoice_key = self.session.get('activation-invoice-key')
         invoice = db.get(db.Key(invoice_key))
-        logging.info([(order.customer.first_name, order.product.title) for order in invoice.orders])
-        self.render('activate_overview.html', invoice=invoice, return_url='%sactivate/complete' % (configuration.ROOT_URL,))
+        
+        subscription_data = self.session['subscription-data']
+        subscription_period = SubscriptionPeriod.get_by_period(subscription_data.get('period'))
+        
+        logging.info([(order.customer.first_name, unicode(order.subscription)) for order in invoice.orders])
+        self.render('activate_overview.html', 
+            subscription_period=subscription_period, 
+            invoice=invoice, 
+            return_url='%sactivate/complete' % (configuration.ROOT_URL,)
+            )
 
     def post(self):
         # A request is sent to this handler to mark the invoice as pending.

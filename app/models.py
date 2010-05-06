@@ -334,7 +334,9 @@ class Subscription(SerializableModel):
     general_sales_tax = DecimalProperty()
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
     period_in_months = db.IntegerProperty()
-    free_period_in_months = db.IntegerProperty(default=0)
+    
+    # Can't have this here.  Blame paypal.
+    #free_period_in_months = db.IntegerProperty(default=0)
 
 
     @classmethod
@@ -351,6 +353,15 @@ class Subscription(SerializableModel):
                 .get()
             memcache.set(cache_key, serialize_entities(subscription), CACHE_DURATION)
         return subscription
+
+
+    def __unicode__(self):
+        return unicode(self.product) + ', period (months): ' + unicode(self.period_in_months)
+
+
+    def __str__(self):
+        return self.__unicode__()
+
 
 
 class SubscriptionPeriod(SerializableModel):
@@ -381,6 +392,24 @@ class SubscriptionPeriod(SerializableModel):
     """
     period_in_months = db.IntegerProperty()
     title = db.StringProperty()
+    
+    # Blame paypal.
+    free_period_in_months = db.IntegerProperty()
+
+    
+    @classmethod
+    def get_by_period(cls, period_in_months):
+        """
+        Fetches a subscription period entity for the given period in months.
+        """
+        cache_key = unicode(period_in_months)
+        subscription_period = deserialize_entities(memcache.get(cache_key))
+        if not subscription_period:
+            subscription_period = SubscriptionPeriod.all() \
+                .filter('period_in_months = ', period_in_months) \
+                .get()
+            memcache.set(cache_key, serialize_entities(subscription_period), CACHE_DURATION)
+        return subscription_period
 
 
     @classmethod
@@ -467,8 +496,10 @@ class Order(SerializableModel):
     subscription_general_sales_tax = DecimalProperty()
     subscription_period_in_months = db.IntegerProperty()
     subscription_free_period_in_months = db.IntegerProperty()
-    subscription_total_price = DecimalProperty()
     subscription_currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
+
+    # Subscription price + subscription gst.
+    price = DecimalProperty()
 
 
 class ActivationCredentials(SerializableModel):
