@@ -63,8 +63,8 @@ def clear_all(fetch_count=1000):
     Clears all models created using the initial data.
     """
     models = (
-        Product, 
         Customer,
+        Product, 
         Subscription,
         SubscriptionPeriod
     )

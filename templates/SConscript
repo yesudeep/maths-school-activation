@@ -19,24 +19,25 @@ env.Cheetah(TEMPLATE_BUILD_DIR + 'base_site.html', 'base_site.html.tmpl', PICKLE
 
 # These templates must have corresponding page scripts.
 PAGE_TEMPLATE_FILES = Split("""
-    index.html
-    profile.html
-    select_products.html
-    unsubscribe.html
-    deinstall_phonica_dinamagic.html
-    deinstall_maths_english.html
-    register.html
     activation_credentials_input.html
     check_activation_code_generation.html
+    deinstall_maths_english.html
+    deinstall_phonica_dinamagic.html
+    index.html
+    profile.html
+    register.html
+    select_products.html
+    unsubscribe.html
+
 """)
 
 BASE_TEMPLATE_FILES = Split("""
+    activate_complete.html
+    activate_overview.html
     base.html
+    change_password.html
     dashboard.html
     deinstall.html
-    activate_overview.html
-    activate_complete.html
-    change_password.html
 """)
 
 # If the template does not use scripts, please place it here.

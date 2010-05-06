@@ -113,24 +113,22 @@ def purge_db(fetch_count=1000):
     Purges all model data in the datastore created using our models.
     """
     models = (
-        Profile,
-        Customer,
-        Phone,
-        Email,
-        Location,
-        Product,
+        ActivationCredentials
         Basket,
+        Customer,
+        Email,
+        Invoice,
+        Location,
+        Order,
+        Phone,
+        Product,
+        Profile,
         Subscription,
         SubscriptionPeriod,
-        Invoice,
         Transaction,
-        Order,
-        ActivationCredentials
     )
     for model in models:
         db.delete(model.all().fetch(fetch_count))
-
-    return
 
 
 class Profile(polymodel.PolyModel):
