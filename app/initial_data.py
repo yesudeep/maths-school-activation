@@ -36,6 +36,7 @@ import configuration
 from google.appengine.api import memcache
 from google.appengine.ext import db
 from models import Product, Basket, Customer, Subscription, SubscriptionPeriod
+from models import Order, ActivationCredentials, Invoice, Transaction, Location, Phone, Email, Profile
 from decimal import Decimal
 
 from configuration import MEDIA_URL as media_url
@@ -44,11 +45,33 @@ MEDIA_URL = media_url
 if MEDIA_URL.startswith('/'):
     MEDIA_URL = "http://%s:%s" % (configuration.SERVER_NAME, configuration.SERVER_PORT) + MEDIA_URL
 
+
 def import_all():
+    """
+    Imports all the initial data into the datastore.
+    
+    Do not call this function multiple times as the data 
+    will be duplicated in the datastore.
+    """
     import_products()
     import_customers()
     import_subscription_periods()
-    
+
+
+def clear_all(fetch_count=1000):
+    """
+    Clears all models created using the initial data.
+    """
+    models = (
+        Product, 
+        Customer,
+        Subscription,
+        SubscriptionPeriod
+    )
+    for model in models:
+        db.delete(model.all().fetch(fetch_count))
+
+
 def import_subscription_periods():
     subscription_periods_list = (
         dict(

@@ -30,22 +30,29 @@
 #     > from initial_data import import_all
 #     > import_all()
 
+import configuration
+
+from decimal import Decimal
+
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 from google.appengine.api import memcache,users
+
 from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, CACHE_DURATION, SerializableModel
 from properties import DecimalProperty, Base64Property
-from decimal import Decimal
 from countries import ISO_ALPHA_3_CODES
+
 
 AUSTRALIA_ISO_ALPHA_3_CODE = 'AUS'
 DEFAULT_ISO_ALPHA_3_CODE = AUSTRALIA_ISO_ALPHA_3_CODE
+
 
 CURRENCY_CHOICES = (
     'AUD',
     'USD',
 )
 DEFAULT_CURRENCY = 'AUD'
+
 
 PHONE_TYPE_CHOICES = (
     'mobile',
@@ -57,6 +64,7 @@ PHONE_TYPE_CHOICES = (
 )
 DEFAULT_PHONE_TYPE = 'mobile'
 
+
 EMAIL_TYPE_CHOICES = (
     'personal',
     'home',
@@ -66,6 +74,7 @@ EMAIL_TYPE_CHOICES = (
 )
 DEFAULT_EMAIL_TYPE = 'personal'
 
+
 INVOICE_STATUS_DRAFT = 'draft'
 INVOICE_STATUS_PENDING = 'pending'
 INVOICE_STATUS_COMPLETE = 'complete'
@@ -74,6 +83,7 @@ INVOICE_STATUS_CHOICES = (
     INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
     INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
 )
+
 
 # Payment Agents
 PAYMENT_AGENT_PAYPAL = 'paypal'
@@ -86,6 +96,7 @@ PAYMENT_AGENTS = (
 )
 DEFAULT_PAYMENT_AGENT = PAYMENT_AGENT_PAYPAL
 
+
 VERIFICATION_STATUS_INVALID = 'invalid'
 VERIFICATION_STATUS_VERIFIED = 'verified'
 VERIFICATION_STATUS_UNKNOWN = 'unknown'
@@ -97,13 +108,29 @@ VERIFICATION_STATUS_CHOICES = (
 DEFAULT_VERIFICATION_STATUS = VERIFICATION_STATUS_UNKNOWN
 
 
-#PRODUCT_TYPE_UNIT = 'unit'        # A single atomic product unit.
-#PRODUCT_TYPE_BASKET = 'basket'    # A basket collection of products.
-#PRODUCT_TYPE_CHOICES = (
-#    PRODUCT_TYPE_UNIT,
-#    PRODUCT_TYPE_BASKET,
-#)
-#DEFAULT_PRODUCT_TYPE = PRODUCT_TYPE_UNIT
+def purge_db(fetch_count=1000):
+    """
+    Purges all model data in the datastore created using our models.
+    """
+    models = (
+        Profile, 
+        Customer, 
+        Phone, 
+        Email, 
+        Location, 
+        Product, 
+        Basket, 
+        Subscription,
+        SubscriptionPeriod,
+        Invoice,
+        Transaction,
+        Order,
+        ActivationCredentials
+    )
+    for model in models:
+        db.delete(model.all().fetch(fetch_count))
+
+    return 
 
 
 class Profile(polymodel.PolyModel):
@@ -142,18 +169,26 @@ class Customer(Profile):
     is_admin = db.BooleanProperty(default=False)
 
     def is_password_correct(self, password):
+        """
+        Determines whether the given password matches the one stored in the datastore.
+        """
         from utils import hash_password
         return hash_password(password, self.password_salt) == self.password_hash
 
 
 class Phone(SerializableModel):
-    """Records phone/mobile number of a customer"""
+    """
+    Records phone numbers belonging to a profile.
+    """
     profile = db.ReferenceProperty(Profile, collection_name='phones')
     phone_type = db.StringProperty(choices=PHONE_TYPE_CHOICES, default=DEFAULT_PHONE_TYPE)
     number = db.StringProperty()
 
 
 class Email(SerializableModel):
+    """
+    Records email addresses belonging to a profile.
+    """
     profile = db.ReferenceProperty(Profile, collection_name='emails')
     email_type = db.StringProperty(choices=EMAIL_TYPE_CHOICES, default=DEFAULT_EMAIL_TYPE)
     email = db.EmailProperty()
@@ -195,15 +230,20 @@ class Product(polymodel.PolyModel):
     when_modified = db.DateTimeProperty(auto_now=True)
     is_deleted = db.BooleanProperty(default=False)
 
-    #product_type = db.StringProperty(choices=PRODUCT_TYPE_CHOICES, default=DEFAULT_PRODUCT_TYPE)
-    #basket = db.SelfReferenceProperty(Product, collection_name='products')
 
     @property
     def baskets(self):
+        """
+        Returns all the Basket entities that this product belongs to.
+        """
         return Basket.gql('WHERE product_keys = :1', self.key())
+
 
     @classmethod
     def get_all(cls, count=MAX_COUNT):
+        """
+        Override.
+        """
         cache_key = '%s.get_all()' % (cls.__name__,)
         entities = deserialize_entities(memcache.get(cache_key))
         if not entities:
@@ -211,8 +251,10 @@ class Product(polymodel.PolyModel):
             memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
         return entities
 
+
     def __unicode__(self):
         return self.title + ', ' + self.subtitle + '(' + self.key().id() + ')'
+
 
     def __str__(self):
         return self.__unicode__()
@@ -240,14 +282,18 @@ class Basket(Product):
     """
     product_keys = db.ListProperty(db.Key)
 
+
     @property
     def products(self):
+        """
+        Returns a list of member products based on the product_keys property.
+        """
         return db.get(self.product_keys)
+
 
     def has_product(self, product):
         """
-        Determines whether a product belongs to this basket
-        given the product entity.
+        Determines whether a product belongs to this basket.
         """
         return product.key() in self.product_keys
 
@@ -290,8 +336,12 @@ class SubscriptionPeriod(SerializableModel):
     period_in_months = db.IntegerProperty()
     title = db.StringProperty()
 
+
     @classmethod
     def get_all(cls, count=MAX_COUNT):
+        """
+        Override.
+        """
         cache_key = '%s.get_all()' % (cls.__name__,)
         entities = deserialize_entities(memcache.get(cache_key))
         if not entities:
