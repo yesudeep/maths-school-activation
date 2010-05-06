@@ -24,17 +24,18 @@
         {% for order in invoice.orders %}
         <tr>
           <td>{{ order.subscription.product.title }} ({{ order.subscription.product.subtitle }})</td>
+          <td>{{ order.subscription_period_in_months }}</td>
           <td>{{ order.subscription_price }} {{ order.subscription_currency }}</td>
           <td>{{ order.subscription_general_sales_tax }} {{ order.subscription_currency }}</td>
           <td>{{ order.price }} {{ order.subscription_currency }}</td>
         </tr>
         {% end %}
         <tr>
-          <th class="right" colspan="3">Total Price</th>
+          <th class="right" colspan="4">Total Price</th>
           <td class="large">{{ invoice.total_price }} {{ invoice.currency }}</td>
         </tr>
         <tr>
-          <th class="right" colspan="3"></th>
+          <th class="right" colspan="4"></th>
           <td class="paypal_button">
               <form action="{{ PAYPAL_POST_URL }}" method="post">
                   <input type="hidden" name="cmd" value="_xclick-subscriptions" />
