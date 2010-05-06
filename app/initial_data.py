@@ -66,7 +66,7 @@ def clear_all(fetch_count=1000):
         Customer,
         Product, 
         Subscription,
-        SubscriptionPeriod
+        SubscriptionPeriod,
     )
     for model in models:
         db.delete(model.all().fetch(fetch_count))

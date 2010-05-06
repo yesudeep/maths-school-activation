@@ -113,7 +113,7 @@ def purge_db(fetch_count=1000):
     Purges all model data in the datastore created using our models.
     """
     models = (
-        ActivationCredentials
+        ActivationCredentials,
         Basket,
         Customer,
         Email,
