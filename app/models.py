@@ -262,7 +262,7 @@ class Product(polymodel.PolyModel):
 
 
     def __unicode__(self):
-        return self.title + ', ' + self.subtitle + '(' + self.key().id() + ')'
+        return self.title + ', ' + self.subtitle + '(' + unicode(self.key().id()) + ')'
 
 
     def __str__(self):
@@ -357,6 +357,26 @@ class SubscriptionPeriod(SerializableModel):
     Subscription periods for the dropdown choice menu.
 
     (Static data model)
+    
+    Important note:
+        Paypal's subscription buttons don't let us split subscriptions
+        based on products, so we wind up clubbing the subscriptions
+        and feeding Paypal the total price.  This, however, means that
+        the customer will have to choose one of the subscription periods
+        for ALL the selected products in one session. 
+        
+        This also implies that if you add a new subscription period
+        here, you will need to ensure subscriptions with this period
+        exist for ALL the products.
+        
+        For example:
+        
+        If you have 6 products and 3 subscription periods, the number
+        of subscriptions will be 6 * 3 = 18.  If you add another subscription
+        period, you will need to add subscriptions with that period for each
+        of those 6 products.  So, 6 * 4 = 24 subscriptions must exist.
+        
+        (Tricky and kludgy.  Yeah, I know.  Blame Paypal.)
     """
     period_in_months = db.IntegerProperty()
     title = db.StringProperty()
@@ -469,3 +489,12 @@ class ActivationCredentials(SerializableModel):
     # Here product is always a unit never a basket.
     product = db.ReferenceProperty(Product, collection_name='activation_credentials')
     order = db.ReferenceProperty(Order, collection_name='activation_credentials')
+
+
+    def __unicode__(self):
+        return unicode(self.product) + ', SN: ' + self.serial_number + ', MID: ' + self.machine_id
+
+
+    def __str__(self):
+        return self.__unicode__()
+
