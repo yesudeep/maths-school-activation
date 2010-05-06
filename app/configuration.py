@@ -51,11 +51,11 @@ def sanitize_url(url):
         url = url + '/'
     return url
 
-NAKED_DOMAIN = 'schools.co.nz'
+NAKED_DOMAIN = 'maths-school.co.nz'
 ADMIN_EMAIL = "administrator@%s" % (NAKED_DOMAIN, )
 CONTACT_EMAIL = ADMIN_EMAIL
 APPLICATION_ID = os.environ['APPLICATION_ID']
-APPLICATION_TITLE = "Maths Worldwide Activation"
+APPLICATION_TITLE = "Maths School Product Activation"
 MODE_DEVELOPMENT = 'development'
 MODE_PRODUCTION = 'production'
 SERVER_PORT = os.environ['SERVER_PORT']
@@ -70,8 +70,8 @@ GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
 
 OWNER_NAME = 'Maths Schools Ltd.'
 OWNER_ADDRESS = ''
-OWNER_URL = 'http://mathsworldwide.com.au'
-OWNER_COMPANY = 'Maths Worldwide Pty Limited'
+OWNER_URL = 'http://maths-school.co.nz'
+OWNER_COMPANY = 'Maths Schools Ltd.'
 COPYRIGHT_YEARS = '2010'
 
 TEXT_MEDIA_URL = '/s/'

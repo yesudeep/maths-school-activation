@@ -30,22 +30,29 @@
 #     > from initial_data import import_all
 #     > import_all()
 
+import configuration
+
+from decimal import Decimal
+
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 from google.appengine.api import memcache,users
+
 from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, CACHE_DURATION, SerializableModel
 from properties import DecimalProperty, Base64Property
-from decimal import Decimal
 from countries import ISO_ALPHA_3_CODES
+
 
 AUSTRALIA_ISO_ALPHA_3_CODE = 'AUS'
 DEFAULT_ISO_ALPHA_3_CODE = AUSTRALIA_ISO_ALPHA_3_CODE
+
 
 CURRENCY_CHOICES = (
     'AUD',
     'USD',
 )
 DEFAULT_CURRENCY = 'AUD'
+
 
 PHONE_TYPE_CHOICES = (
     'mobile',
@@ -57,6 +64,7 @@ PHONE_TYPE_CHOICES = (
 )
 DEFAULT_PHONE_TYPE = 'mobile'
 
+
 EMAIL_TYPE_CHOICES = (
     'personal',
     'home',
@@ -66,6 +74,7 @@ EMAIL_TYPE_CHOICES = (
 )
 DEFAULT_EMAIL_TYPE = 'personal'
 
+
 INVOICE_STATUS_DRAFT = 'draft'
 INVOICE_STATUS_PENDING = 'pending'
 INVOICE_STATUS_COMPLETE = 'complete'
@@ -74,6 +83,7 @@ INVOICE_STATUS_CHOICES = (
     INVOICE_STATUS_PENDING,     # User approved the invoice and payment is now pending.
     INVOICE_STATUS_COMPLETE,    # Invoice payment is complete.
 )
+
 
 # Payment Agents
 PAYMENT_AGENT_PAYPAL = 'paypal'
@@ -86,6 +96,7 @@ PAYMENT_AGENTS = (
 )
 DEFAULT_PAYMENT_AGENT = PAYMENT_AGENT_PAYPAL
 
+
 VERIFICATION_STATUS_INVALID = 'invalid'
 VERIFICATION_STATUS_VERIFIED = 'verified'
 VERIFICATION_STATUS_UNKNOWN = 'unknown'
@@ -97,13 +108,27 @@ VERIFICATION_STATUS_CHOICES = (
 DEFAULT_VERIFICATION_STATUS = VERIFICATION_STATUS_UNKNOWN
 
 
-#PRODUCT_TYPE_UNIT = 'unit'        # A single atomic product unit.
-#PRODUCT_TYPE_BASKET = 'basket'    # A basket collection of products.
-#PRODUCT_TYPE_CHOICES = (
-#    PRODUCT_TYPE_UNIT,
-#    PRODUCT_TYPE_BASKET,
-#)
-#DEFAULT_PRODUCT_TYPE = PRODUCT_TYPE_UNIT
+def purge_db(fetch_count=1000):
+    """
+    Purges all model data in the datastore created using our models.
+    """
+    models = (
+        ActivationCredentials,
+        Basket,
+        Customer,
+        Email,
+        Invoice,
+        Location,
+        Order,
+        Phone,
+        Product,
+        Profile,
+        Subscription,
+        SubscriptionPeriod,
+        Transaction,
+    )
+    for model in models:
+        db.delete(model.all().fetch(fetch_count))
 
 
 class Profile(polymodel.PolyModel):
@@ -142,18 +167,26 @@ class Customer(Profile):
     is_admin = db.BooleanProperty(default=False)
 
     def is_password_correct(self, password):
+        """
+        Determines whether the given password matches the one stored in the datastore.
+        """
         from utils import hash_password
         return hash_password(password, self.password_salt) == self.password_hash
 
 
 class Phone(SerializableModel):
-    """Records phone/mobile number of a customer"""
+    """
+    Records phone numbers belonging to a profile.
+    """
     profile = db.ReferenceProperty(Profile, collection_name='phones')
     phone_type = db.StringProperty(choices=PHONE_TYPE_CHOICES, default=DEFAULT_PHONE_TYPE)
     number = db.StringProperty()
 
 
 class Email(SerializableModel):
+    """
+    Records email addresses belonging to a profile.
+    """
     profile = db.ReferenceProperty(Profile, collection_name='emails')
     email_type = db.StringProperty(choices=EMAIL_TYPE_CHOICES, default=DEFAULT_EMAIL_TYPE)
     email = db.EmailProperty()
@@ -162,7 +195,7 @@ class Email(SerializableModel):
 class Location(SerializableModel):
     """
     Address locations.
-    
+
     Helps locate a customer.
     """
     profile = db.ReferenceProperty(Profile, collection_name='locations')
@@ -177,6 +210,17 @@ class Location(SerializableModel):
 class Product(polymodel.PolyModel):
     """
     Product information.
+
+    A product can be one of two types based on its atomicity.
+    
+    1. Unit
+    2. Basket
+    
+    A product that can contain one or more atomic products is called a Basket
+    (see model class below).  A product that is atomic, indivisible, and
+    cannot contain other products is called a Unit--even though the term "Unit"
+    is never used as a model identifier, it is used as convention throughout
+    the code.
 
     Helps answer these questions:
 
@@ -195,15 +239,20 @@ class Product(polymodel.PolyModel):
     when_modified = db.DateTimeProperty(auto_now=True)
     is_deleted = db.BooleanProperty(default=False)
 
-    #product_type = db.StringProperty(choices=PRODUCT_TYPE_CHOICES, default=DEFAULT_PRODUCT_TYPE)
-    #basket = db.SelfReferenceProperty(Product, collection_name='products')
 
     @property
     def baskets(self):
+        """
+        Returns all the Basket entities that this product belongs to.
+        """
         return Basket.gql('WHERE product_keys = :1', self.key())
+
 
     @classmethod
     def get_all(cls, count=MAX_COUNT):
+        """
+        Override.
+        """
         cache_key = '%s.get_all()' % (cls.__name__,)
         entities = deserialize_entities(memcache.get(cache_key))
         if not entities:
@@ -211,8 +260,10 @@ class Product(polymodel.PolyModel):
             memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
         return entities
 
+
     def __unicode__(self):
-        return self.title + ', ' + self.subtitle + '(' + self.key().id() + ')'
+        return self.title + ', ' + self.subtitle + '(' + unicode(self.key().id()) + ')'
+
 
     def __str__(self):
         return self.__unicode__()
@@ -223,31 +274,35 @@ class Basket(Product):
     Basket is a collective product that contains other products
     and has its own subscriptions.  A product, however, can belong
     to multiple baskets, hence, we store a list of keys belonging
-    to each product contained by the basket.  
-    
+    to each product contained by the basket.
+
     The polymodel inheritance allows a basket to:
-    
+
     1. be a product itself.
     2. contain products.
     3. contain other baskets.
-    
+
     Helps answer these questions:
-    
+
     1. Which products are contained by this basket?
-    
+
     Other questions mentioned in the Product model are also included.
-    
+
     """
     product_keys = db.ListProperty(db.Key)
 
+
     @property
     def products(self):
+        """
+        Returns a list of member products based on the product_keys property.
+        """
         return db.get(self.product_keys)
+
 
     def has_product(self, product):
         """
-        Determines whether a product belongs to this basket
-        given the product entity.
+        Determines whether a product belongs to this basket.
         """
         return product.key() in self.product_keys
 
@@ -255,20 +310,20 @@ class Basket(Product):
 class Subscription(SerializableModel):
     """
     Subscription options available per product for the customer:
-    
+
         1. Monthly
         2. Quarterly
         3. Half yearly
         4. Yearly
-    
+
     Helps answer these questions:
-    
+
     1. Which product is being offered under this subscription?
     2. What is the subscription price?
     3. What is the recurring payment period of the subscription?
     4. What is the general sales tax and currency?
-    5. Which orders have been placed by customers to use this subscription?  (foreign relationship) 
-    
+    5. Which orders have been placed by customers to use this subscription?  (foreign relationship)
+
     This information is filled in by administrators.
     The same number of subscriptions with the same durations must be present for all the products
     for the current system to work.
@@ -281,17 +336,57 @@ class Subscription(SerializableModel):
     free_period_in_months = db.IntegerProperty(default=0)
 
 
+    @classmethod
+    def get_by_product_and_period(cls, product, period_in_months):
+        """
+        Fetches a subscription for the given product and period in months.
+        """
+        cache_key = str(product.key()) + str(period_in_months)
+        subscription = deserialize_entities(memcache.get(cache_key))
+        if not subscription:
+            subscription = Subscription.all() \
+                .filter('product = ', product) \
+                .filter('period_in_months = ', period_in_months) \
+                .get()
+            memcache.set(cache_key, serialize_entities(subscription), CACHE_DURATION)
+        return subscription
+
+
 class SubscriptionPeriod(SerializableModel):
     """
     Subscription periods for the dropdown choice menu.
-    
+
     (Static data model)
+    
+    Important note:
+        Paypal's subscription buttons don't let us split subscriptions
+        based on products, so we wind up clubbing the subscriptions
+        and feeding Paypal the total price.  This, however, means that
+        the customer will have to choose one of the subscription periods
+        for ALL the selected products in one session. 
+        
+        This also implies that if you add a new subscription period
+        here, you will need to ensure subscriptions with this period
+        exist for ALL the products.
+        
+        For example:
+        
+        If you have 6 products and 3 subscription periods, the number
+        of subscriptions will be 6 * 3 = 18.  If you add another subscription
+        period, you will need to add subscriptions with that period for each
+        of those 6 products.  So, 6 * 4 = 24 subscriptions must exist.
+        
+        (Tricky and kludgy.  Yeah, I know.  Blame Paypal.)
     """
     period_in_months = db.IntegerProperty()
     title = db.StringProperty()
 
+
     @classmethod
     def get_all(cls, count=MAX_COUNT):
+        """
+        Override.
+        """
         cache_key = '%s.get_all()' % (cls.__name__,)
         entities = deserialize_entities(memcache.get(cache_key))
         if not entities:
@@ -391,5 +486,15 @@ class ActivationCredentials(SerializableModel):
     machine_id = db.StringProperty()
     activation_code = db.StringProperty()
 
+    # Here product is always a unit never a basket.
     product = db.ReferenceProperty(Product, collection_name='activation_credentials')
     order = db.ReferenceProperty(Order, collection_name='activation_credentials')
+
+
+    def __unicode__(self):
+        return unicode(self.product) + ', SN: ' + self.serial_number + ', MID: ' + self.machine_id
+
+
+    def __str__(self):
+        return self.__unicode__()
+

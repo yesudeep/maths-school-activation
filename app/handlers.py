@@ -34,7 +34,8 @@ from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from utils import SessionRequestHandler, BaseRequestHandler, hash_password
-from models import Product, Customer, Invoice, Order, Phone, Location
+from models import Product, Customer, Invoice, Order, Phone, Location, \
+    Subscription, Basket, ActivationCredentials
 from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
 from models import INVOICE_STATUS_PENDING, INVOICE_STATUS_COMPLETE
 
@@ -55,6 +56,7 @@ COUNTRIES_TUPLE = (
     ('ZAF', 'South Africa'),
 )
 
+
 class IndexHandler(SessionRequestHandler):
     def get(self):
         if self.is_logged_in():
@@ -68,6 +70,7 @@ class IndexHandler(SessionRequestHandler):
             #self.render('index.html', **values)
             self.render('index.html')
 
+
 class LoginHandler(SessionRequestHandler):
     def post(self):
         email = self.get_argument('login-email')
@@ -80,10 +83,12 @@ class LoginHandler(SessionRequestHandler):
         else:
             self.redirect('/?error=login_failed')
 
+
 class LogoutHandler(SessionRequestHandler):
     def get(self):
         self.do_logout()
         self.redirect(LOGIN_PAGE_URL)
+
 
 class ProfileHandler(SessionRequestHandler):
     def get(self):
@@ -91,16 +96,16 @@ class ProfileHandler(SessionRequestHandler):
             self.redirect(LOGIN_PAGE_URL)
         else:
             customer = Customer.get_by_key_name(self.get_current_username())
-            
+
             landline = Phone.all().filter('profile = ', customer).filter('phone_type = ', 'landline').get()
             mobile = Phone.all().filter('profile = ', customer).filter('phone_type = ', 'mobile').get()
-            
-            self.render('profile.html', countries=COUNTRIES_TUPLE, 
+
+            self.render('profile.html', countries=COUNTRIES_TUPLE,
                 landline=landline,
-                mobile=mobile, 
+                mobile=mobile,
                 customer=customer,
                 location=customer.locations[0])
-    
+
     def post(self):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
@@ -108,28 +113,29 @@ class ProfileHandler(SessionRequestHandler):
             customer = Customer.get_by_key_name(self.get_current_username())
             customer.first_name = self.get_argument('first_name')
             customer.last_name = self.get_argument('last_name')
-            
+
             landline_key = self.get_argument('landline_key')
             landline = db.get(db.Key(landline_key))
             landline.number = self.get_argument('landline_number')
-            
+
             mobile_key = self.get_argument('mobile_key')
             mobile = db.get(db.Key(mobile_key))
             mobile.number = self.get_argument('mobile_number')
-            
+
             location_key = self.get_argument('location_key')
             location = db.get(db.Key(location_key))
-            
+
             location.city = self.get_argument('city')
             location.country = self.get_argument('country')
             location.state_or_province = self.get_argument('state_or_province')
             location.area_or_suburb = self.get_argument('area_or_suburb')
             location.street_name = self.get_argument('street_name')
             location.zip_code = self.get_argument('zip_code')
-            
+
             db.put([customer, mobile, landline, location])
-            
+
             self.get()
+
 
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
@@ -152,7 +158,7 @@ class RegistrationHandler(SessionRequestHandler):
 
         p = hash_password(password)
 
-        customer = Customer(key_name=email,      
+        customer = Customer(key_name=email,
                             first_name=first_name,
                             last_name=last_name,
                             email=email,
@@ -193,8 +199,6 @@ class DashboardHandler(SessionRequestHandler):
             self.render('dashboard.html', customer=customer)
 
 
-
-
 class SelectProductsHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
@@ -203,8 +207,8 @@ class SelectProductsHandler(SessionRequestHandler):
             from models import SubscriptionPeriod
             products = Product.get_all()
             subscription_periods = SubscriptionPeriod.get_all()
-            self.render('select_products.html', 
-                products=products, 
+            self.render('select_products.html',
+                products=products,
                 subscription_periods=subscription_periods)
 
     def post(self):
@@ -222,6 +226,7 @@ class SelectProductsHandler(SessionRequestHandler):
             self.write(json.dumps(dict(url='')))
 
 
+"""
 class ActivateHandler(SessionRequestHandler):
     def post(self):
         data = json.loads(self.get_argument('data'))
@@ -260,7 +265,7 @@ class ActivateHandler(SessionRequestHandler):
         else:
             self.set_header('Content-Type', 'application/json')
             self.write(json.dumps(dict(url='')))
-
+"""
 
 class ActivationCredentialsInputHandler(SessionRequestHandler):
     def get(self):
@@ -268,20 +273,74 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
         products = db.get([db.Key(key) for key in subscription_data.get('products')])
         units = [product for product in products if 'product_keys' not in product.properties()]
         baskets = [product for product in products if 'product_keys' in product.properties()]
-        
+
         logging.info(baskets)
         logging.info(units)
-        
+
         self.render('activation_credentials_input.html', products=products, units=units, baskets=baskets)
 
     def post(self):
+        # Get customer and create an invoice.
+        customer = Customer.get_by_key_name(self.get_current_username())
+        invoice = Invoice(customer=customer)
+        invoice.put()
+
+        # Now start processing subscription data.
         subscription_data = self.session['subscription-data']
         products = db.get([db.Key(key) for key in subscription_data.get('products')])
         period = subscription_data.get('period')
+
+        units = [product for product in products if 'product_keys' not in product.properties()]
+        baskets = [product for product in products if 'product_keys' in product.properties()]
+
+        activation_credentials_list = []
+        for unit in units:
+            subscription = Subscription.get_by_product_and_period(unit, period)
+
+            order = Order(customer=customer, invoice=invoice, subscription=subscription)
+            order.subscription_price = subscription.price
+            order.subscription_general_sales_tax = subscription.general_sales_tax
+            order.subscription_period_in_months = subscription.period_in_months
+            order.subscription_free_period_in_months = subscription.free_period_in_months
+            order.subscription_total_price = subscription.price + subscription.general_sales_tax
+            order.put()
+
+            unit_id = unit.key().id()
+            activation_credentials = ActivationCredentials()
+            activation_credentials.serial_number = self.get_argument('u_%d_serial_number' % unit_id)
+            activation_credentials.machine_id = self.get_argument('u_%d_machine_id' % unit_id)
+            activation_credentials.order = order
+            activation_credentials.product = unit
+            logging.info(activation_credentials)
+            activation_credentials_list.append(activation_credentials)
+
+        for basket in baskets:
+            subscription = Subscription.get_by_product_and_period(basket, period)
+
+            order = Order(customer=customer, invoice=invoice, subscription=subscription)
+            order.subscription_price = subscription.price
+            order.subscription_general_sales_tax = subscription.general_sales_tax
+            order.subscription_period_in_months = subscription.period_in_months
+            order.subscription_free_period_in_months = subscription.free_period_in_months
+            order.subscription_total_price = subscription.price + subscription.general_sales_tax
+            order.put()
+
+            for unit in basket.products:
+                basket_id = basket.key().id()
+                unit_id = unit.key().id()
+
+                activation_credentials = ActivationCredentials()
+                activation_credentials.serial_number = self.get_argument('b_%d_u_%d_serial_number' % (basket_id, unit_id,))
+                activation_credentials.machine_id = self.get_argument('b_%d_u_%d_machine_id' % (basket_id, unit_id,))
+                activation_credentials.order = order
+                activation_credentials.product = unit
+                logging.info(activation_credentials)
+                activation_credentials_list.append(activation_credentials)
+
+        db.put(activation_credentials_list)
         
-        for product in products:
-            pass
-        
+        self.session['activation-invoice-key'] = str(invoice.key())
+        #self.redirect('/activate/overview')
 
 
 class ActivateOverviewHandler(SessionRequestHandler):
@@ -304,6 +363,7 @@ class ActivateOverviewHandler(SessionRequestHandler):
 class ActivateCompleteHandler(SessionRequestHandler):
     def get(self):
         self.render('activate_complete.html')
+
 
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
@@ -362,14 +422,14 @@ class CheckActivationCodeGenerationHandler(BaseRequestHandler):
     def get(self):
         self.render('check_activation_code_generation.html')
 
-    def post(self):                
+    def post(self):
         from activation import calculate_activation_code
         serial_number = self.get_argument('serial_number')
         machine_id = self.get_argument('machine_id')
-        
+
         logging.info(serial_number)
         logging.info(machine_id)
-        
+
         if 'a_base' in self.request.arguments:
             a_base = int(self.get_argument('a_base'), 10)
         else:
@@ -394,6 +454,7 @@ def flatten_arguments(args):
         else:
             arguments[k] = v
     return arguments
+
 
 class PaypalEndpoint(BaseRequestHandler):
     verify_url = configuration.PAYPAL_POST_URL
@@ -522,7 +583,7 @@ urls = (
     (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),
-    
+
     # Admin testing pages.
     (r'/_at/check/activation/code/?', CheckActivationCodeGenerationHandler),
 )
