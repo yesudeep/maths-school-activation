@@ -38,7 +38,8 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 from google.appengine.api import memcache,users
 
-from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, CACHE_DURATION, SerializableModel
+from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, \
+    CACHE_DURATION, SerializableModel
 from properties import DecimalProperty, Base64Property
 from countries import ISO_ALPHA_3_CODES
 
@@ -358,16 +359,16 @@ class SubscriptionPeriod(SerializableModel):
 
     (Static data model)
     
-    Important note:
+    IMPORTANT NOTE:
         Paypal's subscription buttons don't let us split subscriptions
         based on products, so we wind up clubbing the subscriptions
-        and feeding Paypal the total price.  This, however, means that
+        and feeding Paypal the sum total price.  This, however, means that
         the customer will have to choose one of the subscription periods
-        for ALL the selected products in one session. 
+        for ALL the selected products during one activation session. 
         
         This also implies that if you add a new subscription period
-        here, you will need to ensure subscriptions with this period
-        exist for ALL the products.
+        you will need to ensure subscriptions with this period exist for 
+        ALL the existing customer-selectable products.
         
         For example:
         
