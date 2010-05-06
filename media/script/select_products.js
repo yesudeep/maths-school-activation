@@ -3,54 +3,29 @@ jQuery(function(){
     productLinks: jQuery('#products a'),
     buttonActivate: jQuery('#button-activate'),
     dialogSubscription: jQuery('#dialog-subscription'),
-    dialogSubscriptionCancel: jQuery('#dialog-subscription .button-cancel'),
-    dialogSubscriptionOk: jQuery('#form-subscription-period .button-ok'),
-    subscription_period_form: jQuery('form-subscription-period')
-    //dialogSubscriptionOption: jQuery('select')
+    buttonCancelSubscriptionPeriod: jQuery('#form-subscription-period .button-cancel'),
+    formSubscriptionPeriod: jQuery('#form-subscription-period'),
+    fieldSubscriptionPeriod: jQuery('#form-subscription-period select[name="period"]')
   };
   
   var selectedClassName = 'selected';
-  var subscription_request = {
+  var subscriptionData = {
     products: {},
     subscription: {
       period: 0
     }
   };
-  
-  elements.buttonActivate.click(function(e){
-    var elem = jQuery(this);
 
-    elements.dialogSubscription.slideToggle('slow');
-
-    /*
-    jQuery.post('/activate/select', {payload: JSON.stringify(data)}, function(result){
-      
-    }, 'json');*/
-    
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  });
-  
-  //fade out if cancel button is clicked on subscription-dialog-box
-  elements.dialogSubscriptionCancel.click(function(e){
-    elements.dialogSubscription.fadeOut('slow');
-
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  });
-  
+  // Mark the clicked product as selected.
   elements.productLinks.click(function(e){
     var elem = jQuery(this);
     var selectedProductKey = elem.attr('id');
     
-    // Mark the clicked product as selected and add it to data.
     if (elem.hasClass(selectedClassName)){
       elem.removeClass(selectedClassName);
-      delete subscription_request.products[selectedProductKey];
+      delete subscriptionData.products[selectedProductKey];
     } else {
-      subscription_request.products[selectedProductKey] = true;
+      subscriptionData.products[selectedProductKey] = true;
       elem.addClass(selectedClassName);
     }
   
@@ -60,27 +35,45 @@ jQuery(function(){
     return false;
   });
 
-  // handel continue-button click of subscription-dialogbox
-  elements.dialogSubscriptionOk.click(function(e){
-    
-    subscription_request.subscription.period = jQuery('select').val();
-    elements.dialogSubscription.fadeOut('slow');
-    
-    //send the data variable via ajax request 
-    jQuery.post('/activate/select', {payload: JSON.stringify(subscription_request)}, function(result){
-      
-    }, 'json')
-
-      
-    //check
-    //alert(subscription_request.subscription.period);
-    //alert(subscription_request.products)
-  
+  // Show the activation subscription period dialog.
+  elements.buttonActivate.click(function(e){
+    var elem = jQuery(this);
+    elements.dialogSubscription.slideToggle('slow');
     e.preventDefault();
     e.stopPropagation();
     return false;
   });
   
+  // Cancel hides the subscription period dialog.
+  elements.buttonCancelSubscriptionPeriod.click(function(e){
+    elements.dialogSubscription.fadeOut('slow');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+  
+
+  // Ok.  We've got all the information we need, send the data to the server.
+  elements.formSubscriptionPeriod.submit(function(e){
+    subscriptionData.subscription.period = parseInt(elements.fieldSubscriptionPeriod.val(), 10);    
+    // Convert the dictionary products to an array.
+    /*var productsList = [];
+    jQuery.each(subscription.products, function(key, value){
+      productsList.push(key);
+    });
+    subscriptionData.products = productsList;
+    
+    console.log(subscriptionData);
+    */
+    jQuery.post('/activate/select', {payload: JSON.stringify(subscriptionData)}, function(response){
+      
+      elements.dialogSubscription.fadeOut('slow');
+    }, 'json');
+    
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
   
   
 });

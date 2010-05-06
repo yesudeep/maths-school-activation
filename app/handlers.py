@@ -206,10 +206,11 @@ class SelectProductsHandler(SessionRequestHandler):
                 subscription_periods=subscription_periods)
 
     def post(self):
-        payload = json.loads(self.get_argument('payload'))
+        subscription_data = json.loads(self.get_argument('payload'))
         
+        logging.info(subscription_data)
         
-        self.write(payload)
+        self.write(subscription_data)
 
 
 class ActivateHandler(SessionRequestHandler):
