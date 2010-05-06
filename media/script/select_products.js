@@ -11,9 +11,7 @@ jQuery(function(){
   var selectedClassName = 'selected';
   var subscriptionData = {
     products: {},
-    subscription: {
-      period: 0
-    }
+    period: 0
   };
 
   // Mark the clicked product as selected.
@@ -55,19 +53,13 @@ jQuery(function(){
 
   // Ok.  We've got all the information we need, send the data to the server.
   elements.formSubscriptionPeriod.submit(function(e){
-    subscriptionData.subscription.period = parseInt(elements.fieldSubscriptionPeriod.val(), 10);    
-    // Convert the dictionary products to an array.
-    /*var productsList = [];
-    jQuery.each(subscription.products, function(key, value){
-      productsList.push(key);
-    });
-    subscriptionData.products = productsList;
+    subscriptionData.period = parseInt(elements.fieldSubscriptionPeriod.val(), 10);      
+    elements.dialogSubscription.fadeOut('slow');
     
-    console.log(subscriptionData);
-    */
     jQuery.post('/activate/select', {payload: JSON.stringify(subscriptionData)}, function(response){
-      
-      elements.dialogSubscription.fadeOut('slow');
+      if (response.url && response.url != ""){
+        window.location = response.url;
+      }
     }, 'json');
     
     e.preventDefault();

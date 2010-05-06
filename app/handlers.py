@@ -207,10 +207,14 @@ class SelectProductsHandler(SessionRequestHandler):
 
     def post(self):
         subscription_data = json.loads(self.get_argument('payload'))
-        
         logging.info(subscription_data)
-        
-        self.write(subscription_data)
+
+        self.set_header('Content-Type', 'application/json')
+        if subscription_data:
+            self.session['subscription-data'] = subscription_data
+            self.write(json.dumps(dict(url='/activate/credentials')))
+        else:
+            self.write(json.dumps(dict(url='')))
 
 
 class ActivateHandler(SessionRequestHandler):
