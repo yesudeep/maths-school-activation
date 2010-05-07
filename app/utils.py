@@ -91,6 +91,9 @@ def truncate(s, length=255, killwords=False, end='...'):
 
 
 def get_previous_month(d=None):
+    """
+    Given a datetime value, determines the previous month.
+    """
     if not d:
         d = datetime.utcnow()
     months = range(0, 12)
