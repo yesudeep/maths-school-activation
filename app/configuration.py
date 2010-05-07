@@ -64,7 +64,7 @@ SERVER_NAME = os.environ['SERVER_NAME']
 SERVER_SOFTWARE = os.environ['SERVER_SOFTWARE']
 
 DEVELOPER_URL = "http://happychickoo.com"
-DEVELOPER_NAME = "Happychickoo"
+DEVELOPER_NAME = "happychickoo"
 
 # Analytics identifiers.
 GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
