@@ -44,9 +44,9 @@ handlers:
   script: admin.py
   login: admin
 
-- url: /
-  script: handlers.py
-  secure: always
+#- url: /
+#  script: handlers.py
+#  secure: always
 
 - url: /login
   script: handlers.py
