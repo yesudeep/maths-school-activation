@@ -1,5 +1,5 @@
-application: mww-subscription
-version: testing
+application: maths-school-activation
+version: development
 runtime: python
 api_version: 1
 

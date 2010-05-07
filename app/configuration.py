@@ -70,7 +70,7 @@ GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
 
 OWNER_NAME = 'Maths Schools Ltd.'
 OWNER_ADDRESS = ''
-OWNER_URL = 'http://maths-school.co.nz'
+OWNER_URL = 'http://www.%s' % NAKED_DOMAIN
 OWNER_COMPANY = 'Maths Schools Ltd.'
 COPYRIGHT_YEARS = '2010'
 
