@@ -6,6 +6,9 @@ from base64 import b64encode, b64decode
 import decimal
 
 class DecimalProperty(db.Property):
+    """
+    Stores decimal.Decimal values.
+    """
     data_type = decimal.Decimal
 
     def get_value_for_datastore(self, model_instance):

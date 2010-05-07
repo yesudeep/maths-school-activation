@@ -52,10 +52,11 @@ def sanitize_url(url):
     return url
 
 NAKED_DOMAIN = 'maths-school.co.nz'
+SUBDOMAIN = 'activate'
 ADMIN_EMAIL = "administrator@%s" % (NAKED_DOMAIN, )
 CONTACT_EMAIL = ADMIN_EMAIL
 APPLICATION_ID = os.environ['APPLICATION_ID']
-APPLICATION_TITLE = "Maths School Product Activation"
+APPLICATION_TITLE = "Maths School - Product Activation"
 MODE_DEVELOPMENT = 'development'
 MODE_PRODUCTION = 'production'
 SERVER_PORT = os.environ['SERVER_PORT']
@@ -68,10 +69,10 @@ DEVELOPER_NAME = "Happychickoo"
 # Analytics identifiers.
 GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
 
-OWNER_NAME = 'Maths Schools Ltd.'
+OWNER_NAME = 'Maths Schools Pty. Ltd.'
 OWNER_ADDRESS = ''
 OWNER_URL = 'http://www.%s' % NAKED_DOMAIN
-OWNER_COMPANY = 'Maths Schools Ltd.'
+OWNER_COMPANY = 'Maths Schools Pty. Ltd.'
 COPYRIGHT_YEARS = '2010'
 
 TEXT_MEDIA_URL = '/s/'
@@ -90,6 +91,8 @@ else:
     HOST_NAME = SERVER_NAME
     LOCAL = False
     DEBUG = False
+    MEDIA_URL = "http://%s.appspot.com/s/" % APPLICATION_ID
+    TEXT_MEDIA_URL = MEDIA_URL
     #TEXT_MEDIA_URL = "http://assets.%s/" % (NAKED_DOMAIN, )
 
 
