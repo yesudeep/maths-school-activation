@@ -68,6 +68,9 @@ SERVER_SOFTWARE = os.environ['SERVER_SOFTWARE']
 DEVELOPER_URL = "http://happychickoo.com"
 DEVELOPER_NAME = "happychickoo"
 
+MAIL_SUBJECT_PREFIX = "[Maths School] "
+MAIL_SIGNATURE = """--
+For more information please visit http://www.%s""" % NAKED_DOMAIN
 
 # Analytics identifiers.
 GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
@@ -173,6 +176,7 @@ TEMPLATE_BUILTINS = {
     'JQUERY_URL': JQUERY_URL,
     'JS_MINIFIED': JS_MINIFIED,
     'LOCAL': LOCAL,
+    'MAIL_SIGNATURE': MAIL_SIGNATURE,
     'MEDIA_URL': sanitize_url(MEDIA_URL),
     'NAKED_DOMAIN': NAKED_DOMAIN,
     'OWNER_ADDRESS': OWNER_ADDRESS,

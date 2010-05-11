@@ -52,6 +52,9 @@ handlers:
   script: handlers.py
   secure: always
 
+- url: /worker.*
+  script: workers.py
+
 - url: /.*
   script: handlers.py
 

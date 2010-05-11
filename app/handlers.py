@@ -555,6 +555,12 @@ class PaypalIPNHandler(PaypalEndpoint):
                     invoice.status = INVOICE_STATUS_COMPLETE
                     invoice.put()
                     # Email success and activation code.
+                    from workers import WORKER_MAIL_ACTIVATION_URL
+                    queue_mail_task(WORKER_MAIL_ACTIVATION_URL, 
+                        params=dict(
+                            'invoice_key': str(invoice.key())
+                        ),
+                        method='POST')
                 else:
                     pass
                     # Email error.

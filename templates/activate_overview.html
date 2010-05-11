@@ -47,10 +47,11 @@
                   <input type="hidden" name="no_shipping" value="1" />
                   <input type="image" src="{{ PAYPAL_BUTTON_IMAGE_URL }}" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
                   
-                  #* Trial (may be free) price and period*#
+                  #* Trial (may be free) price and period
                   <input type="hidden" name="a1" value="0" />
                   <input type="hidden" name="p1" value="{{ subscription_period.free_period_in_months }}" />
                   <input type="hidden" name="t1" value="M" />
+                  *#
                   
                   #* Regular recurring price and period *#
                   <input type="hidden" name="a3" value="{{ invoice.total_price }}" />
