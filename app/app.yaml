@@ -44,13 +44,14 @@ handlers:
   script: admin.py
   login: admin
 
+# Custom domains don't have support for SSL with appengine.
 #- url: /
 #  script: handlers.py
 #  secure: always
 
-- url: /login
-  script: handlers.py
-  secure: always
+#- url: /login
+#  script: handlers.py
+#  secure: always
 
 - url: /worker.*
   script: workers.py

@@ -80,6 +80,8 @@ class LoginHandler(SessionRequestHandler):
             if customer.is_password_correct(password):
                 self.do_login(email)
                 self.redirect('/dashboard')
+            else:
+                self.redirect('/?error=login_failed')
         else:
             self.redirect('/?error=login_failed')
 

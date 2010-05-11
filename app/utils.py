@@ -188,8 +188,6 @@ def hash_password(password_string, salt=None):
         return hexdigest
 
 
-
-
 class BaseRequestHandler(tornado.web.RequestHandler):
     def render_string(self, template_name, **values):
         template_values = {}
@@ -211,6 +209,7 @@ class SessionRequestHandler(BaseRequestHandler):
         return self.session.get('is_logged_in', False)
     
     def do_login(self, username):
+        logging.info('>> logging in user %s' % username)
         self.session['is_logged_in'] = True
         self.session['username'] = username
     
