@@ -558,7 +558,7 @@ class PaypalIPNHandler(PaypalEndpoint):
                     from workers import WORKER_MAIL_ACTIVATION_URL
                     queue_mail_task(WORKER_MAIL_ACTIVATION_URL, 
                         params=dict(
-                            'invoice_key': str(invoice.key())
+                            invoice_key = str(invoice.key())
                         ),
                         method='POST')
                 else:
