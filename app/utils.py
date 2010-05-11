@@ -66,7 +66,7 @@ def queue_mail_task(*args, **kwargs):
     """
     The queue mail-queue must be defined in the queue.yaml file.
     """
-    queue_task(queue_name='mail-queue', *args, **kwargs)    
+    queue_task('mail-queue', *args, **kwargs)    
 
 
 def send_mail_once(cache_key, worker_url, body, to, subject, reply_to=EMAIL_REPLY_TO, sender=EMAIL_SENDER, **kwargs):
@@ -94,7 +94,6 @@ def send_mail_once(cache_key, worker_url, body, to, subject, reply_to=EMAIL_REPL
     """ % (worker_url, cache_key, subject, to, sender, reply_to, additional_key_params, body)
     
     logging.info('Attempting to send mail: \n' + cache_key)
-    logging.info(request)
     
     if not memcache.get(cache_key):
         mail.send_mail(sender=sender,

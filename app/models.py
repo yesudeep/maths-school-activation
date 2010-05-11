@@ -263,7 +263,7 @@ class Product(polymodel.PolyModel):
 
 
     def __unicode__(self):
-        return self.title + ', ' + self.subtitle + '(' + unicode(self.key().id()) + ')'
+        return self.title + ', ' + self.subtitle + '(id: ' + unicode(self.key().id()) + ')'
 
 
     def __str__(self):

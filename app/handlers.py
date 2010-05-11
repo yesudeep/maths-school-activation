@@ -33,7 +33,7 @@ from decimal import Decimal
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from utils import SessionRequestHandler, BaseRequestHandler, hash_password
+from utils import SessionRequestHandler, BaseRequestHandler, hash_password, queue_mail_task
 from models import Product, Customer, Invoice, Order, Phone, Location, \
     Subscription, Basket, ActivationCredentials, SubscriptionPeriod
 from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
@@ -558,7 +558,8 @@ class PaypalIPNHandler(PaypalEndpoint):
                     invoice.put()
                     # Email success and activation code.
                     from workers import WORKER_MAIL_ACTIVATION_URL
-                    queue_mail_task(WORKER_MAIL_ACTIVATION_URL, 
+                    queue_mail_task(
+                        url=WORKER_MAIL_ACTIVATION_URL, 
                         params=dict(
                             invoice_key = str(invoice.key())
                         ),
