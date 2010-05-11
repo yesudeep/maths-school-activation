@@ -45,6 +45,7 @@ TEMPLATE_FILES = BASE_TEMPLATE_FILES + Split("""
 """)
 
 PLAIN_COPIES = Split("""
+    email/activation_code.txt
 """)
 
 MINIFIABLE_FILES = BASE_TEMPLATE_FILES + PAGE_TEMPLATE_FILES + Split("""
