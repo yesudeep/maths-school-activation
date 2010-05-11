@@ -25,7 +25,8 @@
 
 import configuration
 
-from google.appengine.api import memcache
+from google.appengine.api import memcache, mail
+from google.appengine.api.labs import taskqueue
 from google.appengine.ext import webapp
 
 import re
@@ -33,6 +34,7 @@ import tornado.web
 import tornado.wsgi
 import unicodedata
 import hashlib
+import logging
 from base64 import b64encode, b64decode
 from uuid import uuid1
 
@@ -41,9 +43,71 @@ from datetime import datetime
 from functools import partial
 from urllib import urlencode
 
+logging.basicConfig(level=logging.DEBUG)
+
+EMAIL_SENDER = configuration.NOREPLY_EMAIL
+EMAIL_REPLY_TO = configuration.SUPPORT_EMAIL
+
 
 # Conveninence wrapper to make sure int conversion uses a decimal base.
 dec = partial(int, base=10)
+
+
+def queue_task(queue_name='default', *args, **kwargs):
+    """
+    Queues a task for execution asynchronously.
+    """    
+    taskqueue.Task(*args, **kwargs).add(queue_name)
+    info = ' %(url)s %(method)s' % kwargs
+    logging.info('[%s]' % (queue_name,) + info)
+
+
+def queue_mail_task(*args, **kwargs):
+    """
+    The queue mail-queue must be defined in the queue.yaml file.
+    """
+    queue_task(queue_name='mail-queue', *args, **kwargs)    
+
+
+def send_mail_once(cache_key, worker_url, body, to, subject, reply_to=EMAIL_REPLY_TO, sender=EMAIL_SENDER, **kwargs):
+    """
+    Will send email only once.  This uses memcache-based lock to avoid sending email
+    more than once.  However, since memcached is distributed and may not be permanently
+    available, stray duplicates may be found.
+    """
+    
+    if kwargs.has_key("bcc"):
+        additional_key_params = """bcc: \"%s\",""" % (kwargs.get("bcc"),)
+    else:
+        additional_key_params = ""
+    cache_key = """
+        {
+            worker_url: \"%s\",
+            cache_key: \"%s\",
+            subject: \"%s\",
+            sent_to: \"%s\",
+            sent_by: \"%s\",
+            reply_to: \"%s\",
+            %s
+            body: \"%s\",
+        }
+    """ % (worker_url, cache_key, subject, to, sender, reply_to, additional_key_params, body)
+    
+    logging.info('Attempting to send mail: \n' + cache_key)
+    logging.info(request)
+    
+    if not memcache.get(cache_key):
+        mail.send_mail(sender=sender,
+            to=to,
+            reply_to=reply_to,
+            subject=subject,
+            body=body,
+            **kwargs)
+        logging.info("Mail Worker: " + cache_key)
+        memcache.set(cache_key, True, 120)
+        logging.info('Sent mail.')
+    else:
+        logging.info('Mail sent before.  Not sending again.')
 
 
 def slugify(s):
@@ -122,6 +186,8 @@ def hash_password(password_string, salt=None):
         return (hexdigest, random_salt)
     else:
         return hexdigest
+
+
 
 
 class BaseRequestHandler(tornado.web.RequestHandler):

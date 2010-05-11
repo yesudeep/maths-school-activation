@@ -54,6 +54,8 @@ def sanitize_url(url):
 NAKED_DOMAIN = 'maths-school.co.nz'
 SUBDOMAIN = 'activate'
 ADMIN_EMAIL = "administrator@%s" % (NAKED_DOMAIN, )
+SUPPORT_EMAIL = 'support@%s' % (NAKED_DOMAIN, )
+NOREPLY_EMAIL = 'noreply@%s' % (NAKED_DOMAIN, )
 CONTACT_EMAIL = ADMIN_EMAIL
 APPLICATION_ID = os.environ['APPLICATION_ID']
 APPLICATION_TITLE = "Maths School - Product Activation"
@@ -65,6 +67,7 @@ SERVER_SOFTWARE = os.environ['SERVER_SOFTWARE']
 
 DEVELOPER_URL = "http://happychickoo.com"
 DEVELOPER_NAME = "happychickoo"
+
 
 # Analytics identifiers.
 GOOGLE_ANALYTICS_ID = 'UA-15537070-1'
