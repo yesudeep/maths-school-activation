@@ -7,7 +7,7 @@ your software:
 {% for credentials in activation_credentials_list %}
 {{ credentials.product.title }} ({{ credentials.product.subtitle }})
 Serial number: {{ credentials.serial_number }}
-Machine ID: {{ credentials.serial_number }}
+Machine ID: {{ credentials.machine_id }}
 Activation Code: {{ credentials.activation_code }}
 ----
 {% end %}
