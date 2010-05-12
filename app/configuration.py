@@ -64,6 +64,7 @@ MODE_PRODUCTION = 'production'
 SERVER_PORT = os.environ['SERVER_PORT']
 SERVER_NAME = os.environ['SERVER_NAME']
 SERVER_SOFTWARE = os.environ['SERVER_SOFTWARE']
+APPSPOT_DOMAIN = "%s.appspot.com" % APPLICATION_ID
 
 DEVELOPER_URL = "http://happychickoo.com"
 DEVELOPER_NAME = "happychickoo"
@@ -97,14 +98,22 @@ else:
     HOST_NAME = SERVER_NAME
     LOCAL = False
     DEBUG = False
-    MEDIA_URL = "http://%s.appspot.com/s/" % APPLICATION_ID
+    MEDIA_URL = "http://%s/s/" % (APPSPOT_DOMAIN,)
     TEXT_MEDIA_URL = MEDIA_URL
     #TEXT_MEDIA_URL = "http://assets.%s/" % (NAKED_DOMAIN, )
 
 
+# Check list to get Paypal working.
+#
+# 1. Enable IPN and set it to https://application-id.appspot.com/paypal/ipn"
+# 2. Use UTF-8 encoding for the response text.
+# 3. Enable Auto-Return to return-url
+# 4. Set a return URL.
+
+
 # Uncomment one of these to use either sandbox or live settings.
-PAYPAL_MODE = 'sandbox'
-#PAYPAL_MODE = 'live'
+#PAYPAL_MODE = 'sandbox'
+PAYPAL_MODE = 'live'
 
 if PAYPAL_MODE == 'sandbox':
     #PAYPAL_MERCHANT_EMAIL = 'seller_1271087231_biz@happychickoo.com'
@@ -116,9 +125,9 @@ else:
     PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
     PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
-    PAYPAL_BUTTON_IMAGE_URL = 'https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
+    PAYPAL_BUTTON_IMAGE_URL = 'https://www.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
 
-PAYPAL_NOTIFY_URL = "https://%s.appspot.com/paypal/ipn" % (APPLICATION_ID,)
+PAYPAL_NOTIFY_URL = "https://%s/paypal/ipn" % (APPSPOT_DOMAIN,)
 
 if DEBUG:
     # Minification suffixes to use for CSS and JS files.

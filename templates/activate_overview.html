@@ -43,7 +43,7 @@
                   <input type="hidden" name="currency_code" value="{{ invoice.currency }}" />
                   <input type="hidden" name="item_name" value="Subscriptions: {% for order in invoice.orders %}{{ order.subscription.key().id() }}, {% end %}" />
                   <input type="hidden" name="notify_url" value="{{ PAYPAL_NOTIFY_URL }}" />
-                  #*<input type="hidden" name="return" value="{{ return_url }}" />*#
+                  <input type="hidden" name="return" value="{{ return_url }}" />
                   <input type="hidden" name="no_shipping" value="1" />
                   <input type="image" src="{{ PAYPAL_BUTTON_IMAGE_URL }}" border="0" name="submit" alt="PayPal - The safer, easier way to pay online." />
                   

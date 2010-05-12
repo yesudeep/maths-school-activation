@@ -3,11 +3,10 @@ Dear {{ customer.first_name }} {{ customer.last_name }},
 Here is a list of activation codes that you will need to activate
 your software:
 
-----
-{% for credentials in activation_credentials_list %}
+----{% for credentials in activation_credentials_list %}
 {{ credentials.product.title }} ({{ credentials.product.subtitle }})
 Serial number: {{ credentials.serial_number }}
-Machine ID: {{ credentials.machine_id }}
+Computer ID: {{ credentials.machine_id }}
 Activation Code: {{ credentials.activation_code }}
 ----
 {% end %}
