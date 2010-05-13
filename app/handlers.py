@@ -390,8 +390,12 @@ class UnsubscriptionHandler(SessionRequestHandler):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
-            self.render('unsubscribe.html')
-
+            customer = Customer.get_by_key_name(self.get_current_username())
+            subscriptions = []
+            for order in customer.orders:
+                subscriptions.append(order.subscription)
+            self.render('unsubscribe.html', subscriptions=subscriptions)
+            
 
 class DeinstallHandler(SessionRequestHandler):
     def get(self):
