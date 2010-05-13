@@ -42,18 +42,22 @@ from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, \
     CACHE_DURATION, SerializableModel
 from properties import DecimalProperty, Base64Property
 from countries import ISO_ALPHA_3_CODES
+from currencies import ISO_4217_ALPHA_CODES
 
-
+# Regional information.
 AUSTRALIA_ISO_ALPHA_3_CODE = 'AUS'
-DEFAULT_ISO_ALPHA_3_CODE = AUSTRALIA_ISO_ALPHA_3_CODE
+NEW_ZEALAND_ISO_ALPHA_3_CODE = 'NZL'
 
+if configuration.COUNTRY_CODE == AUSTRALIA_ISO_ALPHA_3_CODE:
+    # Deployed for Australia
+    DEFAULT_ISO_ALPHA_3_CODE = AUSTRALIA_ISO_ALPHA_3_CODE
+    DEFAULT_CURRENCY = 'AUD'
+elif configuration.COUNTRY_CODE == NEW_ZEALAND_ISO_ALPHA_3_CODE:
+    # Deployed for New Zealand
+    DEFAULT_ISO_ALPHA_3_CODE = NEW_ZEALAND_ISO_ALPHA_3_CODE
+    DEFAULT_CURRENCY = 'NZD'
 
-CURRENCY_CHOICES = (
-    'AUD',
-    'USD',
-)
-DEFAULT_CURRENCY = 'AUD'
-
+CURRENCY_CHOICES = ISO_4217_ALPHA_CODES
 
 PHONE_TYPE_CHOICES = (
     'mobile',

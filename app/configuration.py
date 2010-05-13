@@ -51,7 +51,12 @@ def sanitize_url(url):
         url = url + '/'
     return url
 
+# Comment/uncomment to deploy for another country.
+#COUNTRY_CODE = 'AUS'
+COUNTRY_CODE = 'NZL'
+
 NAKED_DOMAIN = 'maths-school.co.nz'
+
 SUBDOMAIN = 'activate'
 ADMIN_EMAIL = "administrator@%s" % (NAKED_DOMAIN, )
 SUPPORT_EMAIL = 'support@%s' % (NAKED_DOMAIN, )
