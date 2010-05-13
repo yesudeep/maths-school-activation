@@ -307,6 +307,7 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
             order.subscription_period_in_months = subscription.period_in_months
             order.subscription_free_period_in_months = subscription_period.free_period_in_months
             order.price = subscription.price + subscription.general_sales_tax
+            order.subscription_currency = subscription.currency
             orders.append(order)
             order.put()
 
@@ -328,6 +329,7 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
             order.subscription_period_in_months = subscription.period_in_months
             order.subscription_free_period_in_months = subscription_period.free_period_in_months
             order.price = subscription.price + subscription.general_sales_tax
+            order.subscription_currency = subscription.currency
             orders.append(order)
             order.put()
 
