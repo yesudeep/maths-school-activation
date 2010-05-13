@@ -54,7 +54,7 @@ def import_all():
     will be duplicated in the datastore.
     """
     import_products()
-    import_customers()
+    #import_customers()
     import_subscription_periods()
 
 
