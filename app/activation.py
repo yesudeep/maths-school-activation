@@ -161,6 +161,30 @@ def random_numeric_string(length):
     random_integer = randint(*range_of_digits(length))
     return unicode(random_integer)
 
+# Original code:
+# --------------
+#
+def deactivationEntryCode(date):
+    # returns a 5 digit string from the date string in
+    # d[0]d[1]/m[0]m[1]/y[0]y[1]y[2]y[3] format
+    # as follows:
+    # y[3]d[0]m[1]d[1]y[0]
+    # e.g. 26/12/2006->62262, 01/01/2007->70112
+    # converted to handle strings in form yyyy-mm-dd on 13/06/09
+    if type(date) != str:
+        exit
+    if len(date) != 10:
+        exit
+    res = date[3]+date[8]+date[6]+date[9]+date[0]
+    return res
+
+def generate_deactivation_entry_code(date_string):
+    """
+    Returns a 5-digit string from the date string in the format:
+    
+        d[
+    """
+
 
 # Original code:
 # --------------

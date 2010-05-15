@@ -39,9 +39,11 @@ jQuery(function(){
         form_decorated_fields: jQuery('form.decorated-fields'),
         url_fields: jQuery('form input.url'),
         capitalization_fields: jQuery('form input.capitalize'),
-        lower_capitalization_fields: jQuery('form input.lower-capitalize')
+        lower_capitalization_fields: jQuery('form input.lower-capitalize'),
+        digits_fields: jQuery('form input.digits')
     }, HTTP = "http://";
 
+    elements.digits_fields.numeric();
     elements.mobile_or_phone_fields.numeric({allow: '+-() '});
     elements.url_fields.keyup(function(event){
         var elem = jQuery(this), value = elem.val();
