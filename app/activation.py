@@ -36,6 +36,7 @@
 
 from random import randint
 from functools import partial
+from datetime import datetime
 
 
 dec = partial(int, base=10)
@@ -164,26 +165,73 @@ def random_numeric_string(length):
 # Original code:
 # --------------
 #
-def deactivationEntryCode(date):
-    # returns a 5 digit string from the date string in
-    # d[0]d[1]/m[0]m[1]/y[0]y[1]y[2]y[3] format
-    # as follows:
-    # y[3]d[0]m[1]d[1]y[0]
-    # e.g. 26/12/2006->62262, 01/01/2007->70112
-    # converted to handle strings in form yyyy-mm-dd on 13/06/09
-    if type(date) != str:
-        exit
-    if len(date) != 10:
-        exit
-    res = date[3]+date[8]+date[6]+date[9]+date[0]
-    return res
+# Usage:  dcode = deactivationEntryCode(unicode(date.today())
+#         *assuming* the server is located in Australia.  
+#         This fuckwit doesn't do date time programming.
+#
+#def deactivationEntryCode(date):
+#    # returns a 5 digit string from the date string in
+#    # d[0]d[1]/m[0]m[1]/y[0]y[1]y[2]y[3] format
+#    # as follows:
+#    # y[3]d[0]m[1]d[1]y[0]
+#    # e.g. 26/12/2006->62262, 01/01/2007->70112
+#    # converted to handle strings in form yyyy-mm-dd on 13/06/09
+#    if type(date) != str:
+#        exit
+#    if len(date) != 10:
+#        exit
+#    res = date[3]+date[8]+date[6]+date[9]+date[0]
+#    return res
 
-def generate_deactivation_entry_code(date_string):
+def get_now_for_timezone(timezone='UTC'):
     """
-    Returns a 5-digit string from the date string in the format:
+    Returns the current datetime for the given timezone.
     
-        d[
+    Args:
+        timezone
+            Timezone as from the list of 
+            `from pytz import all_timezones'
+             
     """
+    from pytz.gae import pytz
+    tz = pytz.timezone(timezone)
+    date = tz.fromutc(datetime.utcnow())
+    return date
+
+
+def generate_deactivation_entry_code(date=None, timezone='UTC'):
+    """
+    The deactivation entry code is generated according to the following format.
+    
+        year[last-digit] day[first-digit] month[second-digit] day[second-digit] year[first-digit]
+    
+    Or in programming terms:
+    
+        year[3] day[0] month[1] day[1] year[0]
+    
+    Usage:
+    
+    Args:
+        date  
+            Optional date which will be used to generate the code.
+            If not specified and the timezone is also not specified,
+            the current UTC date is used.  Otherwise, the current date
+            in the specified timezone is used.
+        timezone
+            Timezone as from the list of 
+            `from pytz import all_timezones'
+            
+    """
+    if date is None:
+        if timezone == 'UTC':
+            date = datetime.utcnow()
+        else:
+            date = get_now_for_timezone(timezone)
+    year = unicode(date.year)
+    month = '%02d' % date.month
+    day = '%02d' % date.day
+    string_code = year[3] + day[0] + month[1] + day[1] + year[0]
+    return string_code
 
 
 # Original code:
