@@ -10,17 +10,17 @@
     <form id="form-generate-activation-code" class="decorated-fields tabular" action="" method="post">
         <label for="serial_number">
           <span class="prefix">Serial Number</span>
-          <input type="text" name="serial_number" value="" class="required" />
+          <input type="text" name="serial_number" value="" class="required digits" minlength="7" maxlength="7" />
           <span class="suffix"></span>
         </label>
         <label for="machine_id">
           <span class="prefix">Computer ID</span>
-          <input type="text" name="machine_id" value="" class="required" />
+          <input type="text" name="machine_id" value="" class="required digits" minlength="7" maxlength="7" />
           <span class="suffix"></span>
         </label>
         <label for="a_base">
           <span class="prefix">Base (Salt)</span>
-          <input type="text" name="a_base" value="" />
+          <input type="text" name="a_base" value="" class="digits" maxlength="3" />
           <span class="suffix">(Optional) An integer between 0 and 999 (both inclusive).  Two calculations for the same given base should result in the same activation code.</span>
         </label>
         <label for="activation_code">
