@@ -28,7 +28,7 @@
     <ul id="products" class="image-grid">
       {% for product in products %}
       <li>
-        <a id="{{ product.key() }}" class="btn-slide" href="#{{ product.key() }}">
+        <a id="{{ product.key() }}" class="btn-slide" href="#{{ product.key() }}" title="Click on a product to select it">
           <img src="{{ product.icon_url }}" />
           <strong>{{ product.title }}</strong>
           <span>{{ product.subtitle }}</span>
