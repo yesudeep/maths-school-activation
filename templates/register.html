@@ -72,6 +72,14 @@
           <input type="text" name="zip_code" value="" class="required" />
           <span class="suffix"></span>
         </label>
+        <label for="timezone">
+            <span class="prefix">Timezone</span>
+            <select name="timezone">
+                {% for timezone in timezones %}
+                <option value="{{ timezone }}" {% if timezone == default_timezone %}selected="selected"{% end %}>{{ timezone }}</option>
+                {% end %}
+            </select>
+        </label>
         <label for="submit">
           <span class="prefix"></span>
           <input type="submit" class="awesome-button midium" name="submit" value="&#10004; Register" />

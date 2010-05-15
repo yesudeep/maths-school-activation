@@ -81,7 +81,19 @@
         <div class="content">
             <p><strong class="warning">Warning: DO NOT close the deinstaller dialog until you have completed ALL the steps here.</strong></p>
             <p><strong>Important: Copy the following entry code into the Computer Tutor deinstallation screen on your computer and complete the deinstallation process.</strong></p>
-            <blockquote>{{ entry_code }}</blockquote>
+            <p>The deinstallation entry code depends on your timezone.</p>
+            <form class="decorated-fields tabular" action="/profile/timezone" method="POST">
+                <label for="timezone">
+                    <span class="prefix">Timezone</span>
+                    <select name="timezone">
+                        {% for timezone in timezones %}
+                        <option value="{{ timezone }}" {% if timezone == default_timezone %}selected="selected"{% end %}>{{ timezone }}</option>
+                        {% end %}
+                    </select>
+                </label>
+                <input type="submit" name="submit" value="Change Timezone" />
+            </form>
+            <blockquote>{{ entry_code }} <strong class="warning">(Depends on your timezone.)</strong></blockquote>
         </div>
         <div class="illustration">
         </div>

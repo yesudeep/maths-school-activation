@@ -43,6 +43,10 @@ from dbhelper import serialize_entities, deserialize_entities, MAX_COUNT, \
 from properties import DecimalProperty, Base64Property
 from countries import ISO_ALPHA_3_CODES
 from currencies import ISO_4217_ALPHA_CODES
+from pytz.gae import pytz
+
+ALL_TIMEZONES = pytz.all_timezones
+DEFAULT_TIMEZONE = 'UTC'
 
 # Regional information.
 AUSTRALIA_ISO_ALPHA_3_CODE = 'AUS'
@@ -170,6 +174,7 @@ class Customer(Profile):
     password_salt = Base64Property(required=True)
     should_reset_password = db.BooleanProperty(default=False)
     is_admin = db.BooleanProperty(default=False)
+    timezone = db.StringProperty(choices=ALL_TIMEZONES, default=DEFAULT_TIMEZONE)
 
     def is_password_correct(self, password):
         """

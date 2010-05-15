@@ -38,6 +38,7 @@ from models import Product, Customer, Invoice, Order, Phone, Location, \
     Subscription, Basket, ActivationCredentials, SubscriptionPeriod
 from models import VERIFICATION_STATUS_INVALID, VERIFICATION_STATUS_VERIFIED
 from models import INVOICE_STATUS_PENDING, INVOICE_STATUS_COMPLETE
+from models import DEFAULT_TIMEZONE
 
 try:
     import json
@@ -97,6 +98,8 @@ class ProfileHandler(SessionRequestHandler):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
+            from pytz.gae import pytz
+        
             customer = Customer.get_by_key_name(self.get_current_username())
 
             landline = Phone.all().filter('profile = ', customer).filter('phone_type = ', 'landline').get()
@@ -106,7 +109,9 @@ class ProfileHandler(SessionRequestHandler):
                 landline=landline,
                 mobile=mobile,
                 customer=customer,
-                location=customer.locations[0])
+                location=customer.locations[0],
+                default_timezone=customer.timezone,
+                timezones=pytz.all_timezones)
 
     def post(self):
         if not self.is_logged_in():
@@ -115,6 +120,7 @@ class ProfileHandler(SessionRequestHandler):
             customer = Customer.get_by_key_name(self.get_current_username())
             customer.first_name = self.get_argument('first_name')
             customer.last_name = self.get_argument('last_name')
+            customer.timezone = self.get_argument('timezone')
 
             landline_key = self.get_argument('landline_key')
             landline = db.get(db.Key(landline_key))
@@ -133,7 +139,7 @@ class ProfileHandler(SessionRequestHandler):
             location.area_or_suburb = self.get_argument('area_or_suburb')
             location.street_name = self.get_argument('street_name')
             location.zip_code = self.get_argument('zip_code')
-
+            
             db.put([customer, mobile, landline, location])
 
             self.get()
@@ -142,7 +148,11 @@ class ProfileHandler(SessionRequestHandler):
 class RegistrationHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
-            self.render('register.html', countries=COUNTRIES_TUPLE)
+            from pytz.gae import pytz
+            self.render('register.html',
+                default_timezone=DEFAULT_TIMEZONE,
+                timezones=pytz.all_timezones, 
+                countries=COUNTRIES_TUPLE)
 
     def post(self):
         first_name = self.get_argument('first_name')
@@ -157,6 +167,7 @@ class RegistrationHandler(SessionRequestHandler):
         area_or_suburb = self.get_argument('area_or_suburb')
         street_name = self.get_argument('street_name')
         zip_code = self.get_argument('zip_code')
+        timezone = self.get_argument('timezone')
 
         p = hash_password(password)
 
@@ -165,7 +176,8 @@ class RegistrationHandler(SessionRequestHandler):
                             last_name=last_name,
                             email=email,
                             password_hash=p[0],
-                            password_salt=p[1])
+                            password_salt=p[1],
+                            timezone=timezone)
 
         #TODO: before saving the profile check if the data is not repeated
         db.put(customer)
@@ -418,8 +430,15 @@ class DeinstallMathsEnglishHandler(SessionRequestHandler):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
-            import random
-            self.render('deinstall_maths_english.html', entry_code=random.randint(45000, 100000))
+            from activation import generate_deactivation_entry_code
+            from pytz.gae import pytz
+            
+            customer = Customer.get_by_key_name(self.get_current_username())
+            deactivation_entry_code = generate_deactivation_entry_code(timezone=customer.timezone)
+            self.render('deinstall_maths_english.html', 
+                default_timezone=customer.timezone,
+                entry_code=deactivation_entry_code,
+                timezones=pytz.all_timezones)
 
 
 class ChangePasswordHandler(SessionRequestHandler):
