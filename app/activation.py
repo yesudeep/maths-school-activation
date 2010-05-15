@@ -204,15 +204,22 @@ def generate_deactivation_entry_code(date=None, timezone='UTC'):
     The deactivation entry code is generated according to the following format.
     
         year[last-digit] day[first-digit] month[second-digit] day[second-digit] year[first-digit]
+
+    where the
+        year has 4 digits (e.g., 1992)
+        month has 2 digits (01-12)
+        day has 2 digits (01-31)
     
     Or in programming terms:
     
         year[3] day[0] month[1] day[1] year[0]
     
-    Usage:
+    This means that for a year ending in 0, e.g. 2010, all codes during that year
+    will start with 0.  Therefore, the entry code cannot be an integer.  This function,
+    therefore, returns a string.
     
     Args:
-        date  
+        date
             Optional date which will be used to generate the code.
             If not specified and the timezone is also not specified,
             the current UTC date is used.  Otherwise, the current date
