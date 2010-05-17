@@ -187,6 +187,7 @@ SCRIPT_BUNDLES = (
         sources = Split(
         COMMON_SCRIPTS + 
         """
+            script/lib/chickoojs/src/jquery/form/jquery.form.js
             script/deinstall_maths_english.js
         """)
     ),

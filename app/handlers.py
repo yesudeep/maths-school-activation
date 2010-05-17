@@ -397,6 +397,19 @@ class ActivateCompleteHandler(SessionRequestHandler):
         self.render('activate_complete.html')
 
 
+class JsonDeinstallationEntryCodeByTimezoneHandler(BaseRequestHandler):
+    def post(self):
+        from activation import generate_deactivation_entry_code
+        #payload = json.loads(self.get_argument('payload'))
+        timezone = self.get_argument('timezone')
+        deactivation_entry_code = generate_deactivation_entry_code(timezone=timezone)
+
+        self.set_header('Content-Type', 'application/json')
+        self.write(json.dumps({
+            'deactivationEntryCode': deactivation_entry_code,
+        }))
+
+
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
@@ -606,7 +619,6 @@ class PaypalIPNHandler(PaypalEndpoint):
 
 
 
-
 settings = {
     'debug': configuration.DEBUG,
     #'xsrf_cookies': True,
@@ -624,9 +636,11 @@ urls = (
     (r'/activate/complete/?', ActivateCompleteHandler),
     (r'/paypal/ipn/?', PaypalIPNHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
-    (r'/deinstall/?', DeinstallHandler),
+    #(r'/deinstall/?', DeinstallHandler),
+    (r'/deinstall/?', DeinstallMathsEnglishHandler),
     (r'/profile/?', ProfileHandler),
     (r'/profile/password/change/?', ChangePasswordHandler),
+    (r'/json/get/deinstall/entry/code/by/timezone?', JsonDeinstallationEntryCodeByTimezoneHandler),
     (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),
