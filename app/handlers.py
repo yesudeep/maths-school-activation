@@ -397,11 +397,16 @@ class ActivateCompleteHandler(SessionRequestHandler):
         self.render('activate_complete.html')
 
 
-class JsonDeinstallationEntryCodeByTimezoneHandler(BaseRequestHandler):
+class JsonDeinstallationEntryCodeByTimezoneHandler(SessionRequestHandler):
     def post(self):
         from activation import generate_deactivation_entry_code
         #payload = json.loads(self.get_argument('payload'))
         timezone = self.get_argument('timezone')
+        
+        customer = Customer.get_by_key_name(self.get_current_username())
+        customer.timezone = timezone
+        customer.put()
+        
         deactivation_entry_code = generate_deactivation_entry_code(timezone=timezone)
 
         self.set_header('Content-Type', 'application/json')
