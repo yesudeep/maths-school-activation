@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block tag_header_content %}
+  <h1 class="icon deinstall">Deinstallation for <strong>Junior/Primary/Senior/English Story</strong></h1>
+{% end %}
+
+{% block tag_trunk_content %}
+<div id="deinstall-maths-english" class="box">
+  <h2>Just a minute.  Thank you.</h2>
+  <p>Please provide the deactivation codes for the following serial numbers and activation codes.</p>
+    <form id="form-input-deactivation-codes" action="/deinstall/input/deactivation/code" method="POST">
+        <label for="computer_id">Computer ID</label>
+        <input type="text" name="machine_id" value="{{ machine_id }}" class="required digits" minlength="7" maxlength="7" readonly="readonly" />
+        <input type="hidden" name="deactivation_entry_code" value="{{ deactivation_entry_code }}" />
+        <input type="hidden" name="timezone" value="{{ timezone }}" />
+        <table>
+            <thead>            
+                <tr>
+                    <th>Serial number</th>
+                    <th>Activation code</th>
+                    <th>Deactivation code</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for credentials in activation_credentials %}
+                <tr>
+                    <td>
+                        <label for="serial_number_{{ credentials.key().id() }}">
+                          <span class="prefix"></span>
+                          <input type="text" name="serial_number_ac_{{ credentials.key().id() }}" value="{{ credentials.serial_number }}" readonly="readonly" class="required digits" minlength="7" maxlength="7" />
+                          <span class="suffix"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="activation_code_{{ credentials.key().id() }}">
+                          <span class="prefix"></span>
+                          <input type="text" name="activation_code_ac_{{ credentials.key().id() }}" value="{{ credentials.activation_code }}" readonly="readonly" class="required digits" />
+                          <span class="suffix"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <label for="deactivation_code_{{ credentials.key().id() }}">
+                          <span class="prefix"></span>
+                          <input type="text" name="deactivation_code_ac_{{ credentials.key().id() }}" value="" class="required digits" minlength="10" maxlength="10" />
+                          <span class="suffix"></span>
+                        </label>
+                    </td>
+                </tr>
+                {% end %}
+                <tr>
+                    <td>
+                        <input type="hidden" name="deactivation_entry_code" value="{{ deactivation_entry_code }}" />
+                        <input type="hidden" name="timezone" value="{{ timezone }}" />
+                        <label for="submit">
+                          <span class="prefix"></span>
+                          <input type="submit" class="awesome-button" name="submit" value="&#10004; Submit" />
+                          <span class="suffix"></span>
+                        </label>
+                    </td>
+                    <td colspan="2"></td>
+                <tr>
+            </tbody>
+        </table>        
+    </form>
+</div>
+{% end %}
+
+{% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
+

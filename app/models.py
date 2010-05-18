@@ -475,6 +475,7 @@ class Transaction(SerializableModel):
 
     """
     identifier = db.StringProperty()
+    subscription_id = db.StringProperty()
     transaction_type = db.StringProperty()
 
     currency = db.StringProperty(choices=CURRENCY_CHOICES, default=DEFAULT_CURRENCY)
@@ -528,11 +529,32 @@ class ActivationCredentials(SerializableModel):
     serial_number = db.StringProperty()
     machine_id = db.StringProperty()
     activation_code = db.StringProperty()
-
+    
+    deactivation_code = db.StringProperty()
+    when_deactivated = db.DateTimeProperty()
+    deactivation_entry_code = db.StringProperty()
+    
+    
     # Here product is always a unit never a basket.
     product = db.ReferenceProperty(Product, collection_name='activation_credentials')
     order = db.ReferenceProperty(Order, collection_name='activation_credentials')
-
+    
+    # Recording customer here is redundant as we can get it from order,
+    # BUT this allows us to build an index on this and the machine_id fields
+    # for the get_all_for_customer_and_machine_id routine.
+    customer = db.ReferenceProperty(Customer, collection_name='activation_credentials')
+    
+    @classmethod
+    def get_all_for_customer_and_machine_id(cls, customer, machine_id, count=MAX_COUNT):
+        cache_key = unicode(customer.key()) + machine_id
+        entities = deserialize_entities(memcache.get(cache_key))
+        if not entities:
+            entities = ActivationCredentials.all() \
+                .filter('customer = ', customer) \
+                .filter('machine_id = ', machine_id) \
+                .fetch(count)
+            memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
+        return entities
 
     def __unicode__(self):
         return unicode(self.product) + ', SN: ' + self.serial_number + ', MID: ' + self.machine_id

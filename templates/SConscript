@@ -22,13 +22,13 @@ PAGE_TEMPLATE_FILES = Split("""
     activation_credentials_input.html
     check_activation_code_generation.html
     deinstall_maths_english.html
+    deinstall_maths_english_input.html
     deinstall_phonica_dinamagic.html
     index.html
     profile.html
     register.html
     select_products.html
     unsubscribe.html
-
 """)
 
 BASE_TEMPLATE_FILES = Split("""

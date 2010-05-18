@@ -81,8 +81,8 @@
         <div class="content">
             <p><strong class="warning">Warning: DO NOT close the deinstaller dialog until you have completed ALL the steps here.</strong></p>
             <p><strong>Important: Copy the following entry code into the Computer Tutor deinstallation screen on your computer and complete the deinstallation process.</strong></p>
-            <p>The deinstallation entry code depends on your timezone.</p>
-            <form id="form-deinstallation-entry-code-by-timezone" class="decorated-fields tabular" action="/json/get/deinstall/entry/code/by/timezone" method="POST">
+            <p>The deactivation entry code depends on your timezone.</p>
+            <form id="form-deactivation-entry-code-by-timezone" class="decorated-fields tabular" action="/json/get/deactivation/entry/code/by/timezone" method="POST">
                 <label for="timezone">
                     <span class="prefix">Timezone</span>
                     <select name="timezone">
@@ -91,16 +91,17 @@
                         {% end %}
                     </select>
                 </label>
-                <input type="submit" name="submit" value="Generate Deinstallation Entry Code" />
+                <input type="submit" name="submit" value="Generate Deactivation Entry Code" />
             </form>
-            <blockquote><span id="deinstallation-entry-code">{{ entry_code }}</span> <strong class="warning">(Depends on your timezone.)</strong></blockquote>
+            <blockquote><span id="deactivation-entry-code">{{ deactivation_entry_code }}</span> <strong class="warning">(Depends on your timezone.)</strong></blockquote>
         </div>
         <div class="illustration">
         </div>
     </li>
     <li>
         <div class="content">
-            The last deinstallation screen should look like the one shown below:
+            The last deinstallation screen should look like the one shown below.  You will need to 
+            fill this information in the next step.
         </div>
         <div class="illustration">
             <img src="{{ MEDIA_URL }}image/screenshot/deinstallation_info.jpg" />
@@ -108,148 +109,21 @@
     </li>
     <li>
         <div class="content">
-            <p>Please fill in the details below before we can proceed</p>
-            <form id="math_english_deinstallation_from" action="" method="POST">
-                <label for="computer_id">Computer ID</label>
-                <input type="text" name="computer_id" value="" />
-                <table>
-                    <thead></thead>
-                    <tbody>
-                        <tr>
-                            <th>Serial number</th>
-                            <th>Activation code</th>
-                            <th>Deactivation code</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="sn0">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="sn0" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="ac0">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="ac0" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="dc0">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="dc0" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="sn1">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="sn1" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="ac1">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="ac1" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="dc1">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="dc2" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="sn2">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="sn2" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="ac2">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="ac2" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="dc2">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="dc2" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="sn3">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="sn3" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="ac3">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="ac3" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="dc3">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="dc3" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="sn4">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="sn4" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="ac4">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="ac4" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td>
-                                <label for="dc4">
-                                  <span class="prefix"></span>
-                                  <input type="text" name="dc4" value="" class="required" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="submit">
-                                  <span class="prefix"></span>
-                                  <input type="submit" class="awesome-button" name="submit" value="&#10004; Submit" />
-                                  <span class="suffix"></span>
-                                </label>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        <tr>
-                    </tbody>
-                </table>
-                
-          </form>
+            <p>Please type your computer ID to proceed.</p>
+            <form id="form-machine-id" class="decorated-fields tabular" action="" method="POST">
+                <label for="machine_id">
+                    <span class="prefix">computer ID</span>
+                    <input type="text" name="machine_id" value="" class="required digits" minlength="7" maxlength="7" />
+                    <span class="prefix"></span>
+                </label>
+                <input type="hidden" name="deactivation_entry_code" value="{{ deactivation_entry_code }}" />
+                <input type="hidden" name="timezone" value="{{ default_timezone }}" />
+                <label for="submit">
+                  <span class="prefix"></span>
+                  <input type="submit" class="awesome-button" name="submit" value="&#10004; Submit" />
+                  <span class="suffix"></span>
+                </label>
+            </form>
         </div>
         <div class="illustration">
         </div>

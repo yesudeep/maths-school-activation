@@ -117,8 +117,8 @@ else:
 
 
 # Uncomment one of these to use either sandbox or live settings.
-#PAYPAL_MODE = 'sandbox'
-PAYPAL_MODE = 'live'
+PAYPAL_MODE = 'sandbox'
+#PAYPAL_MODE = 'live'
 
 if PAYPAL_MODE == 'sandbox':
     #PAYPAL_MERCHANT_EMAIL = 'seller_1271087231_biz@happychickoo.com'

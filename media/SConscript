@@ -188,7 +188,30 @@ SCRIPT_BUNDLES = (
         COMMON_SCRIPTS + 
         """
             script/lib/chickoojs/src/jquery/form/jquery.form.js
+            script/lib/chickoojs/src/jquery/metadata/jquery.metadata.js
+            script/lib/chickoojs/src/jquery/validate/jquery.validate.js
+            script/lib/chickoojs/src/jquery/validate/jquery.validate.extra.js
+            script/lib/chickoojs/src/jquery/alphanumeric/jquery.alphanumeric.js
+            script/lib/chickoojs/src/titleCaps.js
+            script/forms.js
+
             script/deinstall_maths_english.js
+        """)
+    ),
+    dict(
+        selector="deinstall_maths_english_input.js",
+        sources = Split(
+        COMMON_SCRIPTS + 
+        """
+            script/lib/chickoojs/src/jquery/form/jquery.form.js
+            script/lib/chickoojs/src/jquery/metadata/jquery.metadata.js
+            script/lib/chickoojs/src/jquery/validate/jquery.validate.js
+            script/lib/chickoojs/src/jquery/validate/jquery.validate.extra.js
+            script/lib/chickoojs/src/jquery/alphanumeric/jquery.alphanumeric.js
+            script/lib/chickoojs/src/titleCaps.js
+            script/forms.js
+
+            script/deinstall_maths_english_input.js
         """)
     ),
     dict(

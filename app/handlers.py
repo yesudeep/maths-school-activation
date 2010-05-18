@@ -29,6 +29,7 @@ import utils
 import tornado.web
 import tornado.wsgi
 
+from datetime import datetime
 from decimal import Decimal
 from google.appengine.api import memcache
 from google.appengine.ext import db, webapp
@@ -329,6 +330,7 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
             activation_credentials.machine_id = self.get_argument('u_%d_machine_id' % unit_id)
             activation_credentials.order = order
             activation_credentials.product = unit
+            activation_credentials.customer = customer
             logging.info(activation_credentials)
             activation_credentials_list.append(activation_credentials)
 
@@ -354,6 +356,7 @@ class ActivationCredentialsInputHandler(SessionRequestHandler):
                 activation_credentials.machine_id = self.get_argument('b_%d_u_%d_machine_id' % (basket_id, unit_id,))
                 activation_credentials.order = order
                 activation_credentials.product = unit
+                activation_credentials.customer = customer
                 logging.info(activation_credentials)
                 activation_credentials_list.append(activation_credentials)
 
@@ -377,8 +380,8 @@ class ActivateOverviewHandler(SessionRequestHandler):
         
         logging.info([(order.customer.first_name, unicode(order.subscription)) for order in invoice.orders])
         self.render('activate_overview.html', 
-            subscription_period=subscription_period, 
-            invoice=invoice, 
+            subscription_period=subscription_period,
+            invoice=invoice,
             return_url='%sactivate/complete' % (configuration.ROOT_URL,)
             )
 
@@ -396,11 +399,11 @@ class ActivateCompleteHandler(SessionRequestHandler):
     def get(self):
         self.render('activate_complete.html')
 
-
-class JsonDeinstallationEntryCodeByTimezoneHandler(SessionRequestHandler):
+        
+class JsonDeactivationEntryCodeByTimezoneHandler(SessionRequestHandler):
     def post(self):
         from activation import generate_deactivation_entry_code
-        #payload = json.loads(self.get_argument('payload'))
+
         timezone = self.get_argument('timezone')
         
         customer = Customer.get_by_key_name(self.get_current_username())
@@ -412,7 +415,9 @@ class JsonDeinstallationEntryCodeByTimezoneHandler(SessionRequestHandler):
         self.set_header('Content-Type', 'application/json')
         self.write(json.dumps({
             'deactivationEntryCode': deactivation_entry_code,
+            'timezone': timezone,
         }))
+
 
 
 class UnsubscriptionHandler(SessionRequestHandler):
@@ -452,11 +457,58 @@ class DeinstallMathsEnglishHandler(SessionRequestHandler):
             from pytz.gae import pytz
             
             customer = Customer.get_by_key_name(self.get_current_username())
+            
             deactivation_entry_code = generate_deactivation_entry_code(timezone=customer.timezone)
             self.render('deinstall_maths_english.html', 
                 default_timezone=customer.timezone,
-                entry_code=deactivation_entry_code,
+                deactivation_entry_code=deactivation_entry_code,
                 timezones=pytz.all_timezones)
+
+    def post(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            machine_id = self.get_argument('machine_id')
+            timezone = self.get_argument('timezone')
+            deactivation_entry_code = self.get_argument('deactivation_entry_code')
+        
+            customer = Customer.get_by_key_name(self.get_current_username())
+            activation_credentials = ActivationCredentials.get_all_for_customer_and_machine_id(customer=customer, machine_id=machine_id)
+            self.render('deinstall_maths_english_input.html', 
+                activation_credentials=activation_credentials,
+                customer=customer,
+                machine_id=machine_id,
+                timezone=timezone,
+                deactivation_entry_code=deactivation_entry_code)
+
+
+class DeinstallMathsEnglishInputDeactivationCodeHandler(SessionRequestHandler):
+    def post(self):
+        if not self.is_logged_in():
+            self.redirect(LOGIN_PAGE_URL)
+        else:
+            machine_id = self.get_argument('machine_id')
+            timezone = self.get_argument('timezone')
+            deactivation_entry_code = self.get_argument('deactivation_entry_code')
+        
+            customer = Customer.get_by_key_name(self.get_current_username())
+            activation_credentials = ActivationCredentials.get_all_for_customer_and_machine_id(customer=customer, machine_id=machine_id)
+            activation_credentials_list = []
+            for credentials in activation_credentials:
+                credentials_id = credentials.key().id()
+                serial_number = self.get_argument('serial_number_ac_%d' % credentials_id)
+                activation_code = self.get_argument('activation_code_ac_%d' % credentials_id)
+                if serial_number == credentials.serial_number and activation_code == credentials.activation_code:
+                    credentials.deactivation_code = self.get_argument('deactivation_code_ac_%d' % credentials_id)
+                    credentials.deactivation_entry_code = deactivation_entry_code
+                    credentials.timezone = timezone
+                    credentials.when_deactivated = datetime.utcnow()
+                    activation_credentials_list.append(credentials)
+                else:
+                    pass  # Error.
+            db.put(activation_credentials_list)
+            self.redirect('/dashboard')
+            #self.redirect('/unsubscribe')
 
 
 class ChangePasswordHandler(SessionRequestHandler):
@@ -551,6 +603,7 @@ class PaypalEndpoint(BaseRequestHandler):
 
             txn = Transaction(invoice=invoice)
             txn.identifier = data.get('txn_id')
+            txn.subscription_id = data.get("subscr_id")
             txn.transaction_type = data.get('txn_type')
             txn.currency = data.get('mc_currency')
             txn.amount = data.get('mc_gross', data.get('mc_amount3'))
@@ -643,9 +696,10 @@ urls = (
     (r'/unsubscribe/?', UnsubscriptionHandler),
     #(r'/deinstall/?', DeinstallHandler),
     (r'/deinstall/?', DeinstallMathsEnglishHandler),
+    (r'/deinstall/input/deactivation/code/?', DeinstallMathsEnglishInputDeactivationCodeHandler),
     (r'/profile/?', ProfileHandler),
     (r'/profile/password/change/?', ChangePasswordHandler),
-    (r'/json/get/deinstall/entry/code/by/timezone?', JsonDeinstallationEntryCodeByTimezoneHandler),
+    (r'/json/get/deactivation/entry/code/by/timezone?', JsonDeactivationEntryCodeByTimezoneHandler),
     (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
     (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),

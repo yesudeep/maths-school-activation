@@ -1,13 +1,24 @@
 jQuery(function(){
     var elements = {
-        formDeinstallationEntryCodeByTimezone: jQuery('#form-deinstallation-entry-code-by-timezone'),
-        deinstallationEntryCode: jQuery('#deinstallation-entry-code')
+        formDeactivationEntryCodeByTimezone: jQuery('#form-deactivation-entry-code-by-timezone'),
+        spanDeactivationEntryCode: jQuery('#deactivation-entry-code'),
+        formMachineID: jQuery('#form-machine-id')
     };
     
-    elements.formDeinstallationEntryCodeByTimezone.ajaxForm({
+    elements.formDeactivationEntryCodeByTimezone.ajaxForm({
         dataType: 'json',
         success: function(responseText){
-           elements.deinstallationEntryCode.text(responseText.deactivationEntryCode);
+            var deactivationEntryCode = responseText.deactivationEntryCode;
+            var timezone = responseText.timezone;
+            
+            var fieldDeactivationEntryCode = elements.formMachineID.find('input[name="deactivation_entry_code"]');
+            var fieldTimezone = elements.formMachineID.find('input[name="timezone"]');
+            
+            fieldTimezone.val(timezone);
+            elements.spanDeactivationEntryCode.text(deactivationEntryCode);
+            fieldDeactivationEntryCode.val(deactivationEntryCode);
         }
     });
+    
+    elements.formMachineID.validate();
 });
