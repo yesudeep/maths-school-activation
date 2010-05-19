@@ -186,6 +186,15 @@ class Customer(Profile):
         return hash_password(password, self.password_salt) == self.password_hash
 
 
+    def has_active_activation_credentials(self):
+        """
+        Determines whether the customer has active activation credentials
+        that have not been deactivated previously.
+        """
+        active_credentials = ActivationCredentials.get_all_active_for_customer(self)
+        return len(active_credentials) > 0
+
+
 class Phone(SerializableModel):
     """
     Records phone numbers belonging to a profile.
@@ -546,12 +555,53 @@ class ActivationCredentials(SerializableModel):
     
     @classmethod
     def get_all_for_customer_and_machine_id(cls, customer, machine_id, count=MAX_COUNT):
+        """
+        Obtains a list of all the activation credentials for a given customer
+        and machine ID.
+        """
         cache_key = unicode(customer.key()) + machine_id
         entities = deserialize_entities(memcache.get(cache_key))
         if not entities:
             entities = ActivationCredentials.all() \
                 .filter('customer = ', customer) \
                 .filter('machine_id = ', machine_id) \
+                .fetch(count)
+            memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
+        return entities
+
+    @classmethod
+    def get_all_active_for_customer_and_machine_id(cls, customer, machine_id, count=MAX_COUNT):
+        """
+        Obtains a list of all the active activation credentials for a given customer
+        and machine ID.
+        """
+        cache_key = unicode(customer.key()) + 'all_active_for_customer'
+        entities = deserialize_entities(memcache.get(cache_key))
+        if not entities:
+            entities = ActivationCredentials.all() \
+                .filter('customer = ', customer) \
+                .filter('machine_id = ', machine_id) \
+                .filter('deactivation_code = ', None) \
+                .filter('activation_code != ', None) \
+                .fetch(count)
+            memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
+        return entities    
+
+    @classmethod
+    def get_all_active_for_customer(cls, customer, count=MAX_COUNT):
+        """
+        Obtains all the active activation credentials which have an activation
+        code but do not have a deactivation code, which essentially means
+        the customer will have these products activated but not deinstalled them
+        as per the Website.
+        """
+        cache_key = unicode(customer.key()) + 'all_active_for_customer'
+        entities = deserialize_entities(memcache.get(cache_key))
+        if not entities:
+            entities = ActivationCredentials.all() \
+                .filter('customer = ', customer) \
+                .filter('deactivation_code = ', None) \
+                .filter('activation_code != ', None) \
                 .fetch(count)
             memcache.set(cache_key, serialize_entities(entities), CACHE_DURATION)
         return entities

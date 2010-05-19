@@ -419,6 +419,20 @@ class JsonDeactivationEntryCodeByTimezoneHandler(SessionRequestHandler):
         }))
 
 
+class JsonCustomerAndMachineIDHaveActiveActivationCredentialsHandler(SessionRequestHandler):
+    def post(self):
+        machine_id = self.get_argument('machine_id')
+        customer = Customer.get_by_key_name(session.get_current_username())
+        credentials = ActivationCredentials.get_all_active_for_customer_and_machine_id(
+            customer=customer,
+            machine_id=machine_id)
+        self.set_header('Content-Type', 'application/json')
+        self.write(json.dumps(len(credentials) > 0))
+
+
+class JsonUserExistsHandler(BaseRequestHandler):
+    def post(self):
+        pass
 
 class UnsubscriptionHandler(SessionRequestHandler):
     def get(self):
@@ -432,37 +446,39 @@ class UnsubscriptionHandler(SessionRequestHandler):
             self.render('unsubscribe.html', subscriptions=subscriptions)
             
 
-class DeinstallHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('deinstall.html')
-
-
-class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
-    def get(self):
-        if not self.is_logged_in():
-            self.redirect(LOGIN_PAGE_URL)
-        else:
-            self.render('deinstall_phonica_dinamagic.html')
-
+#class DeinstallHandler(SessionRequestHandler):
+#    def get(self):
+#        if not self.is_logged_in():
+#            self.redirect(LOGIN_PAGE_URL)
+#        else:
+#            self.render('deinstall.html')
+#
+#
+#class DeinstallPhonicaDinamagicHandler(SessionRequestHandler):
+#    def get(self):
+#        if not self.is_logged_in():
+#            self.redirect(LOGIN_PAGE_URL)
+#        else:
+#            self.render('deinstall_phonica_dinamagic.html')
+#
 
 class DeinstallMathsEnglishHandler(SessionRequestHandler):
     def get(self):
         if not self.is_logged_in():
             self.redirect(LOGIN_PAGE_URL)
         else:
-            from activation import generate_deactivation_entry_code
-            from pytz.gae import pytz
             
             customer = Customer.get_by_key_name(self.get_current_username())
-            
-            deactivation_entry_code = generate_deactivation_entry_code(timezone=customer.timezone)
-            self.render('deinstall_maths_english.html', 
-                default_timezone=customer.timezone,
-                deactivation_entry_code=deactivation_entry_code,
-                timezones=pytz.all_timezones)
+            if customer.has_active_activation_credentials():            
+                from activation import generate_deactivation_entry_code
+                from pytz.gae import pytz
+                deactivation_entry_code = generate_deactivation_entry_code(timezone=customer.timezone)
+                self.render('deinstall_maths_english.html', 
+                    default_timezone=customer.timezone,
+                    deactivation_entry_code=deactivation_entry_code,
+                    timezones=pytz.all_timezones)
+            else:
+                self.render('deinstall_no_active_subscriptions.html')
 
     def post(self):
         if not self.is_logged_in():
@@ -473,7 +489,7 @@ class DeinstallMathsEnglishHandler(SessionRequestHandler):
             deactivation_entry_code = self.get_argument('deactivation_entry_code')
         
             customer = Customer.get_by_key_name(self.get_current_username())
-            activation_credentials = ActivationCredentials.get_all_for_customer_and_machine_id(customer=customer, machine_id=machine_id)
+            activation_credentials = ActivationCredentials.get_all_active_for_customer_and_machine_id(customer=customer, machine_id=machine_id)
             self.render('deinstall_maths_english_input.html', 
                 activation_credentials=activation_credentials,
                 customer=customer,
@@ -694,18 +710,22 @@ urls = (
     (r'/activate/complete/?', ActivateCompleteHandler),
     (r'/paypal/ipn/?', PaypalIPNHandler),
     (r'/unsubscribe/?', UnsubscriptionHandler),
+    (r'/profile/?', ProfileHandler),
+    (r'/profile/password/change/?', ChangePasswordHandler),
     #(r'/deinstall/?', DeinstallHandler),
     (r'/deinstall/?', DeinstallMathsEnglishHandler),
     (r'/deinstall/input/deactivation/code/?', DeinstallMathsEnglishInputDeactivationCodeHandler),
-    (r'/profile/?', ProfileHandler),
-    (r'/profile/password/change/?', ChangePasswordHandler),
-    (r'/json/get/deactivation/entry/code/by/timezone?', JsonDeactivationEntryCodeByTimezoneHandler),
-    (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
-    (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
-    (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),
-    (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
-    (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
-    (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),
+#    (r'/deinstall/english/phonica/?', DeinstallPhonicaDinamagicHandler),
+#    (r'/deinstall/mathematics/dinamagic/?', DeinstallPhonicaDinamagicHandler),
+#    (r'/deinstall/mathematics/junior/?', DeinstallMathsEnglishHandler),
+#    (r'/deinstall/mathematics/primary/?', DeinstallMathsEnglishHandler),
+#    (r'/deinstall/mathematics/senior/?', DeinstallMathsEnglishHandler),
+#    (r'/deinstall/english/story/?', DeinstallMathsEnglishHandler),
+#
+
+    (r'/deactivation_entry_code_for_timezone.json', JsonDeactivationEntryCodeByTimezoneHandler),
+    (r'/customer_and_machine_id_have_activation_credentials.json', JsonCustomerAndMachineIDHaveActiveActivationCredentialsHandler),
+    (r'/user_exists.json', JsonUserExistsHandler),
 
     # Admin testing pages.
     (r'/_at/check/activation/code/?', CheckActivationCodeGenerationHandler),

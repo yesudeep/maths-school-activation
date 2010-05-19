@@ -38,6 +38,7 @@ BASE_TEMPLATE_FILES = Split("""
     change_password.html
     dashboard.html
     deinstall.html
+    deinstall_no_active_subscriptions.html
 """)
 
 # If the template does not use scripts, please place it here.
