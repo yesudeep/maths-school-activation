@@ -9,21 +9,18 @@
 {% block tag_trunk_content %}
   <div class="box">
     <ul>
-    {% for subscription in subscriptions %}
-        <li>{{ subscription }}</li>        
-    {% end %}
+		  {% for subscription in subscriptions %}
+		      <li>{{ subscription }}</li>        
+		  {% end %}
 
-	<p>List all subscriptions</p>
-
-	<p>PLEASE NOTE: Here it is necessary to know the customer's paypal address to inorder to redirect the customer to the paypal page, so we will have to take it as a input from the user on this page.</p>
-
+			<p>List all subscriptions</p>
     </ul>
   </div>
   #*<form id="form-deactivate-products" class="decorated-fields vertical">
     <input type="submit" name="deactivate" class="awesome-button large" value="&times; Unsubscribe" />
   </form>*#
 	<div id="paypal_unsubscription">
-	<a HREF="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=meow_1270981698_biz%40happychickoo%2ecom" _fcksavedurl="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=bhow_1270981914_per%40happychickoo%2ecom">unsubscribe</a> 	
+	<a HREF="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=meow_1270981698_biz%40happychickoo%2ecom">unsubscribe</a> 	
 	</div>
 {% end %}
 
