@@ -3,7 +3,7 @@
 {% block navlink_deactivate_attributes %}class="selected"{% end %}
 
 {% block tag_header_content %}
-  <h1 class="icon deactivate">Unsubscribe Products <strong>Pick any.</strong></h1>
+  <h1 class="icon deactivate">Unsubscribe Products <strong>Your active subscriptions are.</strong></h1>
 {% end %}
 
 {% block tag_trunk_content %}
@@ -12,11 +12,19 @@
     {% for subscription in subscriptions %}
         <li>{{ subscription }}</li>        
     {% end %}
+
+	<p>List all subscriptions</p>
+
+	<p>PLEASE NOTE: Here it is necessary to know the customer's paypal address to inorder to redirect the customer to the paypal page, so we will have to take it as a input from the user on this page.</p>
+
     </ul>
   </div>
-  <form id="form-deactivate-products" class="decorated-fields vertical">
+  #*<form id="form-deactivate-products" class="decorated-fields vertical">
     <input type="submit" name="deactivate" class="awesome-button large" value="&times; Unsubscribe" />
-  </form>
+  </form>*#
+	<div id="paypal_unsubscription">
+	<a HREF="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=meow_1270981698_biz%40happychickoo%2ecom" _fcksavedurl="https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_subscr-find&alias=bhow_1270981914_per%40happychickoo%2ecom">unsubscribe</a> 	
+	</div>
 {% end %}
 
 {% block tag_scripts %}<script type="text/javascript">$SELECTOR_SCRIPT</script>{% end %}
