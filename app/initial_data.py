@@ -167,7 +167,8 @@ def import_products():
             subscriptions.append(Subscription(**subscription))
     db.put(subscriptions)
 
-
+# currently not imported because of password hash and salt
+# It gets automaticaly calculated using functions please refer modules.py 
 def import_customers():
     from utils import hash_password
     p = hash_password('example')
