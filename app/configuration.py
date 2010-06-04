@@ -117,8 +117,8 @@ else:
 
 
 # Uncomment one of these to use either sandbox or live settings.
-PAYPAL_MODE = 'sandbox'
-#PAYPAL_MODE = 'live'
+#PAYPAL_MODE = 'sandbox'
+PAYPAL_MODE = 'live'
 
 if PAYPAL_MODE == 'sandbox':
     #PAYPAL_MERCHANT_EMAIL = 'seller_1271087231_biz@happychickoo.com'
@@ -127,7 +127,8 @@ if PAYPAL_MODE == 'sandbox':
     PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
     PAYPAL_BUTTON_IMAGE_URL = 'https://www.sandbox.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
 else:
-    PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
+    #PAYPAL_MERCHANT_EMAIL = 'sales@mathsworldwide.com.au'
+    PAYPAL_MERCHANT_EMAIL = 'support@maths-school.co.nz'
     PAYPAL_MERCHANT_RECEIVER_EMAIL = PAYPAL_MERCHANT_EMAIL
     PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
     PAYPAL_BUTTON_IMAGE_URL = 'https://www.paypal.com/en_AU/i/btn/btn_subscribeCC_LG.gif'
