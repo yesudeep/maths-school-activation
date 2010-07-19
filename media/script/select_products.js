@@ -3,7 +3,9 @@ jQuery(function(){
     productLinks: jQuery('#products a'),
     buttonActivate: jQuery('#button-activate'),
     dialogSubscription: jQuery('#dialog-subscription'),
+    dialogNotification: jQuery('#dialog-notification'),
     buttonCancelSubscriptionPeriod: jQuery('#form-subscription-period .button-cancel'),
+    buttonHideNotification: jQuery('#form-Notification .button-ok'),
     formSubscriptionPeriod: jQuery('#form-subscription-period'),
     fieldSubscriptionPeriod: jQuery('#form-subscription-period select[name="period"]')
   };
@@ -26,7 +28,20 @@ jQuery(function(){
       subscriptionData.products[selectedProductKey] = true;
       elem.addClass(selectedClassName);
     }
+    
+    var elem = jQuery(this);
+    elements.dialogNotification.slideToggle('slow');
+    e.preventDefault();
+    e.stopPropagation();
   
+  // Cancel hides the subscription period dialog.
+  elements.buttonHideNotification.click(function(e){
+    elements.dialogNotification.fadeOut('slow');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
+    
     // Prevent default behavior and stop event bubbling.
     e.preventDefault();
     e.stopPropagation();
